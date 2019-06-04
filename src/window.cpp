@@ -1,14 +1,24 @@
-#include <iostream>
-#include <stdlib.h>
-#include <GLFW/glfw3.h>
+#include "window.h"
 
-int main() {
-	// GLFW
-	// Window creation
+void Window::SetWidth(int width) {
+    this->width = width;
+}
 
-	GLFWwindow* window;
-	
-	if (!glfwInit())
+void Window::SetHeight(int height) {
+    this->height = height;
+}
+
+void Window::SetName(const std::string& name) {
+    this->name = name;
+}
+
+GLFWwindow* Window::GetPointer() {
+    return this->window;
+}
+
+int Window::Init() {
+    // GLFW
+    if (!glfwInit())
         exit(EXIT_FAILURE);
 
 	// Подсказка glfw окно какой версии создавать
@@ -21,23 +31,22 @@ int main() {
 	// Mac OS build fix
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 
-    window = glfwCreateWindow(1080, 768, "Lesson 1", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Lesson 1", NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-
+	
 	// context
 	glfwMakeContextCurrent(window);
 
-	while (!glfwWindowShouldClose(window)) {
-		glfwSwapBuffers(window);
-    	glfwPollEvents();
-	}
+	// Glew init
+	glewExperimental = true; 
+	if (glewInit() != GLEW_OK) { glfwTerminate(); return -1; }
+    return 0;
+}
 
-	glfwDestroyWindow(window);
+void Window::Destroy() {
+    glfwDestroyWindow(window);
     glfwTerminate();
-
-	std::cout << "Hello World3!" << std::endl;
-	return 0;
 }
