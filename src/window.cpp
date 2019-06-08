@@ -8,6 +8,14 @@ void Window::SetHeight(int height) {
     this->height = height;
 }
 
+int Window::GetWidth() {
+    return this->width;
+}
+
+int Window::GetHeight() {
+    return this->height;
+}
+
 void Window::SetName(const std::string& name) {
     this->name = name;
 }

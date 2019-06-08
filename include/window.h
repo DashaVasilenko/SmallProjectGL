@@ -13,16 +13,16 @@ public:
     GLFWwindow* GetPointer();
     int Init();
     void Destroy();
-
-    void SetWidth(int width);
-    void SetHeight(int height);
-    void SetName(const std::string& name);
+    int GetWidth();
+    int GetHeight();
+    void SetWidth(int);
+    void SetHeight(int);
+    void SetName(const std::string&);
 private:
     GLFWwindow* window; 
     int width = 640;
     int height = 480;
     std::string name = "Window";
 };
-
 
 #endif /* End of __WINDOW__ */
