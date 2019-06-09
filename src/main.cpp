@@ -3,6 +3,7 @@
 
 #include "renderer.h"
 #include "shaderProgram.h"
+#include "camera.h"
 
 int main() {
 	Window window;
@@ -11,26 +12,23 @@ int main() {
 	window.SetName("Karl's window!");
 	window.Init();
 
+
+
 	Renderer renderer;
 	renderer.SetWidth(window.GetWidth());
 	renderer.SetHeight(window.GetHeight());
 	renderer.Init();
 
-
-	std::map<GLenum, std::string> mapSources;
-	mapSources[GL_VERTEX_SHADER] = "glsl/vertex.glsl";
-	mapSources[GL_FRAGMENT_SHADER] = "glsl/fragment.glsl";
-
 	ShaderProgram program;
-	program.Init(mapSources);
+	program[GL_VERTEX_SHADER] = "glsl/vertex.glsl";
+	program[GL_FRAGMENT_SHADER] = "glsl/fragment.glsl";
 	program.Compile();
 	program.Link();
 
-
 	// координаты и цвет вершин 1 треугольника
-	float vertices[] = {0.66, 0.13, 0.0, 1.0, 0.0, 0.0,
-						0.33, 0.67, 0.0, 0.0, 1.0, 0.0,
-						0.97, 0.97, 0.0, 0.0, 0.0, 1.0 };
+	float vertices[] = {-0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
+						0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
+						0.0, 0.5, 0.0, 0.0, 0.0, 1.0 };
 
 	// создаем буфер VAO (vertex array object)
 	GLuint VAO;
@@ -54,15 +52,36 @@ int main() {
 	glEnableVertexAttribArray(1);
 
 
+	// в рендерер
+	glm::mat4 projection = glm::perspective( 45.0f, (float)window.GetWidth()/(float)window.GetHeight(), 0.1f, 100.0f);
 
+	Camera camera;
+	double currentTime = 0.0;
+	double lastTime = 0.0;
+
+
+	glm::mat4 model = glm::mat4(1.0f);
 	while (!glfwWindowShouldClose(window.GetPointer())) {
+		currentTime = glfwGetTime();
+		float deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
+		//calculate time
+
 		// Renderer pass
 		renderer.Update();
+
+		glm::mat4 view = camera.GetViewMatrix();
+		model = glm::rotate(model, 5.0f*deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+
+
+		glm::mat4 mvp = projection*view*model;
 		program.Run();
+		program.SetUniform("MVP", mvp);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-		/////////////////
+
+		camera.Update(deltaTime);
 
 		glfwSwapBuffers(window.GetPointer());
     	glfwPollEvents();

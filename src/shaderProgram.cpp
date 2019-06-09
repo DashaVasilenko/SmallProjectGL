@@ -3,8 +3,9 @@
 #include <fstream>
 #include <streambuf>
 
-void ShaderProgram::Init(const std::map<GLenum, std::string>& mapSources) {
-    this->mapSources = mapSources;
+
+std::string& ShaderProgram::operator[](const GLenum& shader_type) {
+    return mapSources[shader_type];
 }
 
 void ShaderProgram::Compile() {
@@ -34,7 +35,7 @@ void ShaderProgram::Compile() {
             if (logLen > 0) {
                 char *infoLog = new char[logLen];
                 glGetShaderInfoLog(shader_descriptor, logLen, NULL, infoLog);
-                std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+                std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
                 delete[] infoLog;
             }
 	    }
@@ -67,6 +68,16 @@ void ShaderProgram::Link() {
 
 void ShaderProgram::Run() {
     glUseProgram(descriptor);
+}
+
+void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) {
+    GLint location = glGetUniformLocation(descriptor, name);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+    if (location == -1) {
+        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    // обработка ошибок!!!
 }
 
 void ShaderProgram::Delete() {

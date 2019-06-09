@@ -18,6 +18,9 @@ public:
     void SetWidth(int);
     void SetHeight(int);
     void SetName(const std::string&);
+    static void OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode);
+    static void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
+
 private:
     GLFWwindow* window; 
     int width = 640;

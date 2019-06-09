@@ -1,4 +1,5 @@
 #include "window.h"
+#include "inputSystem.h"
 
 void Window::SetWidth(int width) {
     this->width = width;
@@ -24,6 +25,24 @@ GLFWwindow* Window::GetPointer() {
     return this->window;
 }
 
+void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode) {
+    if (action == GLFW_PRESS) 
+        InputSystem::keys[key] = true;
+    else if (action == GLFW_RELEASE)
+         InputSystem::keys[key] = false;
+}
+
+void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
+    if (InputSystem::firstMouseMove) {
+        InputSystem::lastCursPosX = xpos;
+        InputSystem::lastCursPosY = ypos;
+    }
+    InputSystem::deltaCursPosX = xpos - InputSystem::lastCursPosX;
+    InputSystem::deltaCursPosY = InputSystem::lastCursPosY - ypos;
+    InputSystem::firstMouseMove = false;  
+}
+
+
 int Window::Init() {
     // GLFW
     if (!glfwInit())
@@ -44,7 +63,10 @@ int Window::Init() {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-	
+
+    glfwSetKeyCallback(window, OnKeyPressed);  
+    glfwSetCursorPosCallback(window, OnMouseMove);
+
 	// context
 	glfwMakeContextCurrent(window);
 

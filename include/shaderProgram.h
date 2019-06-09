@@ -1,15 +1,20 @@
 #ifndef __SHADER_PROGRAM__
 #define __SHADER_PROGRAM__
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "window.h"
 #include <map>
 
 class ShaderProgram {
 public:
-    void Init(const std::map<GLenum, std::string>& );
+    std::string& operator[](const GLenum& );
     void Compile();
     void Link();
     void Run();
+    void SetUniform(const char* name, const glm::mat4&);
     void Delete();
 private:
     std::map<GLenum, std::string> mapSources;
