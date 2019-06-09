@@ -26,6 +26,10 @@ GLFWwindow* Window::GetPointer() {
 }
 
 void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode) {
+
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
     if (action == GLFW_PRESS) 
         InputSystem::keys[key] = true;
     else if (action == GLFW_RELEASE)
@@ -34,20 +38,22 @@ void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action,
 
 void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
     if (InputSystem::firstMouseMove) {
-        InputSystem::lastCursPosX = xpos;
-        InputSystem::lastCursPosY = ypos;
+        InputSystem::lastCursPosX = 0.0f;
+        InputSystem::lastCursPosY = 0.0f;
     }
     InputSystem::deltaCursPosX = xpos - InputSystem::lastCursPosX;
     InputSystem::deltaCursPosY = InputSystem::lastCursPosY - ypos;
+    InputSystem::lastCursPosX = xpos;
+    InputSystem::lastCursPosY = ypos;
     InputSystem::firstMouseMove = false;
-    InputSystem::mouseMoved = true;  
 }
 
 
 int Window::Init() {
     // GLFW
-    if (!glfwInit())
+    if (!glfwInit()) {
         exit(EXIT_FAILURE);
+    }
 
 	// Подсказка glfw окно какой версии создавать
 	// Window creation + GL context
@@ -65,6 +71,7 @@ int Window::Init() {
         exit(EXIT_FAILURE);
     }
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);    
     glfwSetKeyCallback(window, OnKeyPressed);  
     glfwSetCursorPosCallback(window, OnMouseMove);
 

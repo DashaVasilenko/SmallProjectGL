@@ -2,7 +2,6 @@
 
 bool InputSystem::keys[1024];
 bool InputSystem::firstMouseMove = true;
-bool InputSystem::mouseMoved = false;   
 double InputSystem::lastCursPosX;
 double InputSystem::lastCursPosY;
 double InputSystem::deltaCursPosX;

@@ -5,7 +5,6 @@ class InputSystem {
 public:
     static bool keys[1024];
     static bool firstMouseMove;
-    static bool mouseMoved;   
     static double lastCursPosX;
     static double lastCursPosY;
     static double deltaCursPosX;

@@ -1,6 +1,6 @@
 #include "camera.h"
 #include "inputSystem.h"
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 Camera::Camera(const glm::vec3& position) {
     this->position = position;
@@ -40,20 +40,20 @@ void Camera::UpdatePosition(const float& delta) {
 }
 
 void Camera::UpdateVectors() {
-    if (InputSystem::mouseMoved) {
-        yaw += InputSystem::deltaCursPosX;
-        pitch += InputSystem::deltaCursPosY;
+    yaw += InputSystem::deltaCursPosX*mouse_sense;
+    pitch += InputSystem::deltaCursPosY*mouse_sense;
 
-        if (pitch > 90.0f) pitch = 90.0f;
-        if (pitch < -90.0f) pitch = -90.0f;
+    if (pitch > 90.0f) pitch = 90.0f;
+    if (pitch < -90.0f) pitch = -90.0f;
 
-        glm::quat pitch_quat = glm::angleAxis(pitch, right);
-        glm::quat yaw_quat = glm::angleAxis(yaw, up);
-        glm::quat result_quat = glm::cross(pitch_quat, yaw_quat);
-        glm::normalize(result_quat);
-        front = glm::rotate(result_quat, front);
-        right = glm::rotate(result_quat, right);
+    glm::vec3 tmpFront;
+    tmpFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    tmpFront.y = sin(glm::radians(pitch));
+    tmpFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-        InputSystem::mouseMoved = false;
-    }
+    front = glm::normalize(tmpFront);
+    right = glm::normalize(glm::cross(front, up));
+
+    InputSystem::deltaCursPosX = 0.0f;
+    InputSystem::deltaCursPosY = 0.0f;
 }
