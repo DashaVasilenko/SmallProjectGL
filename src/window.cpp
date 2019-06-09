@@ -39,7 +39,8 @@ void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
     }
     InputSystem::deltaCursPosX = xpos - InputSystem::lastCursPosX;
     InputSystem::deltaCursPosY = InputSystem::lastCursPosY - ypos;
-    InputSystem::firstMouseMove = false;  
+    InputSystem::firstMouseMove = false;
+    InputSystem::mouseMoved = true;  
 }
 
 

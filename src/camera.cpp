@@ -40,7 +40,7 @@ void Camera::UpdatePosition(const float& delta) {
 }
 
 void Camera::UpdateVectors() {
-    if () {
+    if (InputSystem::mouseMoved) {
         yaw += InputSystem::deltaCursPosX;
         pitch += InputSystem::deltaCursPosY;
 
@@ -53,5 +53,7 @@ void Camera::UpdateVectors() {
         glm::normalize(result_quat);
         front = glm::rotate(result_quat, front);
         right = glm::rotate(result_quat, right);
+
+        InputSystem::mouseMoved = false;
     }
 }
