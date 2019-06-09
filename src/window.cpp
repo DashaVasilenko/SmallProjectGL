@@ -38,8 +38,8 @@ void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action,
 
 void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
     if (InputSystem::firstMouseMove) {
-        InputSystem::lastCursPosX = 0.0f;
-        InputSystem::lastCursPosY = 0.0f;
+        InputSystem::lastCursPosX = xpos;
+        InputSystem::lastCursPosY = ypos;
     }
     InputSystem::deltaCursPosX = xpos - InputSystem::lastCursPosX;
     InputSystem::deltaCursPosY = InputSystem::lastCursPosY - ypos;
