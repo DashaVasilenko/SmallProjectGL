@@ -22,4 +22,4 @@ private:
     GLuint descriptor;
 };
 
-#endif /* End of __SHADERPROGRAM__ */
+#endif /* End of __SHADER_PROGRAM__ */

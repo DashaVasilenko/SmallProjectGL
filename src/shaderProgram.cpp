@@ -3,26 +3,24 @@
 #include <fstream>
 #include <streambuf>
 
-
-std::string& ShaderProgram::operator[](const GLenum& shader_type) {
+std::string& ShaderProgram::operator[] (const GLenum& shader_type) {
     return mapSources[shader_type];
 }
 
 void ShaderProgram::Compile() {
     for (auto& element: mapSources) {
         std::ifstream t(element.second);
-	    std::string sourcecpp;
+	    std::string source_cpp;
 	    t.seekg(0, std::ios::end);   
-	    sourcecpp.reserve(t.tellg());
+	    source_cpp.reserve(t.tellg());
 	    t.seekg(0, std::ios::beg);
-	    sourcecpp.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+	    source_cpp.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
         mapShaders[element.first] = glCreateShader(element.first);
         GLuint& shader_descriptor = mapShaders[element.first];
 	    
-	    const char* source =  sourcecpp.c_str();
-	    // привязываем исходный код шейдера к объекту шейдера
-	    // (шейдер, кол-во строк, текст шейдера, NULL)
+	    const char* source =  source_cpp.c_str();
+	    // привязываем исходный код шейдера к объекту шейдера (шейдер, кол-во строк, текст шейдера, NULL)
 	    glShaderSource(shader_descriptor, 1, &source, NULL);  
 	    glCompileShader(shader_descriptor); // компилируем шейдер
 

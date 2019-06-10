@@ -1,32 +1,9 @@
 #include "window.h"
 #include "inputSystem.h"
 
-void Window::SetWidth(int width) {
-    this->width = width;
-}
-
-void Window::SetHeight(int height) {
-    this->height = height;
-}
-
-int Window::GetWidth() {
-    return this->width;
-}
-
-int Window::GetHeight() {
-    return this->height;
-}
-
-void Window::SetName(const std::string& name) {
-    this->name = name;
-}
-
-GLFWwindow* Window::GetPointer() {
-    return this->window;
-}
-
+// (указатель на GLFWwindow, код нажатой клавиши, действие над клавишей,
+// число описывающее модификаторы (shift, control, alt или super) ) 
 void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode) {
-
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
@@ -48,32 +25,31 @@ void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
     InputSystem::firstMouseMove = false;
 }
 
-
 int Window::Init() {
-    // GLFW
+    // инициализация GLFW
     if (!glfwInit()) {
         exit(EXIT_FAILURE);
     }
 
-	// Подсказка glfw окно какой версии создавать
+	// подсказка glfw окно какой версии создавать
 	// Window creation + GL context
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // выключение возможности изменения размера окна
 
 	// Mac OS build fix
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 
-    window = glfwCreateWindow(width, height, "Lesson 1", NULL, NULL);
+    window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);    
-    glfwSetKeyCallback(window, OnKeyPressed);  
-    glfwSetCursorPosCallback(window, OnMouseMove);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // скрыть курсор мыши 
+    glfwSetKeyCallback(window, OnKeyPressed); // передача функции для клавиатуры в GLFW
+    glfwSetCursorPosCallback(window, OnMouseMove); // передача функции для курсора в GLFW
 
 	// context
 	glfwMakeContextCurrent(window);
@@ -84,7 +60,7 @@ int Window::Init() {
     return 0;
 }
 
-void Window::Destroy() {
+void Window::Delete() {
     glfwDestroyWindow(window);
     glfwTerminate();
 }

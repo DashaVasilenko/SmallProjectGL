@@ -10,14 +10,15 @@
 
 class Window {
 public:
-    GLFWwindow* GetPointer();
+    GLFWwindow* GetPointer() { return this->window; }
+    void SetWidth(int width) { this->width = width; }
+    void SetHeight(int height) { this->height = height; }
+    void SetName(const std::string& name) { this->name = name; }
+    int GetWidth() { return this->width; }
+    int GetHeight() { return this->height; }
     int Init();
-    void Destroy();
-    int GetWidth();
-    int GetHeight();
-    void SetWidth(int);
-    void SetHeight(int);
-    void SetName(const std::string&);
+    void Delete();
+     
     static void OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
 
