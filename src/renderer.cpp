@@ -10,6 +10,7 @@ void Renderer::SetHeight(int height) {
 
 void Renderer::Init() {
 	glViewport(0, 0, width, height);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::Update() {

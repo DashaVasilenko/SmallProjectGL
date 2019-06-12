@@ -43,8 +43,8 @@ void Camera::UpdateVectors() {
     yaw += InputSystem::deltaCursPosX*mouse_sense;
     pitch += InputSystem::deltaCursPosY*mouse_sense;
 
-    if (pitch > 90.0f) pitch = 90.0f;
-    if (pitch < -90.0f) pitch = -90.0f;
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
 
     glm::vec3 tmpFront;
     tmpFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
