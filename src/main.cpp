@@ -4,6 +4,7 @@
 #include "renderer.h"
 #include "shaderProgram.h"
 #include "camera.h"
+#include "buffers.h"
 
 int main() {
 	Window window;
@@ -35,7 +36,7 @@ int main() {
 	};
 
 	// кубик индексы вершин для треугольников
-	GLuint indices[] = { 0, 1, 3,   // Первый треугольник
+	int indices[] = { 0, 1, 3,   // Первый треугольник
     					 1, 2, 3,   // Второй треугольник
 						 1, 2, 6,
 						 1, 5, 6,
@@ -57,31 +58,40 @@ int main() {
 	};
 */
 
-	GLuint EBO;
-	glGenBuffers(1, &EBO); // создаем буфер
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // определяем тип буфера
+	//GLuint EBO;
+	//glGenBuffers(1, &EBO); // создаем буфер
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // определяем тип буфера
 	// копируем вершинные данные в буфер (тип буфера, количество данных в байтах, данные, режим работы с данными)
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 
 	// создаем буфер VAO (vertex array object)
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	// GLuint VAO;
+	// glGenVertexArrays(1, &VAO);
+	// glBindVertexArray(VAO);
 
-	GLuint VBO;
-	glGenBuffers(1, &VBO); // создаем буфер VBO (vertex buffer objects) 1 - кол-во буферов
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // определяем тип буфера
-	// копируем вершинные данные в буфер (тип буфера, количество данных в байтах, данные, режим работы с данными)
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//////////// НОВАЯ ШТЮЮЮЮЮЮЮКААААААААА ///////////
+
+	IndexBuffer ibo;
+	ibo.BufferData(indices, 36);
+
+	VertexBuffer vbo;
+	vbo.BufferData(vertices, sizeof(vertices));
+
+	BufferLayout layout = { {"Position", Float3}, {"Color", Float3} };
+
+	VertexArray vao;
+	vao.AddAttributes(vbo, layout);
+/////////// Конец новой штюююююкиииии ////////////
+
 	// сообщаем OpenGL как он должен интерпретировать вершинные данные
 	// (какой аргумент шейдера мы хотим настроить(layout (location = 0)), размер аргумента в шейдере, тип данных,
 	//  необходимость нормализовать входные данные, расстояние между наборами данных, смещение начала данных в буфере)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0); // включаем атрибуты, т.е. передаем вершинному атрибуту позицию аргумента
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)) );
-	glEnableVertexAttribArray(1);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	// glEnableVertexAttribArray(0); // включаем атрибуты, т.е. передаем вершинному атрибуту позицию аргумента
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)) );
+	// glEnableVertexAttribArray(1);
 
-	// в рендерер
+	// в камеру
 	glm::mat4 projection = glm::perspective( 45.0f, (float)window.GetWidth()/(float)window.GetHeight(), 0.1f, 100.0f);
 
 	Camera camera;
@@ -111,7 +121,8 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 */
 		//  для прямоугольника
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		vao.Bind();
+		ibo.Bind();
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		camera.Update(deltaTime);
