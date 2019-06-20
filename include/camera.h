@@ -25,7 +25,7 @@ private:
     float yaw = -90.0f;
 
     glm::vec3 position;
-    float speed = 5.0f;
+    float speed = 10.0f;
     float mouse_sense = 0.1f;
 };
 

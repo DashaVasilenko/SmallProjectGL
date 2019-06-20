@@ -14,7 +14,8 @@ public:
     void Compile();
     void Link();
     void Run();
-    void SetUniform(const char* name, const glm::mat4&);
+    void SetUniform(const char*, const glm::mat4&);
+    void SetUniform(const char*, const glm::mat3&);
     void Delete();
 private:
     std::map<GLenum, std::string> mapSources;
