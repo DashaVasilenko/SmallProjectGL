@@ -11,7 +11,8 @@ class Camera {
 public:
     Camera(const glm::vec3& = glm::vec3(0.0f, 0.0f, 3.0f) );
     void Update(const float&);
-    glm::mat4 GetViewMatrix();
+    inline glm::mat4 GetViewMatrix() { return glm::lookAt(position, position + front, up); }
+    inline glm::vec3 GetPosition() { return position; }
 private:
     void UpdatePosition(const float&);
     void UpdateVectors();

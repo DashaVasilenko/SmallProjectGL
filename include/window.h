@@ -6,7 +6,7 @@
 
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
-#include <string>
+#include <string> 
 
 class Window {
 public:

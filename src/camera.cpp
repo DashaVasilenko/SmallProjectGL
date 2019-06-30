@@ -9,10 +9,6 @@ Camera::Camera(const glm::vec3& position) {
     front = glm::vec3(0.0f, 0.0f, -1.0f);
 }
 
-glm::mat4 Camera::GetViewMatrix() {
-    return glm::lookAt(position, position + front, up);
-}
-
 void Camera::Update(const float& delta) {
     UpdatePosition(delta);
     UpdateVectors();

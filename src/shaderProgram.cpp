@@ -88,6 +88,26 @@ void ShaderProgram::SetUniform(const char* name, const glm::mat3& matrix) {
     // обработка ошибок!!!
 }
 
+void ShaderProgram::SetUniform(const char* name, const glm::vec4& vector) {
+    GLint location = glGetUniformLocation(descriptor, name);
+    glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+    if (location == -1) {
+        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    // обработка ошибок!!!
+}
+
+void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) {
+    GLint location = glGetUniformLocation(descriptor, name);
+    glUniform3f(location, vector.x, vector.y, vector.z);
+    if (location == -1) {
+        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    // обработка ошибок!!!
+}
+
 void ShaderProgram::Delete() {
     for (auto& element: mapShaders) {
 	    glDeleteShader(element.second);

@@ -1,4 +1,5 @@
 #include "buffers.h"
+#include <iostream>
 
 IndexBuffer::IndexBuffer() {
     glGenBuffers(1, &descriptor); // создаем буфер IBO (1 - кол-во буферов)

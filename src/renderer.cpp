@@ -9,8 +9,8 @@ void Renderer::SetHeight(int height) {
 }
 
 void Renderer::Init() {
-	glViewport(0, 0, width, height);
-    glEnable(GL_DEPTH_TEST);
+	glViewport(0, 0, width, height); // размер области в окне, в котором рисуем
+    glEnable(GL_DEPTH_TEST); // тест глубины
 }
 
 void Renderer::Update() {

@@ -49,11 +49,13 @@ int main() {
 		glm::mat4 view = camera.GetViewMatrix();
 		//model = glm::rotate(model, 5.0f*deltaTime, glm::vec3(0.0f, 1.0f, 0.0f)); // вращение треугольника
 
-		glm::mat4 mvp = projection*view*model;
 		program.Run();
-		program.SetUniform("MVP", mvp);
+		program.SetUniform("Model", model);
+		program.SetUniform("View", view);
+		program.SetUniform("Projection", projection);
 		glm::mat3 model3x3 = model;
 		program.SetUniform("NormalMatrix", glm::transpose(glm::inverse(model3x3)));
+		program.SetUniform("cameraPos", camera.GetPosition());
 		dragon.Draw();
 
 		camera.Update(deltaTime);
