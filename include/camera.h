@@ -40,6 +40,14 @@ public:
     void SetTopPlane(float a) { topPlane = a; }
     void SetNearPlane(float a) { nearPlane = a; }
     void SetFarPlane(float a) { farPlane = a; }
+    void SetProjection (float left, float right, float bottom, float top, float near, float far) {
+        leftPlane = left;
+        rightPlane = right;
+        bottomPlane = bottom; 
+        topPlane = top; 
+        nearPlane = near;
+        farPlane = far;
+    }
     // создание ортографической камеры (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
     glm::mat4 GetProjectionMatrix() { 
         return glm::ortho(leftPlane, rightPlane, bottomPlane, topPlane, nearPlane, farPlane);
@@ -59,6 +67,12 @@ public:
     void SetWidthToHeight(float a) { width_to_height = a; }
     void SetNearPlane(float a) { nearPlane = a; }
     void SetFarPlane(float a) { farPlane = a; }
+    void SetProjection(float f, float wtoh, float near, float far) {
+        fov = f;
+        width_to_height = wtoh;
+        nearPlane = near;
+        farPlane = far;
+    }
     // проекционная камера (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
     glm::mat4 GetProjectionMatrix() { 
         return glm::perspective(fov, width_to_height, nearPlane, farPlane);
