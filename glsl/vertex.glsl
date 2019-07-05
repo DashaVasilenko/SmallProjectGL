@@ -1,3 +1,4 @@
+// кук торренс
 #version 330 // установка версии GLSL
 
 layout (location = 0) in vec3 position;

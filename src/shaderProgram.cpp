@@ -16,7 +16,7 @@ void ShaderProgram::Compile() {
 	    t.seekg(0, std::ios::beg);
 	    source_cpp.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-        mapShaders[element.first] = glCreateShader(element.first);
+        mapShaders[element.first] = glCreateShader(element.first); // создать объект шейдера (в скобках тип шейдера)
         GLuint& shader_descriptor = mapShaders[element.first];
 	    
 	    const char* source =  source_cpp.c_str();
@@ -45,9 +45,9 @@ void ShaderProgram::Link() {
 	descriptor = glCreateProgram();
 
     for (auto& element: mapShaders) {
-        glAttachShader(descriptor, element.second);
+        glAttachShader(descriptor, element.second); // присоединяем собранные шейдеры к программе
     }
-	glLinkProgram(descriptor);
+	glLinkProgram(descriptor); // связываем
 
 	// проверка на ошибки при связывании
 	GLint success;
@@ -65,24 +65,25 @@ void ShaderProgram::Link() {
 }
 
 void ShaderProgram::Run() {
-    glUseProgram(descriptor);
+    glUseProgram(descriptor); // использование созданной программы
 }
 
 void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     if (location == -1) {
-        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
         exit(EXIT_FAILURE);
     }
     // обработка ошибок!!!
 }
 
 void ShaderProgram::SetUniform(const char* name, const glm::mat3& matrix) {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+    // получить индекс формы (переменная программы-шейдера, название формы, определенной внутри этой программы)
+    GLint location = glGetUniformLocation(descriptor, name);   
+    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)); // установка значения формы
     if (location == -1) {
-        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
         exit(EXIT_FAILURE);
     }
     // обработка ошибок!!!
@@ -92,7 +93,7 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec4& vector) {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
     if (location == -1) {
-        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
         exit(EXIT_FAILURE);
     }
     // обработка ошибок!!!
@@ -102,7 +103,7 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniform3f(location, vector.x, vector.y, vector.z);
     if (location == -1) {
-        std::cerr << "Uniform  " << location << " not found" << std::endl;
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
         exit(EXIT_FAILURE);
     }
     // обработка ошибок!!!

@@ -1,3 +1,4 @@
+// кук торренс
 #version 330 // установка версии GLSL
 
 in vec3 outNormal;
@@ -31,11 +32,13 @@ vec3 CookTorrance(vec3 normal, vec3 light, vec3 view, float roughness_koef)
 
 // вычисляем результат, добавляя к знаменателю малую величину, чтобы не было деления на ноль
     Rs = min(1.0, (fresnel*geometric*roughness)/(NdotV*NdotL+1.0e-7));
-// vResult = kA*vAmbient + LdotN *(kD*vDiffuse + kS*vSpecular*Rs)
+// vResult = kA*vAmbient + LdotN *(kD*vDiffuse + kS*vSpecular*Rs) эмбианта не должно быть, вроде 
     //return 0.1f*vec3(0.24725, 0.19950, 0.07450) + NdotL*(0.6f*vec3(0.75164, 0.60648, 0.22648) +0.3f*vec3(0.62828, 0.55580, 0.36606)*Rs);
-    return 0.1f*vec3(1.0, 0.0, 0.0) + NdotL*(0.1f*vec3(1.0, 0.0, 0.0) +0.8f*vec3(1.0, 0.0, 0.0)*Rs);
+    //return 0.1f*vec3(1.0, 0.0, 0.0) + NdotL*(0.1f*vec3(1.0, 0.0, 0.0) +0.8f*vec3(1.0, 0.0, 0.0)*Rs);
+    return  NdotL*(vec3(0.75164, 0.60648, 0.22648) + vec3(0.62828, 0.55580, 0.36606)*Rs);
+     
 }
 
 void main() {
-    outColor = vec4(CookTorrance(outNormal, vec3(0.0f, 1.0f, 0.0f), -inEye, 100), 1.0);
+    outColor = vec4(CookTorrance(outNormal, vec3(0.0f, 1.0f, 0.0f), inEye, 0.1), 1.0);
 }

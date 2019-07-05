@@ -54,7 +54,7 @@ int Window::Init() {
 	// context
 	glfwMakeContextCurrent(window);
 
-	// Glew init
+	// Glew init (инициализация GLEW)
 	glewExperimental = true; 
 	if (glewInit() != GLEW_OK) { glfwTerminate(); return -1; }
     return 0;

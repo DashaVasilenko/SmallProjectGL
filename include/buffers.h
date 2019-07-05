@@ -69,4 +69,4 @@ private:
     GLuint freeAttribNum = 0;
 };
 
-#endif
+#endif /* End of __BUFFERS__ */

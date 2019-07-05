@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 
-uniform mat4 MVP;
+uniform mat4 MVP; // надо переписать. MVP уже нет
 uniform mat3 NormalMatrix;
 
 out vec3 outNormal;

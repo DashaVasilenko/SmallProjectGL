@@ -18,5 +18,4 @@ private:
     unsigned int count = 0;
 };
 
-
-#endif
+#endif /* End of __GEOMETRY__ */
