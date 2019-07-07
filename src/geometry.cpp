@@ -26,10 +26,15 @@ void Geometry::Load(const std::string& filename) {
                     vertices.push_back(mesh->mNormals[i].y);
                     vertices.push_back(mesh->mNormals[i].z);
                 }
+                for (int j = 0; mesh->HasTextureCoords(j); j++) {
+                    vertices.push_back(mesh->mTextureCoords[j][i].x);
+                    vertices.push_back(mesh->mTextureCoords[j][i].y);
+                }
             }
         }
         // Determine layout of Mesh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} };
+        //BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} };
+        BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2} };
         Init(vertices, layout);
     }
 }

@@ -15,6 +15,7 @@ void IndexBuffer::Bind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, descriptor); // определяем тип буфера
 }
 
+// !!! где-то надо отвязать (не знаю, где)
 void IndexBuffer::Unbind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -38,6 +39,7 @@ void VertexBuffer::Bind() const {
     glBindBuffer(GL_ARRAY_BUFFER, descriptor); // определяем тип буфера
 }
 
+// !!! где-то надо отвязать (не знаю, где)
 void VertexBuffer::Unbind() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

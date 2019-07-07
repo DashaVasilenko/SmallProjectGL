@@ -9,7 +9,7 @@ find_package (Assimp REQUIRED)
 find_package (GLEW REQUIRED STATIC)
 
 add_executable(main src/main.cpp src/window.cpp src/renderer.cpp src/shaderProgram.cpp src/camera.cpp src/inputSystem.cpp
-        	src/buffers.cpp src/geometry.cpp) 
-target_include_directories(main PUBLIC include)
+        	src/buffers.cpp src/geometry.cpp src/texture.cpp) 
+target_include_directories(main PUBLIC include lib/include)
 
 target_link_libraries(main ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} -lglfw)

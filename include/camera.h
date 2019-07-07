@@ -9,12 +9,13 @@
 
 class Camera {
 public:
-    Camera(const glm::vec3& = glm::vec3(0.0f, 0.0f, 3.0f) );
     void Update(const float&);
     inline glm::mat4 GetViewMatrix() { return glm::lookAt(position, position + front, up); }
     inline glm::vec3 GetPosition() { return position; }
+    void SetAspect(float a) { aspect = a; }
+    float GetAspect() { return this->aspect; }
 protected:
-  //  Camera(const glm::vec3& = glm::vec3(0.0f, 0.0f, 3.0f) );
+    Camera(const glm::vec3& = glm::vec3(0.0f, 0.0f, 3.0f) );
 private:
     void UpdatePosition(const float&);
     void UpdateVectors();
@@ -28,6 +29,7 @@ private:
     float yaw = -90.0f; // рыскание (поворот влево вправо)
 
     glm::vec3 position;
+    float aspect;
     float speed = 10.0f;
     float mouse_sense = 0.1f;
 };
@@ -67,9 +69,9 @@ public:
     void SetWidthToHeight(float a) { width_to_height = a; }
     void SetNearPlane(float a) { nearPlane = a; }
     void SetFarPlane(float a) { farPlane = a; }
-    void SetProjection(float f, float wtoh, float near, float far) {
+    void SetProjection(float f, float aspect, float near, float far) {
         fov = f;
-        width_to_height = wtoh;
+        width_to_height = aspect;
         nearPlane = near;
         farPlane = far;
     }

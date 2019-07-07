@@ -3,9 +3,6 @@
 
 in vec3 outNormal;
 in vec3 inEye;
-in vec2 outTexCoord;
-
-uniform sampler2D Texture;
 
 out vec4 outColor;
 
@@ -43,8 +40,5 @@ vec3 CookTorrance(vec3 normal, vec3 light, vec3 view, float roughness_koef)
 }
 
 void main() {
-    //outColor = vec4(CookTorrance(outNormal, vec3(0.0f, 1.0f, 0.0f), inEye, 0.1), 1.0);
-    outColor = texture(Texture, outTexCoord);
-    //outColor = texture(Texture, outTexCoord)*vec4(CookTorrance(outNormal, vec3(0.0f, 1.0f, 0.0f), inEye, 0.1), 1.0);
-
+    outColor = vec4(CookTorrance(outNormal, vec3(0.0f, 1.0f, 0.0f), inEye, 0.1), 1.0);
 }

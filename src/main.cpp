@@ -9,6 +9,11 @@
 #include "shaderProgram.h"
 #include "camera.h"
 #include "geometry.h"
+#include "texture.h"
+
+// закоментировать
+//#define STB_IMAGE_IMPLEMENTATION 
+//#include "stb_image.h"
 
 int main() {
 	Window window;
@@ -28,16 +33,42 @@ int main() {
 	program.Compile();
 	program.Link();
 
-	Geometry dragon;
-	dragon.Load("data/dragon.obj");
+	Texture texture;
+	texture.Load("textures/autumnleaves.jpg");
+	texture.Init();
 
-	float aspect = (float)window.GetWidth()/(float)window.GetHeight();
+/* 
+	glGenTextures(1, &texture); // 1 - количество текстур для генерации
+	glBindTexture(GL_TEXTURE_2D, texture); // привязка текстуры
 
+	int width, height, cnt;
+	// (путь, ширина, высота, количество каналов при загрузке изображения, количество каналов для отображения)
+	// каналы STBI_grey = 1, STBI_grey_alpha = 2, STBI_rgb = 3, STBI_rgb_alpha = 4
+	unsigned char* image = stbi_load("texture/autumnleaves.jpg", &width, &height, &cnt, 0); // загружаем текстуру
+	// (текстурная цель, уровень мипмапа, формат текстуры, ширина, высота, 0, формат исходного изображения,
+	//  тип данных исходного изображения, данные изображения)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image); // генерируем текстуру
+	glGenerateMipmap(GL_TEXTURE_2D); // генерация всех необходимых мипмапов для текстуры
+	stbi_image_free(image); // освобождения памяти
+	//glBindTexture(GL_TEXTURE_2D, 0); // отвязка объекта текстуры
+*/
+
+
+
+	//Geometry dragon;
+	//dragon.Load("data/dragon.obj"); // добавить вывод ошибки, если файл не найден
+
+	Geometry cube;
+	cube.Load("data/cubetex.obj");
+
+   	
 	//OrthoCamera camera; // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
-	//camera.SetProjection(-20.0f*aspect, 20.0f*aspect, -20.0f, 20.0f, 0.1f, 100.0f);
+	//camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
+	//camera.SetProjection(-20.0f*camera.GetAspect(), 20.0f*camera.GetAspect(), -20.0f, 20.0f, 0.1f, 100.0f);
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
-	camera.SetProjection(45.0f, aspect, 0.1f, 100.0f);
+	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
+	camera.SetProjection(45.0f, camera.GetAspect(), 0.1f, 100.0f);
 
 	double currentTime = 0.0;
 	double lastTime = 0.0;
@@ -70,13 +101,14 @@ int main() {
 		glm::mat3 model3x3 = model;
 		program.SetUniform("NormalMatrix", glm::transpose(glm::inverse(model3x3)));
 		program.SetUniform("cameraPos", camera.GetPosition());
-		dragon.Draw();
+		//dragon.Draw();
+		cube.Draw();
 
- 		program.SetUniform("Model", model2); 
-		glm::mat3 model3x3_2 = model2;
- 		program.SetUniform("NormalMatrix", glm::transpose(glm::inverse(model3x3_2)));
- 		dragon.Draw();
-
+ 		//program.SetUniform("Model", model2); 
+		//glm::mat3 model3x3_2 = model2;
+ 		//program.SetUniform("NormalMatrix", glm::transpose(glm::inverse(model3x3_2)));
+ 		//dragon.Draw();
+ 
 		camera.Update(deltaTime);
 
 		// заменяет цветовой буфер, который использовался для отрисовки на данной итерации и выводит результат на экран
@@ -86,7 +118,7 @@ int main() {
 	}
 
 	// delete program!
-	program.Delete();
-	window.Delete();
+	program.Delete(); // убрать в деструктор 
+	window.Delete(); // убрать в деструктор 
 	return 0;
 }
