@@ -5,6 +5,7 @@
 #include <assimp/postprocess.h>
 
 void Geometry::Load(const std::string& filename) {
+    float cntTexture = 0;
     std::vector<GLfloat> vertices;
     Assimp::Importer Importer;
     const aiScene* pScene = Importer.ReadFile(filename.c_str(), aiProcess_Triangulate);
@@ -29,13 +30,20 @@ void Geometry::Load(const std::string& filename) {
                 for (int j = 0; mesh->HasTextureCoords(j); j++) {
                     vertices.push_back(mesh->mTextureCoords[j][i].x);
                     vertices.push_back(mesh->mTextureCoords[j][i].y);
+                    cntTexture = 1;
                 }
             }
         }
         // Determine layout of Mesh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} };
-        BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2} };
-        Init(vertices, layout);
+        if (cntTexture == 0) {
+            BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} };
+            Init(vertices, layout); 
+        }
+        else {
+            BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2} };
+            Init(vertices, layout); 
+        }
+        //Init(vertices, layout);
     }
 }
 

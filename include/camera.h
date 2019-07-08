@@ -3,9 +3,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 class Camera {
 public:
@@ -30,7 +27,7 @@ private:
 
     glm::vec3 position;
     float aspect;
-    float speed = 10.0f;
+    float speed = 5.0f;
     float mouse_sense = 0.1f;
 };
 

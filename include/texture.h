@@ -1,10 +1,10 @@
 #ifndef __TEXTURE__
 #define __TEXTURE__
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include <string>
 #include <GL/glew.h>
+#include "stb_image.h"
+
 
 class Texture {
 public:
