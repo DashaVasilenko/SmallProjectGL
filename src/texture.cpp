@@ -28,3 +28,7 @@ void Texture::Init() {
 void Texture::Unbind() const { 
     glBindTexture(GL_TEXTURE_2D, 0); // отвязка объекта текстуры
 }
+
+Texture::~Texture() {
+    glDeleteTextures(1, &descriptor);
+}

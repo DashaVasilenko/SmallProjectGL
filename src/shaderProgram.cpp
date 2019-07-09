@@ -64,11 +64,11 @@ void ShaderProgram::Link() {
 	}
 }
 
-void ShaderProgram::Run() {
+void ShaderProgram::Run() const {
     glUseProgram(descriptor); // использование созданной программы
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) {
+void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) const {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     if (location == -1) {
@@ -78,7 +78,7 @@ void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) {
     // обработка ошибок!!!
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::mat3& matrix) {
+void ShaderProgram::SetUniform(const char* name, const glm::mat3& matrix) const {
     // получить индекс формы (переменная программы-шейдера, название формы, определенной внутри этой программы)
     GLint location = glGetUniformLocation(descriptor, name);   
     glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)); // установка значения формы
@@ -89,7 +89,7 @@ void ShaderProgram::SetUniform(const char* name, const glm::mat3& matrix) {
     // обработка ошибок!!!
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::vec4& vector) {
+void ShaderProgram::SetUniform(const char* name, const glm::vec4& vector) const {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
     if (location == -1) {
@@ -99,7 +99,7 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec4& vector) {
     // обработка ошибок!!!
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) {
+void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) const {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniform3f(location, vector.x, vector.y, vector.z);
     if (location == -1) {
@@ -109,7 +109,16 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) {
     // обработка ошибок!!!
 }
 
-void ShaderProgram::Delete() {
+void ShaderProgram::SetUniform(const char* name, float value) const {
+    GLint location = glGetUniformLocation(descriptor, name);
+    glUniform1f(location, value);
+    if (location == -1) {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
+ShaderProgram::~ShaderProgram(){
     for (auto& element: mapShaders) {
 	    glDeleteShader(element.second);
     }

@@ -13,6 +13,7 @@ public:
     void Load(const std::string& filename);
     void Init();
     void Unbind() const;
+    ~Texture();
 
 private:
     GLuint descriptor;

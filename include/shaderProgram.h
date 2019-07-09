@@ -13,12 +13,13 @@ public:
     std::string& operator[](const GLenum& );
     void Compile();
     void Link();
-    void Run();
-    void SetUniform(const char*, const glm::mat4&);
-    void SetUniform(const char*, const glm::mat3&);
-    void SetUniform(const char*, const glm::vec4&);
-    void SetUniform(const char*, const glm::vec3&);
-    void Delete();
+    void Run() const;
+    void SetUniform(const char*, const glm::mat4&) const;
+    void SetUniform(const char*, const glm::mat3&) const;
+    void SetUniform(const char*, const glm::vec4&) const;
+    void SetUniform(const char*, const glm::vec3&) const;
+    void SetUniform(const char*, float) const;
+    ~ShaderProgram();
 private:
     std::map<GLenum, std::string> mapSources;
     std::map<GLenum, GLuint> mapShaders;
