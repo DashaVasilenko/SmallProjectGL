@@ -132,7 +132,7 @@ void VertexArray::AddAttributes(const VertexBuffer& vertexBuffer, const BufferLa
     }
 }
 
-void VertexArray::Bind() {
+void VertexArray::Bind() const {
     glBindVertexArray(descriptor);
 }
 

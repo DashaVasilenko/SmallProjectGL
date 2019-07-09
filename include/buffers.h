@@ -61,7 +61,7 @@ private:
 class VertexArray {
 public:
     VertexArray();
-    void Bind();
+    void Bind() const;
     void AddAttributes(const VertexBuffer&, const BufferLayout&);
     ~VertexArray();
 private:

@@ -52,7 +52,7 @@ void Geometry::Init(const std::vector<GLfloat>& vertices, const BufferLayout& la
     vao.AddAttributes(vbo, layout);
 }
 
-void Geometry::Draw() {
+void Geometry::Draw() const {
     vao.Bind();
     glDrawArrays(GL_TRIANGLES, 0, count);
 }

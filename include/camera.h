@@ -7,12 +7,14 @@
 class Camera {
 public:
     void Update(const float&);
-    inline glm::mat4 GetViewMatrix() { return glm::lookAt(position, position + front, up); }
-    inline glm::vec3 GetPosition() { return position; }
+    inline glm::mat4 GetProjectionMatrix() const { return projection; }
+    inline glm::mat4 GetViewMatrix() const { return glm::lookAt(position, position + front, up); }
+    inline glm::vec3 GetPosition() const { return position; }
     void SetAspect(float a) { aspect = a; }
     float GetAspect() { return this->aspect; }
 protected:
     Camera(const glm::vec3& = glm::vec3(0.0f, 0.0f, 3.0f) );
+    glm::mat4 projection;
 private:
     void UpdatePosition(const float&);
     void UpdateVectors();
@@ -46,11 +48,8 @@ public:
         topPlane = top; 
         nearPlane = near;
         farPlane = far;
+        projection = glm::ortho(leftPlane, rightPlane, bottomPlane, topPlane, nearPlane, farPlane);
     }
-    // создание ортографической камеры (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
-    glm::mat4 GetProjectionMatrix() { 
-        return glm::ortho(leftPlane, rightPlane, bottomPlane, topPlane, nearPlane, farPlane);
-     }
 private:
     float leftPlane;
     float rightPlane;
@@ -71,10 +70,7 @@ public:
         width_to_height = aspect;
         nearPlane = near;
         farPlane = far;
-    }
-    // проекционная камера (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
-    glm::mat4 GetProjectionMatrix() { 
-        return glm::perspective(fov, width_to_height, nearPlane, farPlane);
+        projection = glm::perspective(fov, width_to_height, nearPlane, farPlane);
     }
 private:
     float fov;

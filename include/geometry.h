@@ -8,7 +8,7 @@
 class Geometry {
 public:
     void Load(const std::string& filename);
-    void Draw();
+    void Draw() const;
 private:
     void Init(const std::vector<GLfloat>&, const BufferLayout&); 
 
