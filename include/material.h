@@ -28,12 +28,13 @@ private:
 
 class PhongTextureMaterial: public Material{
 public:
-    PhongTextureMaterial(const ShaderProgram*, const Texture*, const Texture* , const Texture*, float);
+    PhongTextureMaterial(const ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, float);
     void SetInnerUniforms() const override;
 private:
     const Texture* ambientMap;
     const Texture* diffuseMap;
     const Texture* specularMap;
+    const Texture* normalMap;
     float shininess;
 };
 

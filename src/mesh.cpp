@@ -6,13 +6,13 @@ SubMesh::SubMesh(const Geometry* geometry, const Material* material) {
 }
 
 void SubMesh::Draw() const {
-    material->Bind();
     material->SetInnerUniforms();
     geometry->Draw();
 }
 
 void Mesh::Draw() {
     for (auto& subMesh: subMeshes) {
+        subMesh.BindMaterial();
         subMesh.SetModelMatrix(this->model);
         subMesh.Draw();
     }

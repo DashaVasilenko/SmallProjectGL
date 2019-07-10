@@ -36,27 +36,35 @@ PhongTextureMaterial::PhongTextureMaterial(
                         const Texture* ambientColor,
                         const Texture* diffuseColor, 
                         const Texture* specularColor,
+                        const Texture* normals,
                         float s) 
 {
     this->shaderProgram = shaderProgram;
     this->ambientMap = ambientColor;
     this->diffuseMap = diffuseColor;
     this->specularMap = specularColor;
+    this->normalMap = normals;
     this->shininess = s;
+
+    shaderProgram->Run();
+    shaderProgram->SetUniform("ambientMap", 0);
+    shaderProgram->SetUniform("diffuseMap", 1);
+    shaderProgram->SetUniform("specularMap", 2);
+    shaderProgram->SetUniform("normalMap", 3);
 }
 
 void PhongTextureMaterial::SetInnerUniforms() const {
     glActiveTexture(GL_TEXTURE0);
     ambientMap->Bind();
-    shaderProgram->SetUniform("ambientMap", 0);
 
     glActiveTexture(GL_TEXTURE1);
     diffuseMap->Bind();
-    shaderProgram->SetUniform("diffuseMap", 1);
-
+   
     glActiveTexture(GL_TEXTURE2);
     specularMap->Bind();
-    shaderProgram->SetUniform("specularMap", 2);
 
+    glActiveTexture(GL_TEXTURE3);
+    normalMap->Bind();
+   
     shaderProgram->SetUniform("material.shininess", shininess);
 }

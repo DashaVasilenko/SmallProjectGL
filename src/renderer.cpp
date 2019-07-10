@@ -31,6 +31,7 @@ void Renderer::Update() {
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
 
     for (const auto& material: materials) {
+        material->Bind();
         material->SetProjectionMatrix(projection);
         material->SetViewMatrix(camera->GetViewMatrix());
     }

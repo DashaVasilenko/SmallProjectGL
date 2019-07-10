@@ -10,6 +10,9 @@ public:
     inline glm::mat4 GetProjectionMatrix() const { return projection; }
     inline glm::mat4 GetViewMatrix() const { return glm::lookAt(position, position + front, up); }
     inline glm::vec3 GetPosition() const { return position; }
+    inline void SetPosition(const glm::vec3& position) { this->position = position; }
+    inline void SetYaw(float yaw) { this->yaw = yaw; }
+    void SetPitch(float);
     void SetAspect(float a) { aspect = a; }
     float GetAspect() { return this->aspect; }
 protected:

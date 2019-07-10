@@ -42,31 +42,28 @@ int main() {
 	specular.Load("textures/woodAlbedo.png");
 	specular.Init();
 
-	PhongTextureMaterial wood(&phong_text_program, &ambient, &diffuse, &specular, 0.4);
+	Texture normals;
+	normals.Load("woodNormalMap");
+	normals.Init();
+
+	PhongTextureMaterial wood(&phong_text_program, &ambient, &diffuse, &specular, &normals, 0.4);
 	PhongMaterial emerald(&program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
 
 	Geometry dragonGeometry;
 	dragonGeometry.Load("data/dragon.obj");  //добавить вывод ошибки, если файл не найден
 
-	//Mesh dragon = { {&dragonGeometry, &wood} };
-	//dragon.SetModelMatrix(glm::scale(glm::mat4(1.0f), {0.1f, 0.1f, 0.1f}));
-
-	//Geometry tableGeometry;
-	//tableGeometry.Load("data/table.obj");
+	Mesh dragon = { {&dragonGeometry, &emerald} };
 
 	Geometry cubeGeometry;
 	cubeGeometry.Load("data/cube.obj");
 
 	Mesh cube = { {&cubeGeometry, &wood} };
-	cube.SetModelMatrix(glm::scale(glm::mat4(1.0f), {1.0f, 1.0f, 1.0f}));
+	cube.SetModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(15.0f, 0.15f, 15.0f)));
 
-	//OrthoCamera camera; // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
-	//camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
-	//camera.SetProjection(-20.0f*camera.GetAspect(), 20.0f*camera.GetAspect(), -20.0f, 20.0f, 0.1f, 100.0f);
-
-	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
-	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
-	camera.SetProjection(45.0f, camera.GetAspect(), 0.1f, 100.0f);
+//  исправить под эту версию проги
+//  OrthoCamera camera; // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
+//  camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
+//  camera.SetProjection(-20.0f*camera.GetAspect(), 20.0f*camera.GetAspect(), -20.0f, 20.0f, 0.1f, 100.0f);
 
 //	glm::mat4 projection = camera.GetProjectionMatrix();
 //	glm::mat4 model = glm::mat4(1.0f);
@@ -75,9 +72,17 @@ int main() {
 //	//model2 = glm::rotate(model2, 90.0f, glm::vec3(0.0, 0.0, 1.0)); // поворот на 90 градусов вдоль Оz
 //	//model2 = glm::scale(model2, glm::vec3(0.5, 0.5, 0.5));  // масштабирование
 
+	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
+	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
+	camera.SetProjection(45.0f, camera.GetAspect(), 0.1f, 100.0f);
+	camera.SetPosition(glm::vec3(0.0f, 10.0f, 20.0f));
+	camera.SetPitch(-20.0f);
+
 	renderer.SetActiveCamera(&camera);
 	renderer.AddMaterial(&wood);
+	renderer.AddMaterial(&emerald);
 	renderer.AddMesh(cube);
+	renderer.AddMesh(dragon);
 	
 	double currentTime = 0.0;
 	double lastTime = 0.0;

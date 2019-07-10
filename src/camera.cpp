@@ -9,6 +9,18 @@ Camera::Camera(const glm::vec3& position) {
     front = glm::vec3(0.0f, 0.0f, -1.0f);
 }
 
+void Camera::SetPitch(float pitch) {
+    if (pitch > 89.0f) {
+        this->pitch = 89.0f;
+    }
+    else if (pitch < -89.0f) {
+        this->pitch = -89.0f;
+    }
+    else {
+        this->pitch = pitch;
+    }
+}
+
 void Camera::Update(const float& delta) {
     UpdatePosition(delta);
     UpdateVectors();

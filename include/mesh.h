@@ -8,6 +8,7 @@
 class SubMesh {
 public:
     SubMesh(const Geometry* geometry, const Material* material);
+    void BindMaterial() const { material->Bind(); }
     inline void SetModelMatrix(const glm::mat4& model) { material->SetModelMatrix(model); }
     void Draw() const;
 private:

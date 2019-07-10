@@ -10,7 +10,7 @@ void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action,
     if (action == GLFW_PRESS) 
         InputSystem::keys[key] = true;
     else if (action == GLFW_RELEASE)
-         InputSystem::keys[key] = false;
+        InputSystem::keys[key] = false;
 }
 
 void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {

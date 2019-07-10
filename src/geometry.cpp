@@ -8,7 +8,7 @@ void Geometry::Load(const std::string& filename) {
     float cntTexture = 0;
     std::vector<GLfloat> vertices;
     Assimp::Importer Importer;
-    const aiScene* pScene = Importer.ReadFile(filename.c_str(), aiProcess_Triangulate);
+    const aiScene* pScene = Importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace);
     if (pScene) {
         for (uint i = 0; i < pScene->mNumMeshes; i++) {
             const aiMesh* mesh = pScene->mMeshes[i];
@@ -32,6 +32,14 @@ void Geometry::Load(const std::string& filename) {
                     vertices.push_back(mesh->mTextureCoords[j][i].y);
                     cntTexture = 1;
                 }
+                if (mesh->HasTangentsAndBitangents()) {
+                    vertices.push_back(mesh->mTangents[i].x);
+                    vertices.push_back(mesh->mTangents[i].y);
+                    vertices.push_back(mesh->mTangents[i].z);
+                    vertices.push_back(mesh->mBitangents[i].x);
+                    vertices.push_back(mesh->mBitangents[i].y);
+                    vertices.push_back(mesh->mBitangents[i].z);
+                }
             }
         }
         // Determine layout of Mesh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -40,7 +48,7 @@ void Geometry::Load(const std::string& filename) {
             Init(vertices, layout); 
         }
         else {
-            BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2} };
+            BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2}, {"Tangents", Float3}, {"Bitangents", Float3}};
             Init(vertices, layout); 
         }
         //Init(vertices, layout);
