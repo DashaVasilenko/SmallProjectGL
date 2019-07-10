@@ -19,6 +19,7 @@ public:
     void SetUniform(const char*, const glm::vec4&) const;
     void SetUniform(const char*, const glm::vec3&) const;
     void SetUniform(const char*, float) const;
+    void SetUniform(const char*, int) const;
     ~ShaderProgram();
 private:
     std::map<GLenum, std::string> mapSources;

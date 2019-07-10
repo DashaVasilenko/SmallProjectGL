@@ -118,6 +118,15 @@ void ShaderProgram::SetUniform(const char* name, float value) const {
     }
 }
 
+void ShaderProgram::SetUniform(const char* name, int value) const {
+    GLint location = glGetUniformLocation(descriptor, name);
+    glUniform1i(location, value);
+    if (location == -1) {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
 ShaderProgram::~ShaderProgram(){
     for (auto& element: mapShaders) {
 	    glDeleteShader(element.second);

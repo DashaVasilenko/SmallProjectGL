@@ -2,6 +2,7 @@
 #define __MATERIAL__
 
 #include "shaderProgram.h"
+#include "texture.h"
 
 class Material {
 public:
@@ -22,6 +23,17 @@ private:
     glm::vec3 ambientColor;
     glm::vec3 diffuseColor;
     glm::vec3 specularColor;
+    float shininess;
+};
+
+class PhongTextureMaterial: public Material{
+public:
+    PhongTextureMaterial(const ShaderProgram*, const Texture*, const Texture* , const Texture*, float);
+    void SetInnerUniforms() const override;
+private:
+    const Texture* ambientMap;
+    const Texture* diffuseMap;
+    const Texture* specularMap;
     float shininess;
 };
 

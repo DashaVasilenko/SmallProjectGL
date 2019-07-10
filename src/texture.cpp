@@ -10,13 +10,13 @@ void Texture::Bind() const {
  }
 
 void Texture::Load(const std::string& filename) {
-    Bind();
     // (путь, ширина, высота, количество каналов при загрузке изображения, количество каналов для отображения)
 	// каналы STBI_grey = 1, STBI_grey_alpha = 2, STBI_rgb = 3, STBI_rgb_alpha = 4
-	image = stbi_load(filename.c_str(), &width, &height, &cnt, 0); // загружаем текстуру
+	image = stbi_load(filename.c_str(), &width, &height, &cnt, 3); // загружаем текстуру
 }
 
 void Texture::Init() {
+    Bind();
     // (текстурная цель, уровень мипмапа, формат текстуры, ширина, высота, 0, формат исходного изображения,
 	//  тип данных исходного изображения, данные изображения)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image); // генерируем текстуру

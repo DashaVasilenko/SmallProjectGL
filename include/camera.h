@@ -28,7 +28,7 @@ private:
     float yaw = -90.0f; // рыскание (поворот влево вправо)
 
     glm::vec3 position;
-    float aspect;
+    float aspect; 
     float speed = 5.0f;
     float mouse_sense = 0.1f;
 };
@@ -41,6 +41,7 @@ public:
     void SetTopPlane(float a) { topPlane = a; }
     void SetNearPlane(float a) { nearPlane = a; }
     void SetFarPlane(float a) { farPlane = a; }
+    // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
     void SetProjection (float left, float right, float bottom, float top, float near, float far) {
         leftPlane = left;
         rightPlane = right;
@@ -65,6 +66,7 @@ public:
     void SetWidthToHeight(float a) { width_to_height = a; }
     void SetNearPlane(float a) { nearPlane = a; }
     void SetFarPlane(float a) { farPlane = a; }
+    // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
     void SetProjection(float f, float aspect, float near, float far) {
         fov = f;
         width_to_height = aspect;
