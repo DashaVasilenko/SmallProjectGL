@@ -52,10 +52,10 @@ int main() {
 	Geometry dragonGeometry;
 	dragonGeometry.Load("data/dragon.obj");  //добавить вывод ошибки, если файл не найден
 
-	Mesh dragon = { {&dragonGeometry, &emerald} };
-
 	Geometry cubeGeometry;
 	cubeGeometry.Load("data/cube.obj");
+
+	Mesh dragon = { {&dragonGeometry, &emerald} };
 
 	Mesh cube = { {&cubeGeometry, &wood} };
 	cube.SetModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(15.0f, 0.15f, 15.0f)));
@@ -79,8 +79,8 @@ int main() {
 	camera.SetPitch(-20.0f);
 
 	renderer.SetActiveCamera(&camera);
-	renderer.AddMesh(cube);
-	renderer.AddMesh(dragon);
+	renderer.AddMesh(&cube);
+	renderer.AddMesh(&dragon);
 	
 	double currentTime = 0.0;
 	double lastTime = 0.0;
@@ -92,14 +92,15 @@ int main() {
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 		camera.Update(deltaTime);
-		 
+		dragon.SetModelMatrix(glm::rotate(dragon.GetModelMatrix(), deltaTime*1.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
 		// Renderer pass
 		renderer.Update();
 		
+
 		// заменяет цветовой буфер, который использовался для отрисовки на данной итерации и выводит результат на экран
 		glfwSwapBuffers(window.GetPointer());
  		// проверяем события (ввод с клавиатуры, перемещение мыши) и вызываем функции обратного вызова(callback))
-    	glfwPollEvents(); 
+    	glfwPollEvents(); // вызывает callback функции
 	}
 	// delete program!
 	window.Delete(); // убрать в деструктор 

@@ -10,8 +10,8 @@ void SubMesh::Draw() const {
     geometry->Draw();
 }
 
-void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view) {
-    for (auto& subMesh: subMeshes) {
+void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view) const {
+    for (const auto& subMesh: subMeshes) {
         auto material = subMesh.GetMaterial();
         material->Bind();
         material->SetProjectionMatrix(projection);

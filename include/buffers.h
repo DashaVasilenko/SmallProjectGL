@@ -44,7 +44,6 @@ struct BufferElement {
     static size_t GetSizeOfType(ShaderDataType type);
 };
 
-
 class BufferLayout {
 public:
     std::vector<BufferElement> elements;
@@ -55,7 +54,7 @@ public:
     size_t GetStride() const { return stride; }
 
 private:
-    size_t stride = 0;
+    size_t stride = 0; // какой-то шаг step
 };
 
 class VertexArray {

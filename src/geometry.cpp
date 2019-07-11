@@ -10,11 +10,12 @@ void Geometry::Load(const std::string& filename) {
     Assimp::Importer Importer;
     const aiScene* pScene = Importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace);
     if (pScene) {
+    
         for (uint i = 0; i < pScene->mNumMeshes; i++) {
             const aiMesh* mesh = pScene->mMeshes[i];
             count += mesh->mNumVertices;
         }
-        vertices.reserve(3*count);
+        //vertices.reserve(3*count);
 
         for (uint i = 0; i < pScene->mNumMeshes; i++) {
             const aiMesh* mesh = pScene->mMeshes[i];

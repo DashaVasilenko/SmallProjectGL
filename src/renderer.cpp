@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include <iostream>
 
 void Renderer::SetWidth(int width) {
     this->width = width;
@@ -13,7 +14,7 @@ void Renderer::SetActiveCamera(const Camera* camera) {
     this->projection = camera->GetProjectionMatrix();
 }
 
-void Renderer::AddMesh(const Mesh& mesh) {
+void Renderer::AddMesh(const Mesh* mesh) {
     meshes.push_back(mesh);
 }
 
@@ -28,7 +29,7 @@ void Renderer::Update() {
 
     glm::mat4 view = camera->GetViewMatrix();
     for (auto& mesh: meshes) {
-        mesh.Draw(projection, view);
+        mesh->Draw(projection, view);
     }
 
 }
