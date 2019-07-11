@@ -23,7 +23,7 @@ public:
     glm::mat4 GetModelMatrix() const { return model; }
 private:
     std::vector<SubMesh> subMeshes;
-    glm::mat4 model;
+    glm::mat4 model = glm::mat4(1.0f);
 };
 
 #endif /* End of Mesh */

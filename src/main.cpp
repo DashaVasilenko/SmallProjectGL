@@ -39,7 +39,7 @@ int main() {
 	diffuse.Init();
 
 	Texture specular;
-	specular.Load("textures/brickAlbedo.png");
+	specular.Load("textures/brickMetallic.png");
 	specular.Init();
 
 	Texture normals;
