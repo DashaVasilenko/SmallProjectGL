@@ -11,6 +11,7 @@ public:
     void SetProjectionMatrix(const glm::mat4&) const;
     void SetViewMatrix(const glm::mat4&) const;
     void SetModelMatrix(const glm::mat4&) const;
+    void SetNormalMatrix(const glm::mat3&) const;
 protected:
     const ShaderProgram* shaderProgram;
 };

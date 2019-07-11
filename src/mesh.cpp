@@ -10,10 +10,16 @@ void SubMesh::Draw() const {
     geometry->Draw();
 }
 
-void Mesh::Draw() {
+void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view) {
     for (auto& subMesh: subMeshes) {
-        subMesh.BindMaterial();
-        subMesh.SetModelMatrix(this->model);
+        auto material = subMesh.GetMaterial();
+        material->Bind();
+        material->SetProjectionMatrix(projection);
+        material->SetViewMatrix(view);
+        material->SetModelMatrix(model);
+        glm::mat3 modelView = view*model;
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelView));
+        material->SetNormalMatrix(normalMatrix);
         subMesh.Draw();
     }
 }

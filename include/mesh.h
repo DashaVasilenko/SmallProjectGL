@@ -8,8 +8,7 @@
 class SubMesh {
 public:
     SubMesh(const Geometry* geometry, const Material* material);
-    void BindMaterial() const { material->Bind(); }
-    inline void SetModelMatrix(const glm::mat4& model) { material->SetModelMatrix(model); }
+    const Material* GetMaterial() { return material; }
     void Draw() const;
 private:
     const Geometry* geometry;
@@ -19,7 +18,7 @@ private:
 class Mesh {
 public:
     Mesh(const std::initializer_list<SubMesh>& t_subMeshes): subMeshes(t_subMeshes) {}
-    void Draw();
+    void Draw(const glm::mat4& projection, const glm::mat4& view);
     void SetModelMatrix(const glm::mat4& model) { this->model = model; }
     glm::mat4 GetModelMatrix() const { return model; }
 private:

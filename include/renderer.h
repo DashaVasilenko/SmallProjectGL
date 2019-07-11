@@ -17,7 +17,6 @@ public:
     void Update();
 private:
     glm::mat4 projection;
-    std::vector<const Material*> materials;
     std::vector<Mesh> meshes;
     const Camera* camera;
     int width;

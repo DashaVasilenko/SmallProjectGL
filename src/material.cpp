@@ -10,8 +10,10 @@ void Material::SetViewMatrix(const glm::mat4& view) const {
 
 void Material::SetModelMatrix(const glm::mat4& model) const {
     shaderProgram->SetUniform("Model", model); // масштабирование повороты и смещение
-    glm::mat3 model3x3 = model;
-    shaderProgram->SetUniform("NormalMatrix", glm::transpose(glm::inverse(model3x3)));
+}
+
+void Material::SetNormalMatrix(const glm::mat3& normalMatrix) const {
+    shaderProgram->SetUniform("NormalMatrix", normalMatrix);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

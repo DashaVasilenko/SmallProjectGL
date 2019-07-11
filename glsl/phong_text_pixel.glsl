@@ -36,7 +36,8 @@ vec4 Phong() {
     vec3 ambient = ambientLightColor*ambientColor;
     vec3 diffuse = diffuseLightColor*diffuseColor*max(dot(light_direction, normal), 0.0f);
     vec3 specular = specularLightColor*specularColor*pow(max(dot(eye, reflected_light), 0.0), material.shininess);
-    return vec4(ambient + diffuse + specular, 1.0);
+    //return vec4(ambient + diffuse + specular, 1.0);
+    return vec4(diffuse + specular, 1.0);
 }
 
 void main() {

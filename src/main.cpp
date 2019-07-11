@@ -31,19 +31,19 @@ int main() {
 	phong_text_program.Link();
 
 	Texture ambient;
-	ambient.Load("textures/woodAO.png");
+	ambient.Load("textures/brickAO.png");
 	ambient.Init();
 
 	Texture diffuse;
-	diffuse.Load("textures/woodAlbedo.png");
+	diffuse.Load("textures/brickAlbedo.png");
 	diffuse.Init();
 
 	Texture specular;
-	specular.Load("textures/woodAlbedo.png");
+	specular.Load("textures/brickAlbedo.png");
 	specular.Init();
 
 	Texture normals;
-	normals.Load("woodNormalMap");
+	normals.Load("textures/brickNormalMap.png");
 	normals.Init();
 
 	PhongTextureMaterial wood(&phong_text_program, &ambient, &diffuse, &specular, &normals, 0.4);
@@ -79,8 +79,6 @@ int main() {
 	camera.SetPitch(-20.0f);
 
 	renderer.SetActiveCamera(&camera);
-	renderer.AddMaterial(&wood);
-	renderer.AddMaterial(&emerald);
 	renderer.AddMesh(cube);
 	renderer.AddMesh(dragon);
 	

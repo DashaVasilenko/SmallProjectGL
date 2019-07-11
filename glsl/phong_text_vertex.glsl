@@ -23,13 +23,17 @@ void main() {
     outNormal = normalize(NormalMatrix*normal);
     vec3 tang = normalize(NormalMatrix*tangent);
     vec3 bitang = normalize(NormalMatrix*bitangent);
+    
     // матрица преобразования в пространство касательных
     mat3 TBN = mat3(tang.x, bitang.x, outNormal.x, 
                     tang.y, bitang.y, outNormal.y,
                     tang.z, bitang.z, outNormal.z);
-    outEye = TBN*normalize(vec3(View*Model*vec4(position, 1.0f))); // вектор из глаза
-    vec4 lightDir = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-    light_direction = TBN*normalize((View*lightDir).xyz);
+    vec4 pos = View*Model*vec4(position, 1.0f);
+    outEye = TBN*normalize(position.xyz); // вектор из глаза
+
+    const vec3 lightDir = vec3(0.0f, 1.0f, 0.0f);
+    light_direction = normalize(TBN*normalize((View*vec4(lightDir, 0.0f)).xyz)); // L
+
     outTexCoord = texCoord;
-    gl_Position = Projection*View*Model*vec4(position, 1.0f);
+    gl_Position = Projection*pos;
 }
