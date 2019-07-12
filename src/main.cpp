@@ -52,13 +52,12 @@ int main() {
 	Geometry dragonGeometry;
 	dragonGeometry.Load("data/dragon.obj");  //добавить вывод ошибки, если файл не найден
 
-	Geometry cubeGeometry;
-	cubeGeometry.Load("data/cube.obj");
+	Geometry sphereGeometry;
+	sphereGeometry.Load("data/sphere.obj");
 
 	Mesh dragon = { {&dragonGeometry, &emerald} };
 
-	Mesh cube = { {&cubeGeometry, &wood} };
-	cube.SetModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(15.0f, 0.15f, 15.0f)));
+	Mesh sphere = { {&sphereGeometry, &wood} };
 
 //  исправить под эту версию проги
 //  OrthoCamera camera; // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
@@ -79,8 +78,8 @@ int main() {
 	camera.SetPitch(-20.0f);
 
 	renderer.SetActiveCamera(&camera);
-	renderer.AddMesh(&cube);
-	renderer.AddMesh(&dragon);
+	renderer.AddMesh(&sphere);
+	//renderer.AddMesh(&dragon);
 	
 	double currentTime = 0.0;
 	double lastTime = 0.0;
@@ -92,7 +91,7 @@ int main() {
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 		camera.Update(deltaTime);
-		dragon.SetModelMatrix(glm::rotate(dragon.GetModelMatrix(), deltaTime*1.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
+		sphere.SetModelMatrix(glm::rotate(sphere.GetModelMatrix(), deltaTime*1.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
 		// Renderer pass
 		renderer.Update();
 		
