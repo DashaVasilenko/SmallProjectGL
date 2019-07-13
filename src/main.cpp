@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "mesh.h"
 #include "texture.h"
+#include "resourceManager.h"
 
 int main() {
 	Window window;
@@ -30,46 +31,31 @@ int main() {
 	phong_text_program.Compile();
 	phong_text_program.Link();
 
-	Texture ambient;
-	ambient.Load("textures/brickAO.png");
-	ambient.Init();
 
-	Texture diffuse;
-	diffuse.Load("textures/brickAlbedo.png");
-	diffuse.Init();
+	ResourceManager<Texture> textureManager;
+	textureManager.Add("textures/brickAO.png");
+	textureManager.Add("textures/brickAlbedo.png");
+	textureManager.Add("textures/brickMetallic.png");
+	textureManager.Add("textures/brickNormalMap.png");
 
-	Texture specular;
-	specular.Load("textures/brickMetallic.png");
-	specular.Init();
+	ResourceManager<Geometry> geometryManager;
+	geometryManager.Add("data/dragon.obj");
+	geometryManager.Add("data/sphere.obj");
 
-	Texture normals;
-	normals.Load("textures/brickNormalMap.png");
-	normals.Init();
+	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
+	const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
 
-	PhongTextureMaterial wood(&phong_text_program, &ambient, &diffuse, &specular, &normals, 0.4);
+	PhongTextureMaterial wood(&phong_text_program, 
+							  textureManager.Get("textures/brickAO.png"), 
+							  textureManager.Get("textures/brickAlbedo.png"),
+							  textureManager.Get("textures/brickMetallic.png"),
+							  textureManager.Get("textures/brickNormalMap.png"),
+							  0.4);
 	PhongMaterial emerald(&program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
 
-	Geometry dragonGeometry;
-	dragonGeometry.Load("data/dragon.obj");  //добавить вывод ошибки, если файл не найден
 
-	Geometry sphereGeometry;
-	sphereGeometry.Load("data/sphere.obj");
-
-	Mesh dragon = { {&dragonGeometry, &emerald} };
-
-	Mesh sphere = { {&sphereGeometry, &wood} };
-
-//  исправить под эту версию проги
-//  OrthoCamera camera; // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
-//  camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
-//  camera.SetProjection(-20.0f*camera.GetAspect(), 20.0f*camera.GetAspect(), -20.0f, 20.0f, 0.1f, 100.0f);
-
-//	glm::mat4 projection = camera.GetProjectionMatrix();
-//	glm::mat4 model = glm::mat4(1.0f);
-//	glm::mat4 model2 = glm::mat4(1.0f);;
-//	model2 = glm::translate(model2, glm::vec3(0.0f, 0.0f, -50.0f)); // сдвиг на вектор 
-//	//model2 = glm::rotate(model2, 90.0f, glm::vec3(0.0, 0.0, 1.0)); // поворот на 90 градусов вдоль Оz
-//	//model2 = glm::scale(model2, glm::vec3(0.5, 0.5, 0.5));  // масштабирование
+	Mesh dragon = { {dragonGeo, &emerald} };
+	Mesh sphere = { {sphereGeo, &wood} };
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
@@ -79,7 +65,7 @@ int main() {
 
 	renderer.SetActiveCamera(&camera);
 	renderer.AddMesh(&sphere);
-	//renderer.AddMesh(&dragon);
+	renderer.AddMesh(&dragon);
 	
 	double currentTime = 0.0;
 	double lastTime = 0.0;
@@ -91,7 +77,6 @@ int main() {
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 		camera.Update(deltaTime);
-		sphere.SetModelMatrix(glm::rotate(sphere.GetModelMatrix(), deltaTime*1.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
 		// Renderer pass
 		renderer.Update();
 		

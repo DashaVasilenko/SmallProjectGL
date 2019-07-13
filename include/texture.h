@@ -11,11 +11,12 @@ public:
     Texture();
     void Bind() const;
     void Load(const std::string& filename);
-    void Init();
+   
     void Unbind() const;
     ~Texture();
 
 private:
+    void Init();
     GLuint descriptor;
     unsigned char* image;
     int width;
