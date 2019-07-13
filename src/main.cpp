@@ -33,14 +33,7 @@ int main() {
 
 
 	ResourceManager<Texture> textureManager;
-	textureManager.Add("textures/brickAO.png");
-	textureManager.Add("textures/brickAlbedo.png");
-	textureManager.Add("textures/brickMetallic.png");
-	textureManager.Add("textures/brickNormalMap.png");
-
 	ResourceManager<Geometry> geometryManager;
-	geometryManager.Add("data/dragon.obj");
-	geometryManager.Add("data/sphere.obj");
 
 	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
 	const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");

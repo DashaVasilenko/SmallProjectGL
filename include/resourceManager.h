@@ -11,11 +11,12 @@ public:
     ResourceManager& operator=(const ResourceManager&) = delete;
     ResourceManager(const ResourceManager&) = delete;
 
-    bool Add(const std::string& fileName);
+    
     bool Remove(const std::string& fileName);
     T* Get(const std::string& fileName);
     ~ResourceManager();
 private:
+    bool Add(const std::string& fileName);
     std::pair<T*,  int>* Find(const std::string& fileName);
     void Free(const std::string& fileName);
     std::unordered_map<std::string, std::pair<T*, int>> resourceMap;
@@ -74,6 +75,13 @@ bool ResourceManager<T>::Remove(const std::string& fileName) {
 template<typename T>
 T* ResourceManager<T>::Get(const std::string& fileName) {
     auto res = Find(fileName);
+    if (!res) {
+        bool ok = Add(fileName);
+        if(!ok) {
+            return NULL;
+        }
+        res = Find(fileName);
+    }
     return res->first;
 }
 
