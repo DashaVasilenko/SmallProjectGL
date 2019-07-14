@@ -18,12 +18,9 @@ private:
 class Mesh {
 public:
     Mesh(const std::initializer_list<SubMesh>& t_subMeshes): subMeshes(t_subMeshes) {}
-    void Draw(const glm::mat4& projection, const glm::mat4& view) const;
-    void SetModelMatrix(const glm::mat4& model) { this->model = model; }
-    glm::mat4 GetModelMatrix() const { return model; }
+    void Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) const;
 private:
     std::vector<SubMesh> subMeshes;
-    glm::mat4 model = glm::mat4(1.0f);
 };
 
 #endif /* End of Mesh */

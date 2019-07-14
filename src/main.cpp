@@ -6,6 +6,7 @@
 #include "mesh.h"
 #include "texture.h"
 #include "resourceManager.h"
+#include "transform.h"
 
 #include "entt/entt.hpp"
 
@@ -41,11 +42,23 @@ int main() {
 
 	
 	entt::registry registry;
-	Mesh dragon = { {dragonGeo, &emerald} };
-	Mesh sphere = { {sphereGeo, &wood} };
+	Mesh dragon_mesh = { {dragonGeo, &emerald} };
+	Mesh sphere_mesh = { {sphereGeo, &wood} };
 
-	registry.assign<Mesh>(registry.create(), dragon );
-	registry.assign<Mesh>(registry.create(), sphere );
+	auto dragon = registry.create();
+	auto sphere = registry.create();
+
+	Transform dragon_transform;
+	dragon_transform.Scale({0.1f, 0.1f, 0.1f});
+	dragon_transform.Rotate({0.0f, 0.0f, -1.0f}, 180.0f);
+
+	Transform sphere_transform;
+	sphere_transform.Translate({0.0f, -2.0f, 0.0f});
+
+	registry.assign<Mesh>(dragon, dragon_mesh );
+	registry.assign<Mesh>(sphere, sphere_mesh );
+	registry.assign<Transform>(dragon, dragon_transform);
+	registry.assign<Transform>(sphere, sphere_transform);
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());

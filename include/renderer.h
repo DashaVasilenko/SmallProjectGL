@@ -4,6 +4,7 @@
 #include "window.h"
 #include "camera.h"
 #include "mesh.h"
+#include "transform.h"
 #include "entt/entt.hpp"
 
 class Renderer {

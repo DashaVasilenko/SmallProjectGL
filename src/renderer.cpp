@@ -24,10 +24,11 @@ void Renderer::Update(entt::registry& registry) {
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
 
     glm::mat4 viewMatrix = camera->GetViewMatrix();
-    auto view = registry.view<Mesh>();
+    auto view = registry.view<Mesh, Transform>();
     for (auto entity: view) {
-        auto &mesh = view.get(entity);
-        mesh.Draw(projection, viewMatrix);
+        auto& mesh = view.get<Mesh>(entity);
+        auto& transform = view.get<Transform>(entity);
+        mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
 
 }
