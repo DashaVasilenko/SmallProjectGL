@@ -4,6 +4,7 @@
 #include "window.h"
 #include "camera.h"
 #include "mesh.h"
+#include "entt/entt.hpp"
 
 class Renderer {
 public:
@@ -13,10 +14,9 @@ public:
     void SetActiveCamera(const Camera* camera);
     void AddMesh(const Mesh*);
     void Init();
-    void Update();
+    void Update(entt::registry& registry);
 private:
     glm::mat4 projection;
-    std::vector<const Mesh*> meshes;
     const Camera* camera;
     int width;
     int height;
