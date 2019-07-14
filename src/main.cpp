@@ -44,8 +44,8 @@ int main() {
 	Mesh dragon = { {dragonGeo, &emerald} };
 	Mesh sphere = { {sphereGeo, &wood} };
 
-	registry.assign<Mesh>(registry.create(), std::move(dragon) );
-	registry.assign<Mesh>(registry.create(), std::move(sphere) );
+	registry.assign<Mesh>(registry.create(), dragon );
+	registry.assign<Mesh>(registry.create(), sphere );
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
