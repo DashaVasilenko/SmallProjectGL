@@ -19,32 +19,23 @@ int main() {
 	renderer.SetHeight(window.GetHeight());
 	renderer.Init();
 
-	ShaderProgram program;
-	program[GL_VERTEX_SHADER] = "glsl/phong_notext_vertex.glsl"; // заполняем мапу
-	program[GL_FRAGMENT_SHADER] = "glsl/phong_notext_pixel.glsl"; // заполняем мапу
-	program.Compile();
-	program.Link();
-
-	ShaderProgram phong_text_program;
-	phong_text_program[GL_VERTEX_SHADER] = "glsl/phong_text_vertex.glsl";
-	phong_text_program[GL_FRAGMENT_SHADER] = "glsl/phong_text_pixel.glsl";
-	phong_text_program.Compile();
-	phong_text_program.Link();
-
-
+	ResourceManager<ShaderProgram> programManager;
 	ResourceManager<Texture> textureManager;
 	ResourceManager<Geometry> geometryManager;
+
+	const ShaderProgram* program = programManager.Get("data/shaders/phong.json");
+	const ShaderProgram* phong_text_program = programManager.Get("data/shaders/phong_texture.json");
 
 	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
 	const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
 
-	PhongTextureMaterial wood(&phong_text_program, 
+	PhongTextureMaterial wood(phong_text_program, 
 							  textureManager.Get("textures/brickAO.png"), 
 							  textureManager.Get("textures/brickAlbedo.png"),
 							  textureManager.Get("textures/brickMetallic.png"),
 							  textureManager.Get("textures/brickNormalMap.png"),
 							  0.4);
-	PhongMaterial emerald(&program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
+	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
 
 
 	Mesh dragon = { {dragonGeo, &emerald} };

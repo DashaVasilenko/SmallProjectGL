@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "json.hpp"
+using json = nlohmann::json;
 
 #include "window.h"
 #include <map>
@@ -11,6 +13,7 @@
 class ShaderProgram {
 public:
     std::string& operator[](const GLenum& );
+    void Load(const std::string& filename);
     void Compile();
     void Link();
     void Run() const;

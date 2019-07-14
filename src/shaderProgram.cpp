@@ -7,6 +7,29 @@ std::string& ShaderProgram::operator[] (const GLenum& shader_type) {
     return mapSources[shader_type];
 }
 
+void ShaderProgram::Load(const std::string& fileName) {
+    std::ifstream input(fileName);
+    json shaderData;
+    input >> shaderData;
+
+    mapSources[GL_VERTEX_SHADER] = shaderData["vertex"];
+    mapSources[GL_FRAGMENT_SHADER] = shaderData["fragment"];
+   
+    if (shaderData.find("tesselation_evaluation") != shaderData.end()) {
+        mapSources[GL_TESS_EVALUATION_SHADER] = shaderData["tesselation_evaluation"];
+    }
+
+    if (shaderData.find("tesselation_control") != shaderData.end()) {
+        mapSources[GL_TESS_CONTROL_SHADER] = shaderData["tesselation_control"];
+    }
+
+    if (shaderData.find("geometry") != shaderData.end()) {
+        mapSources[GL_GEOMETRY_SHADER] = shaderData["geometry"];
+    }
+    Compile();
+    Link();
+}
+
 void ShaderProgram::Compile() {
     for (auto& element: mapSources) {
         std::ifstream t(element.second);

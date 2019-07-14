@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/phong_notext_vertex.glsl",
+    "fragment": "glsl/phong_notext_pixel.glsl"
+}
