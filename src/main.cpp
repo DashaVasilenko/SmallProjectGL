@@ -39,14 +39,18 @@ int main() {
 							  textureManager.Get("textures/brickMetallic.png"),
 							  textureManager.Get("textures/brickNormalMap.png"),
 							  0.4);
-	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
+	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 76.8f);
+	PhongMaterial ruby(program, {0.1745f, 0.01175f, 0.01175f}, {0.61424f, 0.04136f, 0.04136f}, {0.727811f, 0.626959f, 0.626959f}, 76.8f);
+	PhongMaterial silver(program, {0.23125f, 0.23125f, 0.23125f}, {0.2775f, 0.2775f, 0.2775f}, {0.773911f, 0.773911f, 0.773911f}, 89.6f);
 
-	PointLight light(program, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f});
-	light.setAttenuation(0.7f, 0.14f, 0.02f);
+	SpotLight light(program, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.0f, 25.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 30.0f);
+	light.setAttenuation(1.0f);
 	light.SetInnerUniforms();
+	
 
 	entt::registry registry;
-	Mesh dragon_mesh = { {dragonGeo, &emerald} };
+	Mesh dragon_mesh = { {dragonGeo, &ruby} };
+	Mesh dragon_mesh2 = { {dragonGeo, &silver} };
 	Mesh cube_mesh = { {cubeGeo, &emerald} };
 
 	auto dragon = registry.create();
@@ -63,11 +67,11 @@ int main() {
 	dragon_transform2.Translate({7.0f, 0.0f, 0.0f});
 
 	Transform cube_transform;
-	cube_transform.Scale({25.0f, 0.15f, 25.0f});
+	cube_transform.Scale({34.0f, 0.15f, 35.0f});
 
 	registry.assign<Mesh>(dragon, dragon_mesh );
 	registry.assign<Transform>(dragon, dragon_transform);
-	registry.assign<Mesh>(dragon2, dragon_mesh );
+	registry.assign<Mesh>(dragon2, dragon_mesh2 );
 	registry.assign<Transform>(dragon2, dragon_transform2);
 	registry.assign<Mesh>(cube, cube_mesh);
 	registry.assign<Transform>(cube, cube_transform);
