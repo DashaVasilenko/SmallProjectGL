@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "resourceManager.h"
 #include "transform.h"
+#include "light.h"
 
 #include "entt/entt.hpp"
 
@@ -29,8 +30,8 @@ int main() {
 	const ShaderProgram* program = programManager.Get("data/shaders/phong.json");
 	const ShaderProgram* phong_text_program = programManager.Get("data/shaders/phong_texture.json");
 
-	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
 	const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
+	const Geometry* cubeGeo = geometryManager.Get("data/cube.obj");
 
 	PhongTextureMaterial wood(phong_text_program, 
 							  textureManager.Get("textures/brickAO.png"), 
@@ -40,25 +41,36 @@ int main() {
 							  0.4);
 	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
 
-	
+	PointLight light(program, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f});
+	light.setAttenuation(0.7f, 0.14f, 0.02f);
+	light.SetInnerUniforms();
+
 	entt::registry registry;
 	Mesh dragon_mesh = { {dragonGeo, &emerald} };
-	Mesh sphere_mesh = { {sphereGeo, &wood} };
+	Mesh cube_mesh = { {cubeGeo, &emerald} };
 
 	auto dragon = registry.create();
-	auto sphere = registry.create();
+	auto dragon2 = registry.create();
+	auto cube = registry.create();
+
 
 	Transform dragon_transform;
-	dragon_transform.Scale({0.1f, 0.1f, 0.1f});
-	dragon_transform.Rotate({0.0f, 0.0f, -1.0f}, 180.0f);
+	dragon_transform.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
+	dragon_transform.Translate({-7.0f, 0.0f, 0.0f});
 
-	Transform sphere_transform;
-	sphere_transform.Translate({0.0f, -2.0f, 0.0f});
+	Transform dragon_transform2;
+	dragon_transform2.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
+	dragon_transform2.Translate({7.0f, 0.0f, 0.0f});
+
+	Transform cube_transform;
+	cube_transform.Scale({25.0f, 0.15f, 25.0f});
 
 	registry.assign<Mesh>(dragon, dragon_mesh );
-	registry.assign<Mesh>(sphere, sphere_mesh );
 	registry.assign<Transform>(dragon, dragon_transform);
-	registry.assign<Transform>(sphere, sphere_transform);
+	registry.assign<Mesh>(dragon2, dragon_mesh );
+	registry.assign<Transform>(dragon2, dragon_transform2);
+	registry.assign<Mesh>(cube, cube_mesh);
+	registry.assign<Transform>(cube, cube_transform);
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
@@ -70,11 +82,6 @@ int main() {
 	
 	double currentTime = 0.0;
 	double lastTime = 0.0;
-	
-	struct pos {
-		double x;
-		double y;
-	};
 	
 	// игровой цикл
 	while (!glfwWindowShouldClose(window.GetPointer())) {
