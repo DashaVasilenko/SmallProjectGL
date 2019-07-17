@@ -70,3 +70,44 @@ void PhongTextureMaterial::SetInnerUniforms() const {
    
     shaderProgram->SetUniform("material.shininess", shininess);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+PbrMaterial::PbrMaterial(
+                        const ShaderProgram* shaderProgram, 
+                        const Texture* albedo,
+                        const Texture* normals, 
+                        const Texture* metallic,
+                        const Texture* roughness,
+                        const Texture* ao) 
+{
+    this->shaderProgram = shaderProgram;
+    this->albedoMap = albedo;
+    this->normalMap = normals;
+    this->metallicMap = metallic;
+    this->roughnessMap = roughness;
+    this->aoMap = ao;
+
+    shaderProgram->Run();
+    shaderProgram->SetUniform("albedoMap", 0);
+    shaderProgram->SetUniform("normalMap", 1);
+    shaderProgram->SetUniform("metallicMap", 2);
+    shaderProgram->SetUniform("roughnessMap", 3);
+    shaderProgram->SetUniform("aoMap", 4);
+}
+
+void PbrMaterial::SetInnerUniforms() const {
+    glActiveTexture(GL_TEXTURE0);
+    albedoMap->Bind();
+
+    glActiveTexture(GL_TEXTURE1);
+    normalMap->Bind();
+   
+    glActiveTexture(GL_TEXTURE2);
+    metallicMap->Bind();
+
+    glActiveTexture(GL_TEXTURE3);
+    roughnessMap->Bind();
+
+    glActiveTexture(GL_TEXTURE4);
+    aoMap->Bind();
+}

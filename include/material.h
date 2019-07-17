@@ -39,5 +39,17 @@ private:
     float shininess;
 };
 
+class PbrMaterial: public Material{
+public:
+    PbrMaterial(const ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, const Texture*);
+    void SetInnerUniforms() const override;
+private:
+    const Texture* albedoMap;
+    const Texture* normalMap;
+    const Texture* metallicMap;
+    const Texture* roughnessMap;
+    const Texture* aoMap;
+};
+
 
 #endif /* End of Material */
