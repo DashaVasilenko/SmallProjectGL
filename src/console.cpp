@@ -15,16 +15,17 @@ void Console::Render() {
     ImGui::EndChild();
     ImGui::Separator();
     //ImGui::SetKeyboardFocusHere();
-    bool reclaim_focus = false;
+    //bool reclaim_focus = false;
     if (ImGui::InputText("Enter", buffer, IM_ARRAYSIZE(buffer), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackCompletion|ImGuiInputTextFlags_CallbackHistory, callback, (void*)this))
     {
-        EnterCommand(buffer);
-        reclaim_focus = true;
+        if (buffer[0]) {
+            EnterCommand(buffer);
+        }
+        //reclaim_focus = true;
     }
 
     ImGui::SetItemDefaultFocus();
-        if (reclaim_focus)
-            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+    ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 
 	ImGui::End();
 
