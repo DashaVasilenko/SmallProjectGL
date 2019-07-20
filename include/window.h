@@ -3,6 +3,10 @@
 
 #include <GL/glew.h>
 #define GLEW_STATIC
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
@@ -23,6 +27,8 @@ public:
     static void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
 
 private:
+    void SwitchMode();
+    static bool cursor_enabled;
     GLFWwindow* window; 
     int width = 640;
     int height = 480;

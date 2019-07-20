@@ -32,7 +32,7 @@ private:
 
     glm::vec3 position;
     float aspect; 
-    float speed = 5.0f;
+    float speed = 10.0f;
     float mouse_sense = 0.1f;
 };
 
