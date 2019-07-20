@@ -6,10 +6,11 @@ void Console::EnterCommand(char* buffer) {
 }
 
 void Console::Render() {
-    ImGui::Begin("Console");
+    ImGui::Begin("Console", NULL, ImGuiWindowFlags_NoResize);
     ImGui::BeginChild("TextWindow", ImVec2(0, 360));
         for (const auto& command: commands) {
             ImGui::Text("%s", command.c_str());
+            ImGui::SetScrollHere(1.0f);
         }
     ImGui::EndChild();
     ImGui::Separator();

@@ -14,6 +14,7 @@ void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action,
         if (!cursor_enabled) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
+            glfwSetCursorPosCallback(window, nullptr);
         }
         else {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
