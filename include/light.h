@@ -37,7 +37,7 @@ private:
 
 class SpotLight : public Light{
 public:
-    SpotLight(const ShaderProgram* , const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, float);
+    SpotLight(const ShaderProgram*, const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, float);
     void setAttenuation(float k1) { assert(k1 >= 0); exponent = k1;  } // затухание света
     void SetInnerUniforms() const override;
 private:

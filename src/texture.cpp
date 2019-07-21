@@ -13,6 +13,7 @@ void Texture::Load(const std::string& filename) {
     // (путь, ширина, высота, количество каналов при загрузке изображения, количество каналов для отображения)
 	// каналы STBI_grey = 1, STBI_grey_alpha = 2, STBI_rgb = 3, STBI_rgb_alpha = 4
 	image = stbi_load(filename.c_str(), &width, &height, &cnt, 3); // загружаем текстуру
+    Init();
 }
 
 void Texture::Init() {

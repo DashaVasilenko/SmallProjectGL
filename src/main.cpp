@@ -5,7 +5,11 @@
 #include "camera.h"
 #include "mesh.h"
 #include "texture.h"
+#include "resourceManager.h"
+#include "transform.h"
 #include "light.h"
+
+#include "entt/entt.hpp"
 
 int main() {
 	Window window;
@@ -19,137 +23,58 @@ int main() {
 	renderer.SetHeight(window.GetHeight());
 	renderer.Init();
 
-	ShaderProgram program;
-	program[GL_VERTEX_SHADER] = "glsl/phong_notext_vertex.glsl"; // заполняем мапу
-	program[GL_FRAGMENT_SHADER] = "glsl/phong_notext_pixel.glsl"; // заполняем мапу
-	program.Compile();
-	program.Link();
+	ResourceManager<ShaderProgram> programManager;
+	ResourceManager<Texture> textureManager;
+	ResourceManager<Geometry> geometryManager;
 
-	ShaderProgram phong_text_program;
-	phong_text_program[GL_VERTEX_SHADER] = "glsl/phong_text_vertex.glsl";
-	phong_text_program[GL_FRAGMENT_SHADER] = "glsl/phong_text_pixel.glsl";
-	phong_text_program.Compile();
-	phong_text_program.Link();
+	const ShaderProgram* program = programManager.Get("data/shaders/phong.json");
+	const ShaderProgram* phong_text_program = programManager.Get("data/shaders/phong_texture.json");
 
-	ShaderProgram pbr_program;
-	pbr_program[GL_VERTEX_SHADER] = "glsl/pbr_vertex.glsl";
-	pbr_program[GL_FRAGMENT_SHADER] = "glsl/pbr_pixel.glsl";
-	pbr_program.Compile();
-	pbr_program.Link();
+	const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
+	const Geometry* cubeGeo = geometryManager.Get("data/cube.obj");
 
-	//DirectLight l1(&program, {0.5, 0.5, 0.5}, {0.5, 0.5, 0.5}, {0.5, 0.5, 0.5}, {0.0f, -1.0f, 0.0f});
-	//l1.SetInnerUniforms();
+	PhongTextureMaterial wood(phong_text_program, 
+							  textureManager.Get("textures/brickAO.png"), 
+							  textureManager.Get("textures/brickAlbedo.png"),
+							  textureManager.Get("textures/brickMetallic.png"),
+							  textureManager.Get("textures/brickNormalMap.png"),
+							  0.4);
+	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 76.8f);
+	PhongMaterial ruby(program, {0.1745f, 0.01175f, 0.01175f}, {0.61424f, 0.04136f, 0.04136f}, {0.727811f, 0.626959f, 0.626959f}, 76.8f);
+	PhongMaterial silver(program, {0.23125f, 0.23125f, 0.23125f}, {0.2775f, 0.2775f, 0.2775f}, {0.773911f, 0.773911f, 0.773911f}, 89.6f);
 
-	//PointLight l2(&program, {1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, {20.0f, 10.0f, 0.0f});
-	//l2.setAttenuation(1.0f, 0.02f, 0.001f);
- 	//l2.SetInnerUniforms();
-
-	//SpotLight l3(&program, {0.5, 0.5, 0.5}, {0.5, 0.5, 0.5}, {0.5, 0.5, 0.5}, {0.0f, 30.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 30.0f);
-	//l3.setAttenuation(15.0f);
-	//l3.SetInnerUniforms();
-
-	Texture ambient;
-	ambient.Load("textures/brickAO.png");
-	ambient.Init();
-
-	Texture diffuse;
-	diffuse.Load("textures/brickAlbedo.png");
-	diffuse.Init();
-
-	Texture specular;
-	specular.Load("textures/brickMetallic.png");
-	specular.Init();
-
-	Texture normals;
-	normals.Load("textures/brickNormalMap.png");
-	normals.Init();
-
-	//////////////////////////////////////////////
-
-	Texture albedo;
-	albedo.Load("textures/brickAlbedo.png");
-	albedo.Init();
-
-	Texture normalPBR;
-	normalPBR.Load("textures/brickNormalMap.png");
-	normalPBR.Init();
-
-	Texture metallic;
-	metallic.Load("textures/brickMetallic.png");
-	metallic.Init();
-
-	Texture roughness;
-	roughness.Load("textures/brickRoughness.png");
-	roughness.Init();
-
-	Texture ao;
-	ao.Load("textures/brickAO.png");
-	ao.Init();
-
-	////////////////////////////////////////////////////////////////////
+	SpotLight light(program, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.0f, 25.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 30.0f);
+	light.setAttenuation(1.0f);
+	light.SetInnerUniforms();
 	
-	Texture wood_albedo;
-	wood_albedo.Load("textures/woodAlbedo.png");
-	wood_albedo.Init();
 
-	Texture wood_normalPBR;
-	wood_normalPBR.Load("textures/woodNormalMap.png");
-	wood_normalPBR.Init();
+	entt::registry registry;
+	Mesh dragon_mesh = { {dragonGeo, &ruby} };
+	Mesh dragon_mesh2 = { {dragonGeo, &silver} };
+	Mesh cube_mesh = { {cubeGeo, &emerald} };
 
-	Texture wood_metallic;
-	wood_metallic.Load("textures/woodMetallic.png");
-	wood_metallic.Init();
-
-	Texture wood_roughness;
-	wood_roughness.Load("textures/woodRoughness.png");
-	wood_roughness.Init();
-
-	Texture wood_ao;
-	wood_ao.Load("textures/woodAO.png");
-	wood_ao.Init();
+	auto dragon = registry.create();
+	auto dragon2 = registry.create();
+	auto cube = registry.create();
 
 
-	PhongTextureMaterial wood(&phong_text_program, &ambient, &diffuse, &specular, &normals, 0.4);
-	PhongMaterial emerald(&program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 0.6f);
-	PbrMaterial brick(&pbr_program, &albedo, &normalPBR, &metallic, &roughness, &ao);
-	//PbrMaterial brick(&pbr_program, &diffuse, &normals, &specular, &roughness, &ambient);
-	PbrMaterial woodPBR(&pbr_program, &wood_albedo, &wood_normalPBR, &wood_metallic, &wood_roughness, &wood_ao);
+	Transform dragon_transform;
+	dragon_transform.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
+	dragon_transform.Translate({-7.0f, 0.0f, 0.0f});
 
+	Transform dragon_transform2;
+	dragon_transform2.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
+	dragon_transform2.Translate({7.0f, 0.0f, 0.0f});
 
-	Geometry dragonGeometry;
-	dragonGeometry.Load("data/dragon.obj");  //добавить вывод ошибки, если файл не найден
+	Transform cube_transform;
+	cube_transform.Scale({34.0f, 0.15f, 35.0f});
 
-	Geometry cubeGeometry;
-	cubeGeometry.Load("data/cube.obj");
-
-	Geometry sphereGeometry;
-	sphereGeometry.Load("data/sphere.obj");
-
-	Mesh dragon = { {&dragonGeometry, &emerald} };
-
-	//Mesh cube = { {&cubeGeometry, &wood} };
-	//Mesh cube = { {&cubeGeometry, &emerald} };
-	Mesh cube = { {&cubeGeometry, &brick} };
-	//Mesh cube = { {&cubeGeometry, &woodPBR} };
-	cube.SetModelMatrix(glm::scale(glm::mat4(1.0f), glm::vec3(15.0f, 0.15f, 15.0f)));
-
-	//Mesh sphere = { {&sphereGeometry, &wood} };
-	Mesh sphere = { {&sphereGeometry, &woodPBR} };
-	//Mesh sphere = { {&sphereGeometry, &brick} };
-	sphere.SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 10.0f, 0.0f))); 	 	  
-	//sphere.SetModelMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f))); 	 	  
-
-//  исправить под эту версию прог
-//  OrthoCamera camera; // (левая, правая, нижняя, верхняя, ближняя, задняя стенки)
-//  camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
-//  camera.SetProjection(-20.0f*camera.GetAspect(), 20.0f*camera.GetAspect(), -20.0f, 20.0f, 0.1f, 100.0f);
-
-//	glm::mat4 projection = camera.GetProjectionMatrix();
-//	glm::mat4 model = glm::mat4(1.0f);
-//	glm::mat4 model2 = glm::mat4(1.0f);
-//	model2 = glm::translate(model2, glm::vec3(0.0f, 0.0f, -50.0f)); // сдвиг на вектор 
-//	//model2 = glm::rotate(model2, 90.0f, glm::vec3(0.0, 0.0, 1.0)); // поворот на 90 градусов вдоль Оz
-//	//model2 = glm::scale(model2, glm::vec3(0.5, 0.5, 0.5));  // масштабирование
+	registry.assign<Mesh>(dragon, dragon_mesh );
+	registry.assign<Transform>(dragon, dragon_transform);
+	registry.assign<Mesh>(dragon2, dragon_mesh2 );
+	registry.assign<Transform>(dragon2, dragon_transform2);
+	registry.assign<Mesh>(cube, cube_mesh);
+	registry.assign<Transform>(cube, cube_transform);
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
@@ -158,13 +83,10 @@ int main() {
 	camera.SetPitch(-20.0f);
 
 	renderer.SetActiveCamera(&camera);
- 	renderer.AddMesh(&dragon);
-	renderer.AddMesh(&cube);
-	renderer.AddMesh(&sphere);
-
+	
 	double currentTime = 0.0;
 	double lastTime = 0.0;
-	 
+	
 	// игровой цикл
 	while (!glfwWindowShouldClose(window.GetPointer())) {
 		//calculate time
@@ -172,12 +94,10 @@ int main() {
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 		camera.Update(deltaTime);
-		//sphere.SetModelMatrix(glm::rotate(sphere.GetModelMatrix(), deltaTime*1.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
 		// Renderer pass
-		renderer.Update();
-		
-
+		renderer.Update(registry);
 		// заменяет цветовой буфер, который использовался для отрисовки на данной итерации и выводит результат на экран
+
 		glfwSwapBuffers(window.GetPointer());
  		// проверяем события (ввод с клавиатуры, перемещение мыши) и вызываем функции обратного вызова(callback))
     	glfwPollEvents(); // вызывает callback функции
