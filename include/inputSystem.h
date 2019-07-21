@@ -3,6 +3,7 @@
 
 class InputSystem {
 public:
+    static bool draw_gui;
     static bool keys[1024];
     static bool firstMouseMove;
     static double lastCursPosX;

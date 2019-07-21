@@ -8,6 +8,7 @@
 #include "resourceManager.h"
 #include "transform.h"
 #include "light.h"
+#include "system_gui.h"
 
 #include "entt/entt.hpp"
 
@@ -17,6 +18,9 @@ int main() {
 	window.SetHeight(768);
 	window.SetName("Karl's window!");
 	window.Init();
+
+	SystemGUI gui;
+	gui.Init(window.GetPointer());
 
 	Renderer renderer;
 	renderer.SetWidth(window.GetWidth());
@@ -87,22 +91,30 @@ int main() {
 	double currentTime = 0.0;
 	double lastTime = 0.0;
 	
+	
+
+    
 	// игровой цикл
 	while (!glfwWindowShouldClose(window.GetPointer())) {
 		//calculate time
+		glfwPollEvents(); // вызывает callback функции
+		
 		currentTime = glfwGetTime();
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 		camera.Update(deltaTime);
 		// Renderer pass
 		renderer.Update(registry);
+		gui.Update();
+    	
+
 		// заменяет цветовой буфер, который использовался для отрисовки на данной итерации и выводит результат на экран
 
 		glfwSwapBuffers(window.GetPointer());
  		// проверяем события (ввод с клавиатуры, перемещение мыши) и вызываем функции обратного вызова(callback))
-    	glfwPollEvents(); // вызывает callback функции
-	}
-	// delete program!
+    	
+	}	
 	window.Delete(); // убрать в деструктор 
+
 	return 0;
 }
