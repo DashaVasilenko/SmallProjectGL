@@ -21,11 +21,14 @@ int main() {
 
 	SystemGUI gui;
 	gui.Init(window.GetPointer());
+	auto& console = gui.GetConsole();
 
 	Renderer renderer;
 	renderer.SetWidth(window.GetWidth());
 	renderer.SetHeight(window.GetHeight());
 	renderer.Init();
+
+	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
 
 	ResourceManager<ShaderProgram> programManager;
 	ResourceManager<Texture> textureManager;

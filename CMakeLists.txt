@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
-project(Lesson1)
+set(CMAKE_CXX_COMPILER "g++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -g")
+
+project(Lesson1)
 
 
 find_package (glfw3 REQUIRED)
