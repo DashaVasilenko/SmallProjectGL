@@ -76,12 +76,12 @@ int main() {
 	Transform cube_transform;
 	cube_transform.Scale({34.0f, 0.15f, 35.0f});
 
-	registry.assign<Mesh>(dragon, dragon_mesh );
-	registry.assign<Transform>(dragon, dragon_transform);
-	registry.assign<Mesh>(dragon2, dragon_mesh2 );
-	registry.assign<Transform>(dragon2, dragon_transform2);
-	registry.assign<Mesh>(cube, cube_mesh);
-	registry.assign<Transform>(cube, cube_transform);
+	registry.assign<Mesh>(dragon, std::move(dragon_mesh) );
+	registry.assign<Transform>(dragon, std::move(dragon_transform));
+	registry.assign<Mesh>(dragon2, std::move(dragon_mesh2) );
+	registry.assign<Transform>(dragon2, std::move(dragon_transform2));
+	registry.assign<Mesh>(cube, std::move(cube_mesh));
+	registry.assign<Transform>(cube, std::move(cube_transform));
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
