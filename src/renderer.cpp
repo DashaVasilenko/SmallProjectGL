@@ -35,4 +35,19 @@ void Renderer::Update(entt::registry& registry) {
         auto& transform = view.get<Transform>(entity);
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
+
 }
+
+bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
+    if (arguments.size() == 1) {
+        bool flag = std::stoi(arguments[0]);
+        if (flag) {
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        }
+        else {
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        }
+        return true;
+    }
+    return false;
+} 
