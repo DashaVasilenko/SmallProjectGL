@@ -3,7 +3,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <iostream>
 
 void Geometry::Load(const std::string& filename) {
     bool texture_flag = false;
@@ -57,7 +56,6 @@ void Geometry::Load(const std::string& filename) {
             }
         }
         else {
-            std::cout << "Hey!" <<  vertices.size() << std::endl;
             BufferLayout layout = { {"Position", Float3}, {"Textures", Float2} };
            
             Init(vertices, layout);

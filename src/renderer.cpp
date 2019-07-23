@@ -30,7 +30,7 @@ void Renderer::Update(entt::registry& registry) {
     // здесь нужно сказать что мы рисуем в текстуру  
     fbo.Bind();
     glEnable(GL_DEPTH_TEST); // тест глубины
-    
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // очищаем буферы
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
 
@@ -47,9 +47,9 @@ void Renderer::Update(entt::registry& registry) {
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT); // очищаем буферы
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
-
     quad_program->Run();
-    
+    glActiveTexture(GL_TEXTURE0);
+
     glBindTexture(GL_TEXTURE_2D, fbo.GetTexDescriptor());
     quad_geometry->Draw();
 }
