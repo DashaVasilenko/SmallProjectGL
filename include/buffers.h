@@ -76,9 +76,12 @@ public:
     void BufferInit(int width, int  height);
     void Bind() const;
     void Unbind() const;
+    int GetTexDescriptor() { return this->tex_color_buf; }
     ~FrameBuffer();
 private:
     GLuint descriptor;
+    unsigned int tex_color_buf;
+    unsigned int rbo;
     //int width = 640; // пока не используется
     //int height = 480; // пока не используется
 };

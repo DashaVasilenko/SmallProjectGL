@@ -19,6 +19,7 @@ private:
     bool Add(const std::string& fileName);
     std::pair<T*,  int>* Find(const std::string& fileName);
     void Free(const std::string& fileName);
+
     std::unordered_map<std::string, std::pair<T*, int>> resourceMap;
 };
 
@@ -29,7 +30,7 @@ std::pair<T*,  int>* ResourceManager<T>::Find(const std::string& fileName) {
         return &it->second;
     }
     else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -78,7 +79,7 @@ T* ResourceManager<T>::Get(const std::string& fileName) {
     if (!res) {
         bool ok = Add(fileName);
         if(!ok) {
-            return NULL;
+            return nullptr;
         }
         res = Find(fileName);
     }

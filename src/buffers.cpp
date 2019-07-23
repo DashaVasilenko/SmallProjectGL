@@ -150,7 +150,6 @@ void FrameBuffer::BufferInit(int width, int  height) {
     Bind();
 
     // используем текстурные прикрепления для создания объектра буфера цвета
-    unsigned int tex_color_buf;
     glGenTextures(1, &tex_color_buf);
     glBindTexture(GL_TEXTURE_2D, tex_color_buf);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -163,7 +162,6 @@ void FrameBuffer::BufferInit(int width, int  height) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex_color_buf, 0); 
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
-    unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);  

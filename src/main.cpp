@@ -23,33 +23,37 @@ int main() {
 	gui.Init(window.GetPointer());
 	auto& console = gui.GetConsole();
 
-	Renderer renderer;
-	renderer.SetWidth(window.GetWidth());
-	renderer.SetHeight(window.GetHeight());
-	renderer.Init();
-
-	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
-
 	ResourceManager<ShaderProgram> programManager;
 	ResourceManager<Texture> textureManager;
 	ResourceManager<Geometry> geometryManager;
 
+	Renderer renderer;
+	renderer.SetWidth(window.GetWidth());
+	renderer.SetHeight(window.GetHeight());
+	renderer.Init(programManager.Get("data/shaders/quad.json"), geometryManager.Get("data/quad.obj"));
+
+	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
+
 	const ShaderProgram* program = programManager.Get("data/shaders/phong.json");
-	const ShaderProgram* phong_text_program = programManager.Get("data/shaders/phong_texture.json");
+	const ShaderProgram* pbr_program = programManager.Get("data/shaders/pbr.json");
 
 	const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
 	const Geometry* cubeGeo = geometryManager.Get("data/cube.obj");
+	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
 
-	PhongTextureMaterial wood(phong_text_program, 
-							  textureManager.Get("textures/brickAO.png"), 
-							  textureManager.Get("textures/brickAlbedo.png"),
-							  textureManager.Get("textures/brickMetallic.png"),
-							  textureManager.Get("textures/brickNormalMap.png"),
-							  0.4);
 	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 76.8f);
 	PhongMaterial ruby(program, {0.1745f, 0.01175f, 0.01175f}, {0.61424f, 0.04136f, 0.04136f}, {0.727811f, 0.626959f, 0.626959f}, 76.8f);
 	PhongMaterial silver(program, {0.23125f, 0.23125f, 0.23125f}, {0.2775f, 0.2775f, 0.2775f}, {0.773911f, 0.773911f, 0.773911f}, 89.6f);
 
+	PbrMaterial brick(pbr_program,
+					 textureManager.Get("textures/brickAlbedo.png"),
+					 textureManager.Get("textures/brickNormalMap.png"),
+					 textureManager.Get("textures/brickMetallic.png"),
+					 textureManager.Get("textures/brickRoughness.png"),
+					 textureManager.Get("textures/brickAO.png")
+					);
+
+			
 	SpotLight light(program, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.0f, 25.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 30.0f);
 	light.setAttenuation(1.0f);
 	light.SetInnerUniforms();
@@ -59,10 +63,12 @@ int main() {
 	Mesh dragon_mesh = { {dragonGeo, &ruby} };
 	Mesh dragon_mesh2 = { {dragonGeo, &silver} };
 	Mesh cube_mesh = { {cubeGeo, &emerald} };
+	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
 	auto dragon = registry.create();
 	auto dragon2 = registry.create();
 	auto cube = registry.create();
+	auto sphere = registry.create();
 
 
 	Transform dragon_transform;
@@ -76,12 +82,18 @@ int main() {
 	Transform cube_transform;
 	cube_transform.Scale({34.0f, 0.15f, 35.0f});
 
+	Transform sphere_transform;
+	sphere_transform.Translate({0.0f, 3.0f, 0.0f});
+	sphere_transform.Rotate({1.0f, 0.0f, 0.0f}, 45);
+
 	registry.assign<Mesh>(dragon, std::move(dragon_mesh) );
 	registry.assign<Transform>(dragon, std::move(dragon_transform));
 	registry.assign<Mesh>(dragon2, std::move(dragon_mesh2) );
 	registry.assign<Transform>(dragon2, std::move(dragon_transform2));
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
+	registry.assign<Mesh>(sphere, std::move(sphere_mesh));
+	registry.assign<Transform>(sphere, std::move(sphere_transform));
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());

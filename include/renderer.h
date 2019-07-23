@@ -8,6 +8,9 @@
 #include "transform.h"
 #include "entt/entt.hpp"
 #include "buffers.h"
+#include "geometry.h"
+#include "shaderProgram.h"
+#include "resourceManager.h"
 
 class Renderer {
 public:
@@ -16,7 +19,7 @@ public:
     void SetFrameBuffer(GLuint);
     void SetActiveCamera(const Camera* camera);
     void AddMesh(const Mesh*);
-    void Init();
+    void Init(const ShaderProgram*, const Geometry*);
     void Update(entt::registry& registry);
 
     ConsoleFunction GetWireFrameFunc() { return std::bind(&Renderer::WireFrame, this, std::placeholders::_1); }
@@ -28,6 +31,8 @@ private:
     int height;
 
     FrameBuffer fbo;
+    const Geometry* quad_geometry;
+    const ShaderProgram* quad_program;
 };
 
 #endif /* End of __RENDERER__ */

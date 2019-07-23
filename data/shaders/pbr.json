@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/pbr_vertex.glsl",
+    "fragment": "glsl/pbr_pixel.glsl"
+}

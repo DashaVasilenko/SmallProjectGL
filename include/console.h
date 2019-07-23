@@ -33,6 +33,7 @@ public:
     void AddCommand(const std::string&, const ConsoleFunction&);
 private:
     std::unordered_map<std::string, ConsoleFunction> legit_commands;
+    
     char buffer[MAX_COMMAND_LENGTH];
     std::vector<std::string> command_line;
     std::vector<OutputStr> text_buffer;

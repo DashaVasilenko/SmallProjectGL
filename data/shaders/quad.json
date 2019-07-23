@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/quad_vertex.glsl",
+    "fragment": "glsl/quad_pixel.glsl"
+}
