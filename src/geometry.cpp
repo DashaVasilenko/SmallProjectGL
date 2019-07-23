@@ -3,10 +3,11 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <iostream>
 
 void Geometry::Load(const std::string& filename) {
-    float cntTexture = 0;
-    float cntNormal = 0;
+    bool texture_flag = false;
+    bool normal_flag = false;
     std::vector<GLfloat> vertices;
     Assimp::Importer Importer;
     const aiScene* pScene = Importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace);
@@ -27,12 +28,12 @@ void Geometry::Load(const std::string& filename) {
                     vertices.push_back(mesh->mNormals[i].x);
                     vertices.push_back(mesh->mNormals[i].y);
                     vertices.push_back(mesh->mNormals[i].z);
-                    cntNormal = 1;
+                    normal_flag = true;
                 }
                 for (int j = 0; mesh->HasTextureCoords(j); j++) {
                     vertices.push_back(mesh->mTextureCoords[j][i].x);
                     vertices.push_back(mesh->mTextureCoords[j][i].y);
-                    cntTexture = 1;
+                    texture_flag = true;
                 }
                 if (mesh->HasTangentsAndBitangents()) {
                     vertices.push_back(mesh->mTangents[i].x);
@@ -45,18 +46,20 @@ void Geometry::Load(const std::string& filename) {
             }
         }
         // Determine layout of Mesh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if (cntNormal != 0) {
-            if (cntTexture == 0) {
-                BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} };
+        if (normal_flag) {
+            if (texture_flag) {
+                BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2}, {"Tangents", Float3}, {"Bitangents", Float3}};
                 Init(vertices, layout); 
             }
             else {
-                BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} , {"Textures", Float2}, {"Tangents", Float3}, {"Bitangents", Float3}};
+                BufferLayout layout = { {"Position", Float3}, {"Normals", Float3} };
                 Init(vertices, layout); 
             }
         }
         else {
+            std::cout << "Hey!" <<  vertices.size() << std::endl;
             BufferLayout layout = { {"Position", Float3}, {"Textures", Float2} };
+           
             Init(vertices, layout);
         }
         //Init(vertices, layout);

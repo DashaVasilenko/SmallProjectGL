@@ -82,8 +82,6 @@ private:
     GLuint descriptor;
     unsigned int tex_color_buf;
     unsigned int rbo;
-    //int width = 640; // пока не используется
-    //int height = 480; // пока не используется
 };
 
 #endif /* End of __BUFFERS__ */
