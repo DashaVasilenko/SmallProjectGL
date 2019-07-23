@@ -20,19 +20,21 @@ void Renderer::SetActiveCamera(const Camera* camera) {
  
 void Renderer::Init(const ShaderProgram* qprogram, const Geometry* qgeometry) {
 	glViewport(0, 0, width, height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем
-    glEnable(GL_DEPTH_TEST); // тест глубины
+   
     fbo.BufferInit(width, height); // создаем буфер кадра
     quad_program = qprogram;
     quad_geometry = qgeometry;
 }
 
 void Renderer::Update(entt::registry& registry) {
+    // здесь нужно сказать что мы рисуем в текстуру  
+    fbo.Bind();
+    glEnable(GL_DEPTH_TEST); // тест глубины
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // очищаем буферы
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
 
-    // здесь нужно сказать что мы рисуем в текстуру  
-    fbo.Bind();
-    glBindTexture(GL_TEXTURE_2D, fbo.GetTexDescriptor());
+    
 
     glm::mat4 viewMatrix = camera->GetViewMatrix();
     auto view = registry.view<Mesh, Transform>();
@@ -41,12 +43,14 @@ void Renderer::Update(entt::registry& registry) {
         auto& transform = view.get<Transform>(entity);
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
+    fbo.Unbind();
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT); // очищаем буферы
+	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
 
-    // здесь нужно рисовать квад
-    // бинд квада
-    // бинд шейдерпрограммы квада
-    // квад.дро
     quad_program->Run();
+    
+    glBindTexture(GL_TEXTURE_2D, fbo.GetTexDescriptor());
     quad_geometry->Draw();
 }
 
