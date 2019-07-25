@@ -49,13 +49,15 @@ PhongTextureMaterial::PhongTextureMaterial(
     this->shininess = s;
 
     shaderProgram->Run();
+}
+
+void PhongTextureMaterial::SetInnerUniforms() const {
+
     shaderProgram->SetUniform("ambientMap", 0);
     shaderProgram->SetUniform("diffuseMap", 1);
     shaderProgram->SetUniform("specularMap", 2);
     shaderProgram->SetUniform("normalMap", 3);
-}
 
-void PhongTextureMaterial::SetInnerUniforms() const {
     glActiveTexture(GL_TEXTURE0);
     ambientMap->Bind();
 
