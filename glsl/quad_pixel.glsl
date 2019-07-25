@@ -45,10 +45,10 @@ vec4 PBR() {
     const vec3 lightColor = vec3(1.0, 1.0, 1.0); // интенсивность фонового света
 
     vec3 outEye = normalize(texture(positionMap, outTexCoord).rgb);
-
+    vec3 normal = texture(normalMap, outTexCoord).rgb;
     vec3 albedo = pow(texture(albedoMap, outTexCoord).rgb, vec3(2.2));
     // выборка вектора из карты нормалей с областью значений [0,1] и перевод вектора нормали в интервал [-1,1]
-    vec3 normal = texture(normalMap, outTexCoord).rgb;
+   
     float metallic = texture(mraoMap, outTexCoord).r;
     float roughness = texture(mraoMap, outTexCoord).g;
     float ao = texture(mraoMap, outTexCoord).b;
