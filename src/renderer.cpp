@@ -28,6 +28,13 @@ void Renderer::Init(const ShaderProgram* qprogram, const Geometry* qgeometry) {
 
     quad_program = qprogram;
     quad_geometry = qgeometry;
+
+
+    quad_program->Run();
+    quad_program->SetUniform("positionMap", 0);
+    quad_program->SetUniform("normalMap", 1);
+    quad_program->SetUniform("albedoMap", 2);
+    quad_program->SetUniform("mraoMap", 3);
 }
 
 void Renderer::Update(entt::registry& registry) {
@@ -64,10 +71,7 @@ void Renderer::Update(entt::registry& registry) {
     
     //PBR SET PBR quad  
     quad_program->SetUniform("light_direction", glm::normalize(glm::vec3((camera->GetViewMatrix()*glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)))));
-    quad_program->SetUniform("positionMap", 0);
-    quad_program->SetUniform("normalMap", 1);
-    quad_program->SetUniform("albedoMap", 2);
-    quad_program->SetUniform("mraoMap", 3);
+    
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, fbo.GetTexDescriptor());
 
