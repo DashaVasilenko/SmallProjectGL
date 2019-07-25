@@ -23,7 +23,7 @@ void main() {
     vec3 tang = normalize(NormalMatrix*tangent);
     vec3 bitang = normalize(NormalMatrix*bitangent);
     
-    // матрица преобразования в пространство касательных
+    // матрица преобразования из пространства касательных
     TBN_inverse = mat3(tang.x, tang.y, tang.z, 
                        bitang.x, bitang.y, bitang.z,
                        outNormal.x, outNormal.y, outNormal.z);
@@ -33,3 +33,6 @@ void main() {
     outTexCoord = texCoord;
     gl_Position = Projection*pos;
 }
+     
+
+    

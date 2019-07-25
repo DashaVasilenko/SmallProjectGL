@@ -5,9 +5,9 @@ layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
 layout (location = 3) out vec3 gMetallRoughnessAO;
 
-in vec3 outNormal;       
+in vec3 outNormal; 
+in vec2 outTexCoord;      
 in vec3 outPosition;          
-in vec2 outTexCoord;
 in mat3 TBN_inverse;  
 
 uniform sampler2D albedoMap;

@@ -90,8 +90,11 @@ vec4 PBR() {
     color = pow(color, vec3(1.0/2.2));  
    
     return vec4(color, 1.0);
+    //return vec4(texture(albedoMap, outTexCoord).rgb, 1.0);
 }   
 
 void main() {
     outColor = PBR();
 }
+
+
