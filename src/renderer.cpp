@@ -21,20 +21,24 @@ void Renderer::SetActiveCamera(const Camera* camera) {
 void Renderer::Init(const ShaderProgram* qprogram, const Geometry* qgeometry) {
 	glViewport(0, 0, width, height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем
    
-    fbo.BufferInit(width, height); // создаем буфер кадра
+    //fbo.BufferInit(width, height); // создаем буфер кадра
+    gbuffer.BufferInit(width, height);
+
+    current_view_buffer = gbuffer.GetAlbedoDescriptor();
+
     quad_program = qprogram;
     quad_geometry = qgeometry;
 }
 
 void Renderer::Update(entt::registry& registry) {
     // здесь нужно сказать что мы рисуем в текстуру  
-    fbo.Bind();
+    //fbo.Bind(); 
+    gbuffer.Bind();
+
     glEnable(GL_DEPTH_TEST); // тест глубины
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // очищаем буферы
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
-
-    
 
     glm::mat4 viewMatrix = camera->GetViewMatrix();
     auto view = registry.view<Mesh, Transform>();
@@ -43,14 +47,37 @@ void Renderer::Update(entt::registry& registry) {
         auto& transform = view.get<Transform>(entity);
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
-    fbo.Unbind();
+
+    //fbo.Unbind();
+    gbuffer.Unbind();
+
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT); // очищаем буферы
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
     quad_program->Run();
-    glActiveTexture(GL_TEXTURE0);
 
-    glBindTexture(GL_TEXTURE_2D, fbo.GetTexDescriptor());
+   /* 
+      Debug
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, current_view_buffer);*/
+   
+    //PBR SET PBR quad  
+    quad_program->SetUniform("light_direction", glm::normalize(glm::vec3((camera->GetViewMatrix()*glm::vec4(0.0f, 1.0f, 0.0f, 0.0f)))));
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, fbo.GetTexDescriptor());
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.GetPositionDescriptor());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.GetNormalDescriptor());
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.GetAlbedoDescriptor());
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.GetMetallRoughAODescriptor());
+
     quad_geometry->Draw();
 }
 
@@ -67,3 +94,27 @@ bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
     }
     return false;
 } 
+
+
+bool Renderer::ViewBuffer(const std::vector<std::string>& arguments) {
+    if (arguments.size() == 1) {
+        if (arguments[0] == "normal") {
+            current_view_buffer = gbuffer.GetNormalDescriptor();
+            return true;
+        }
+        else if (arguments[0] == "position") {
+            current_view_buffer = gbuffer.GetPositionDescriptor();
+            return true;
+        }
+        else if (arguments[0] == "albedo") {
+            current_view_buffer = gbuffer.GetAlbedoDescriptor();
+            return true;
+        }
+        else if (arguments[0] == "mrao") {
+            current_view_buffer = gbuffer.GetMetallRoughAODescriptor();
+            return true;
+        }
+        return false;
+    }
+    return false;
+}

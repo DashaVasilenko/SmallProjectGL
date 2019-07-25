@@ -23,16 +23,22 @@ public:
     void Update(entt::registry& registry);
 
     ConsoleFunction GetWireFrameFunc() { return std::bind(&Renderer::WireFrame, this, std::placeholders::_1); }
+    ConsoleFunction GetViewBufferFunc() { return std::bind(&Renderer::ViewBuffer, this, std::placeholders::_1);}
+
 private:
     bool WireFrame(const std::vector<std::string>& );
+    bool ViewBuffer(const std::vector<std::string>& );
     glm::mat4 projection;
     const Camera* camera;
     int width;
     int height;
 
     FrameBuffer fbo;
+    GBuffer gbuffer;
     const Geometry* quad_geometry;
     const ShaderProgram* quad_program;
+
+    unsigned int current_view_buffer;
 };
 
 #endif /* End of __RENDERER__ */

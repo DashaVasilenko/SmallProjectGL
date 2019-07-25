@@ -31,12 +31,15 @@ int main() {
 	renderer.SetWidth(window.GetWidth());
 	renderer.SetHeight(window.GetHeight());
 	renderer.Init(programManager.Get("data/shaders/quad.json"), geometryManager.Get("data/quad.obj"));
+	//renderer.Init(programManager.Get("data/shaders/deferred_rendering.json"), geometryManager.Get("data/quad.obj"));
 
 	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
+	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc());
 
 	const ShaderProgram* program = programManager.Get("data/shaders/phong.json");
 	const ShaderProgram* pbr_program = programManager.Get("data/shaders/pbr.json");
 
+	// const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
 	const Geometry* cubeGeo = geometryManager.Get("data/cube.obj");
 	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
 
@@ -68,6 +71,26 @@ int main() {
 
 	entt::registry registry;
 
+	/*
+	Mesh dragon_mesh = { {dragonGeo, &ruby} };
+	Mesh dragon_mesh2 = { {dragonGeo, &silver} };
+	Mesh cube_mesh = { {cubeGeo, &emerald} };
+	Mesh sphere_mesh = { {sphereGeo, &brick} };
+
+	auto dragon = registry.create();
+	auto dragon2 = registry.create();
+	auto cube = registry.create();
+	auto sphere = registry.create(); 
+
+	Transform dragon_transform;
+	dragon_transform.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
+	dragon_transform.Translate({-7.0f, 0.0f, 0.0f});
+
+	Transform dragon_transform2;
+	dragon_transform2.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
+	dragon_transform2.Translate({7.0f, 0.0f, 0.0f});
+	*/
+
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
@@ -83,10 +106,26 @@ int main() {
 	}
 	auto cube = registry.create();
 	Transform cube_transform;
+
+	/*
+	cube_transform.Scale({34.0f, 0.15f, 35.0f});
+
+	Transform sphere_transform;
+	sphere_transform.Translate({0.0f, 3.0f, 0.0f});
+	sphere_transform.Rotate({1.0f, 0.0f, 0.0f}, 45);
+
+	registry.assign<Mesh>(dragon, std::move(dragon_mesh) );
+	registry.assign<Transform>(dragon, std::move(dragon_transform));
+	registry.assign<Mesh>(dragon2, std::move(dragon_mesh2) );
+	registry.assign<Transform>(dragon2, std::move(dragon_transform2));
+	*/
+
 	cube_transform.Translate({7.0f, 0.0f, 7.0f});
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
+	//registry.assign<Mesh>(sphere, std::move(sphere_mesh));
+	//registry.assign<Transform>(sphere, std::move(sphere_transform));
 	
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)

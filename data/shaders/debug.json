@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/debug_vertex.glsl",
+    "fragment": "glsl/debug_pixel.glsl"
+}

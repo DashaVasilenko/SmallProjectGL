@@ -84,4 +84,28 @@ private:
     unsigned int rbo;
 };
 
+class GBuffer {
+public:
+    GBuffer();
+    //void SetWidth(int width) { this->width = width; } // пока не используется
+    //void SetHeight(int height) { this->height = height; } // пока не используется
+    void BufferInit(int width, int  height);
+    void Bind() const;
+    void Unbind() const;
+
+    int GetPositionDescriptor() { return this->position; }
+    int GetNormalDescriptor() { return this->normal; }
+    int GetAlbedoDescriptor() { return this->albedo; }
+    int GetMetallRoughAODescriptor() { return this->metallRoughAO; }
+
+    ~GBuffer();
+private:
+    GLuint descriptor;
+    unsigned int position;
+    unsigned int normal; 
+    unsigned int albedo;
+    unsigned int metallRoughAO;
+    unsigned int rbo;
+};
+
 #endif /* End of __BUFFERS__ */
