@@ -56,9 +56,6 @@ PhongTextureMaterial::PhongTextureMaterial(
 }
 
 void PhongTextureMaterial::SetInnerUniforms() const {
-
-    
-
     glActiveTexture(GL_TEXTURE0);
     ambientMap->Bind();
 

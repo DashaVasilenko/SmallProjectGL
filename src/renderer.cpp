@@ -29,8 +29,10 @@ void Renderer::Init(const ShaderProgram* qprogram, const Geometry* qgeometry) {
     quad_program = qprogram;
     quad_geometry = qgeometry;
 
-
     quad_program->Run();
+    
+    quad_program->SetUniform("ScreenWidthHeight", glm::vec2(width, height));
+ 
     quad_program->SetUniform("positionMap", 0);
     quad_program->SetUniform("normalMap", 1);
     quad_program->SetUniform("albedoMap", 2);
@@ -61,10 +63,19 @@ void Renderer::Update(entt::registry& registry) {
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT); // очищаем буферы
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // буфер цвета очищаем синим цветом
+    
     quad_program->Run();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::scale(model, glm::vec3(3.0, 3.0, 3.0));
+    //glm::mat3 model3x3 = model;
+
+    quad_program->SetUniform("View", viewMatrix);
+    quad_program->SetUniform("Projection", projection);
+    quad_program->SetUniform("Model", model);
+    //quad_program->SetUniform("NormalMatrix", glm::transpose(glm::inverse(model3x3)));
 
     
-     // Debug
+    // Debug
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, current_view_buffer);
    

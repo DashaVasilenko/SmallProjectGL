@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/sphere_vertex.glsl",
+    "fragment": "glsl/sphere_pixel.glsl"
+}

@@ -132,6 +132,16 @@ void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) const 
     // обработка ошибок!!!
 }
 
+void ShaderProgram::SetUniform(const char* name, const glm::vec2& vector) const {
+    GLint location = glGetUniformLocation(descriptor, name);
+    glUniform2f(location, vector.x, vector.y);
+    if (location == -1) {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    // обработка ошибок!!!
+}
+
 void ShaderProgram::SetUniform(const char* name, float value) const {
     GLint location = glGetUniformLocation(descriptor, name);
     glUniform1f(location, value);

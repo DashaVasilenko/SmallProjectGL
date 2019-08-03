@@ -30,7 +30,8 @@ int main() {
 	Renderer renderer;
 	renderer.SetWidth(window.GetWidth());
 	renderer.SetHeight(window.GetHeight());
-	renderer.Init(programManager.Get("data/shaders/quad.json"), geometryManager.Get("data/quad.obj"));
+	//renderer.Init(programManager.Get("data/shaders/quad.json"), geometryManager.Get("data/quad.obj"));
+	renderer.Init(programManager.Get("data/shaders/sphere.json"), geometryManager.Get("data/light_sphere.obj"));
 	//renderer.Init(programManager.Get("data/shaders/deferred_rendering.json"), geometryManager.Get("data/quad.obj"));
 
 	console->AddCommand("wireframe", renderer.GetWireFrameFunc());

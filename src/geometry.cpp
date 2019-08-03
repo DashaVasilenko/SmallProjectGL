@@ -56,9 +56,14 @@ void Geometry::Load(const std::string& filename) {
             }
         }
         else {
-            BufferLayout layout = { {"Position", Float3}, {"Textures", Float2} };
-           
-            Init(vertices, layout);
+            if (texture_flag) {
+                BufferLayout layout = { {"Position", Float3}, {"Textures", Float2} };
+                Init(vertices, layout);
+            }
+            else {
+                BufferLayout layout = { {"Position", Float3} };
+                Init(vertices, layout);
+            }
         }
         //Init(vertices, layout);
     }
