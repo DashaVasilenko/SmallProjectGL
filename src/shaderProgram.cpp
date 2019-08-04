@@ -10,8 +10,11 @@ void ShaderProgram::Load(const std::string& fileName) {
     input >> shaderData;
 
     mapSources[GL_VERTEX_SHADER] = shaderData["vertex"];
-    mapSources[GL_FRAGMENT_SHADER] = shaderData["fragment"];
-   
+    
+    if (shaderData.find("fragment") != shaderData.end()) {
+        mapSources[GL_FRAGMENT_SHADER] = shaderData["fragment"];
+    }
+
     if (shaderData.find("tesselation_evaluation") != shaderData.end()) {
         mapSources[GL_TESS_EVALUATION_SHADER] = shaderData["tesselation_evaluation"];
     }

@@ -70,16 +70,7 @@ int main() {
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
-	glm::vec3 colors[9];
-	colors[0] = {1.0f , 0.0f, 0.0f};
-	colors[1] = {0.0f , 1.0f, 0.0f};
-	colors[2] = {0.0f , 0.0f, 1.0f};
-	colors[3] = {1.0f , 1.0f, 0.0f};
-	colors[4] = {1.0f , 0.0f, 1.0f};
-	colors[5] = {0.0f , 1.0f, 1.0f};
-	colors[6] = {1.0f , 1.0f, 1.0f};
-	colors[7] = {1.0f , 1.0f, 0.0f};
-	colors[8] = {1.0f , 1.0f, 1.0f};
+	
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -87,7 +78,7 @@ int main() {
 			Transform sphere_transform;
 			sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*2) - 5.0f});
 
-			PointLight pl(colors[3*i+j], {static_cast<float>(i*3 - 5.0f), 4.0f, static_cast<float>(j*2) - 5.0f}, 5.0f);
+			PointLight pl({1.0f, 1.0f, 1.0f}, {static_cast<float>(i*3 - 5.0f), 4.0f, static_cast<float>(j*2) - 5.0f}, 15.0f);
 			pl.SetAttenuation(0.0f, 0.0f, 2.0f);
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);

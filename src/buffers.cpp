@@ -193,7 +193,7 @@ GBuffer::GBuffer() {
 
 // дописать эту функцию 
 void GBuffer::BufferInit(int width, int  height) {
-    Bind();
+    glBindFramebuffer(GL_FRAMEBUFFER, descriptor);
     //unsigned int gPosition, gNormal, gColorSpec;
 
     // буфер позиций
@@ -230,6 +230,13 @@ void GBuffer::BufferInit(int width, int  height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, metallRoughAO, 0);
 
+    glGenTextures(1, &result);
+    glBindTexture(GL_TEXTURE_2D, result);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, result, 0);
+
     // укажем OpenGL, какие буферы мы будем использовать при рендеринге
     unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
     glDrawBuffers(4, attachments);
@@ -247,11 +254,45 @@ void GBuffer::BufferInit(int width, int  height) {
     Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
 }
 
-void GBuffer::Bind() const {
+void GBuffer::GeometryPassBind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, descriptor);  // привязываем как текущий активный буфер кадра 
+    unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers(4, attachments);
 }
 
-// !!! где-то надо отвязать (не знаю, где)
+void GBuffer::StencilPassBind() const {
+    glDrawBuffer(GL_NONE);
+}
+
+void GBuffer::LightPassBind() const {
+    glDrawBuffer(GL_COLOR_ATTACHMENT4);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, position);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, normal);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, albedo);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, metallRoughAO);
+}
+
+
+void GBuffer::FinalPassBind() const {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
+    glReadBuffer(GL_COLOR_ATTACHMENT4);
+}
+
+void GBuffer::StartFrame() const {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, descriptor);
+    glDrawBuffer(GL_COLOR_ATTACHMENT4);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void GBuffer::Unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
 }

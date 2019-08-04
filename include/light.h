@@ -5,15 +5,17 @@
 #include "geometry.h"
 
 
-/* Базовый класс для любого света */
+/* Базовый класс для любого света кроме Directional */
 class Light {
 public:
     virtual void SetInnerUniforms() = 0;
     virtual void Draw(const glm::mat4& projection, const glm::mat4& view) = 0;
+    virtual void StencilPass(const glm::mat4& projection, const glm::mat4& view) = 0;
 protected:
     /* Теперь у света есть своя геометрия */
     Geometry* geometry;
     ShaderProgram* shaderProgram;
+    ShaderProgram* stencilProgram;
     glm::vec3 color;
     /* Позиции в WorldSpace*/
     glm::vec3 position_WS;
@@ -37,6 +39,7 @@ public:
     void CalculateRadius();
     void SetInnerUniforms() override;
     void Draw(const glm::mat4&, const glm::mat4&) override;
+    void StencilPass(const glm::mat4&, const glm::mat4&) override;
 private:
 
     /* по дефолту свет затухает с квадратичной скоростью */

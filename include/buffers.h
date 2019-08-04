@@ -87,10 +87,13 @@ private:
 class GBuffer {
 public:
     GBuffer();
-    //void SetWidth(int width) { this->width = width; } // пока не используется
-    //void SetHeight(int height) { this->height = height; } // пока не используется
+    GLuint GetDescriptor() { return descriptor; }
     void BufferInit(int width, int  height);
-    void Bind() const;
+    void StartFrame() const;
+    void GeometryPassBind() const;
+    void StencilPassBind() const;
+    void LightPassBind() const;
+    void FinalPassBind() const;
     void Unbind() const;
 
     int GetPositionDescriptor() { return this->position; }
@@ -105,6 +108,7 @@ private:
     unsigned int normal; 
     unsigned int albedo;
     unsigned int metallRoughAO;
+    unsigned int result;
     unsigned int rbo;
 };
 

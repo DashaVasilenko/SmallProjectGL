@@ -19,6 +19,13 @@ public:
     void AddMesh(const Mesh*);
     void Init();
     void Update(entt::registry& registry);
+    void GeometryPass(entt::registry& registry);
+    void LightPass(entt::registry& registry);
+    void BeginLightPass();
+    void EndLightPass();
+    void BeginStencilPass();
+    void StencilPass(entt::registry& registry);
+    void FinalPass();
 
 
     static void SetWidth(int w) {

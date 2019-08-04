@@ -15,24 +15,20 @@ void Renderer::SetActiveCamera(const Camera* camera) {
 }
  
 void Renderer::Init() {
-	glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем
-   
-    //fbo.BufferInit(width, height); // создаем буфер кадра
+	glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
     gbuffer.BufferInit(Renderer::width, Renderer::height);
-
     current_view_buffer = gbuffer.GetAlbedoDescriptor();
 }
 
-void Renderer::Update(entt::registry& registry) {
-    // здесь нужно сказать что мы рисуем в текстуру  
-    //fbo.Bind(); 
-    glDisable(GL_BLEND);
-    gbuffer.Bind();
-    
-    glEnable(GL_DEPTH_TEST); // тест глубины
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // очищаем буферы
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // буфер цвета очищаем синим цветом
+void Renderer::GeometryPass(entt::registry& registry) {
+    // Бинд буффера геометрии, теперь рисуем всё в него    
+    gbuffer.GeometryPassBind();
+    glDepthMask(GL_TRUE); // только проход геометрии обновляет буффер глубины
+    // включаем тест глубины чтобы яйки друг за другом рисовались без багов
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND); // выключаем блендинг
 
     // Проход геометрии
     glm::mat4 viewMatrix = camera->GetViewMatrix();
@@ -43,55 +39,83 @@ void Renderer::Update(entt::registry& registry) {
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
 
-    gbuffer.Unbind();
+    glDepthMask(GL_FALSE); // запрещаем менять Depth buffer
 
-    
+    // Копируем буффер глубины из gBuffer -> screen
+    //glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.GetDescriptor()); // откуда с джибуффера
+    //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // куда в экран
+    //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height, 0, 0, Renderer::width, Renderer::height, GL_DEPTH_BUFFER_BIT, GL_NEAREST); // копируем
+}
+
+void Renderer::BeginLightPass() {
+    gbuffer.LightPassBind();
+    glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
     glDisable(GL_DEPTH_TEST);
-
-    glClear(GL_COLOR_BUFFER_BIT); // очищаем буферы
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // буфер цвета очищаем синим цветом
-    
     glEnable(GL_BLEND);
-    //glBlendEquation(GL_FUNC_ADD);
+    glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_ONE, GL_ONE);
 
-    // glDepthMask(0);
-    // glCullFace(GL_FRONT);   //to render only backfaces
-    // glDepthFunc(GL_GEQUAL);
-    // Проход света
-    // Включаем смешивание
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+}
 
-    
+void Renderer::EndLightPass() {
+    glCullFace(GL_BACK);
+    glDisable(GL_BLEND);
+}
+
+void Renderer::BeginStencilPass() {
+    gbuffer.StencilPassBind();
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glClear(GL_STENCIL_BUFFER_BIT);
+    glStencilFunc(GL_ALWAYS, 0, 0);
+    glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+    glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+}
+
+void Renderer::LightPass(entt::registry& registry) {
+
+    glEnable(GL_STENCIL_TEST);
+    glm::mat4 viewMatrix = camera->GetViewMatrix();
     auto lights = registry.view<PointLight>();
     for (auto entity: lights) {
         auto& pl = lights.get(entity);
-        pl.SetInnerUniforms();
+        BeginStencilPass();
+        pl.StencilPass(projection, viewMatrix);
 
-        /* Сделать gBuffer статическим в Renderer и убрать бинд текстур в SetInnerUniforms */
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, gbuffer.GetPositionDescriptor());
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, gbuffer.GetNormalDescriptor());
-
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, gbuffer.GetAlbedoDescriptor());
-
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, gbuffer.GetMetallRoughAODescriptor());
-
+        BeginLightPass();
+       
+        pl.SetInnerUniforms();        
         pl.Draw(projection, viewMatrix);
+
+        EndLightPass();   
     }
+    glDisable(GL_STENCIL_TEST);
+    // Here do directional light!
+}
+
+void Renderer::FinalPass() {
+    gbuffer.FinalPassBind();
+    glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
+                      0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+}
+
+void Renderer::Update(entt::registry& registry) {
+    gbuffer.StartFrame();
+    GeometryPass(registry);
+    LightPass(registry);
+    FinalPass();
 }
 
 bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
     if (arguments.size() == 1) {
         bool flag = std::stoi(arguments[0]);
         if (flag) {
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
         else {
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
         return true;
     }

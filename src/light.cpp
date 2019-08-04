@@ -29,6 +29,7 @@ PointLight::PointLight(const glm::vec3& color,
     */
 
     this->shaderProgram = Engine::programManager.Get("data/shaders/point_light.json");
+    this->stencilProgram = Engine::programManager.Get("data/shaders/stencil.json");
     this->color = color*intensity;
     this->intensity = intensity;
     this->position_WS = pos;
@@ -72,15 +73,13 @@ void PointLight::SetAttenuation(float k1, float k2, float k3) {
 }
 void PointLight::SetInnerUniforms() {
     shaderProgram->Run();
-    this->shaderProgram->SetUniform("Model", model);
     this->shaderProgram->SetUniform("point_light.color", color);
-
-    /* Here Uniforms which changes each frame*/
 }
 
 void PointLight::Draw(const glm::mat4& projection, const glm::mat4& view) {
 
     shaderProgram->Run();
+    shaderProgram->SetUniform("Model", model);
     shaderProgram->SetUniform("View", view);
     shaderProgram->SetUniform("Projection", projection);
     shaderProgram->SetUniform("point_light.position", glm::vec3(view*glm::vec4(position_WS, 1.0f)));   
@@ -88,6 +87,12 @@ void PointLight::Draw(const glm::mat4& projection, const glm::mat4& view) {
     geometry->Draw();
 }
 
+
+void PointLight::StencilPass(const glm::mat4& projection, const glm::mat4& view) {
+    stencilProgram->Run();
+    stencilProgram->SetUniform("MVP", projection*view*model);
+    geometry->Draw();
+}
 
 //-------------------------------------------------------------------------------------------------
 //
