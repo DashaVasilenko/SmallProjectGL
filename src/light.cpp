@@ -56,7 +56,7 @@ void PointLight::CalculateRadius() {
    
     float lightMax  = std::fmaxf(std::fmaxf(color.r, color.g), color.b);
     radius    = (-Kl +  std::sqrt(Kl * Kl - 4 * Kq * (Kc - 256.0 * lightMax))) / (2 * Kq);
-    model = glm::translate(glm::mat4(1.0f), position_WS)*glm::scale(glm::mat4(1.0f), {radius, radius, radius});
+    model = glm::translate(glm::mat4(1.0f), position_WS)*glm::scale(glm::mat4(1.0f), {radius/intensity, radius/intensity, radius/intensity});
 }
 
 void PointLight::SetAttenuation(float k1, float k2, float k3) {

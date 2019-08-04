@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <random>
 
 #include "engine.h"
 #include "renderer.h"
@@ -11,17 +12,20 @@
 
 #include "entt/entt.hpp"
 
+
+float get_random()
+{
+    static std::default_random_engine e;
+    static std::uniform_real_distribution<float> dis(0, 1);
+    return dis(e);
+}
+
 int main() {
 	Window window;
 	window.SetWidth(1080);
 	window.SetHeight(768);
 	window.SetName("Karl's window!");
 	window.Init();
-
-	
-
-
-
 
 	SystemGUI gui;
 	gui.Init(window.GetPointer());
@@ -70,16 +74,18 @@ int main() {
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
-	
+	std::default_random_engine generator;
+	std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
 			auto sphere = registry.create();
 			Transform sphere_transform;
-			sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*2) - 5.0f});
-
-			PointLight pl({1.0f, 1.0f, 1.0f}, {static_cast<float>(i*3 - 5.0f), 4.0f, static_cast<float>(j*2) - 5.0f}, 15.0f);
-			pl.SetAttenuation(0.0f, 0.0f, 2.0f);
+			sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*3) - 5.0f});
+			float r =  get_random();
+			float g = get_random();
+			float b = get_random();
+			PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 15.0f);
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);
 			registry.assign<PointLight>(sphere, pl);
