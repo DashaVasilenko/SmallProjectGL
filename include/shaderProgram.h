@@ -9,23 +9,26 @@ using json = nlohmann::json;
 
 #include "window.h"
 #include <map>
+#include <unordered_map>
+#include <string>
 
 class ShaderProgram {
 public:
-    std::string& operator[](const GLenum& );
+    //std::string& operator[](const GLenum& );
     void Load(const std::string& filename);
     void Compile();
     void Link();
     void Run() const;
-    void SetUniform(const char*, const glm::mat4&) const;
-    void SetUniform(const char*, const glm::mat3&) const;
-    void SetUniform(const char*, const glm::vec4&) const;
-    void SetUniform(const char*, const glm::vec3&) const;
-    void SetUniform(const char*, const glm::vec2&) const;
-    void SetUniform(const char*, float) const;
-    void SetUniform(const char*, int) const;
+    void SetUniform(const std::string&, const glm::mat4&);
+    void SetUniform(const std::string&, const glm::mat3&);
+    void SetUniform(const std::string&, const glm::vec4&);
+    void SetUniform(const std::string&, const glm::vec3&);
+    void SetUniform(const std::string&, const glm::vec2&);
+    void SetUniform(const std::string&, float);
+    void SetUniform(const std::string&, int);
     ~ShaderProgram();
 private:
+    std::unordered_map<std::string, GLint> uniformCache;
     std::map<GLenum, std::string> mapSources;
     std::map<GLenum, GLuint> mapShaders;
     GLuint descriptor;

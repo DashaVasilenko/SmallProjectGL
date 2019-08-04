@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
 
+#include "engine.h"
 #include "renderer.h"
 #include "camera.h"
 #include "mesh.h"
-#include "texture.h"
-#include "resourceManager.h"
 #include "transform.h"
 #include "light.h"
 #include "system_gui.h"
@@ -19,114 +18,90 @@ int main() {
 	window.SetName("Karl's window!");
 	window.Init();
 
+	
+
+
+
+
 	SystemGUI gui;
 	gui.Init(window.GetPointer());
 	auto& console = gui.GetConsole();
 
-	ResourceManager<ShaderProgram> programManager;
-	ResourceManager<Texture> textureManager;
-	ResourceManager<Geometry> geometryManager;
-
+	
+	Renderer::SetWidth(window.GetWidth());
+	Renderer::SetHeight(window.GetHeight());
 	Renderer renderer;
-	renderer.SetWidth(window.GetWidth());
-	renderer.SetHeight(window.GetHeight());
-	//renderer.Init(programManager.Get("data/shaders/quad.json"), geometryManager.Get("data/quad.obj"));
-	renderer.Init(programManager.Get("data/shaders/sphere.json"), geometryManager.Get("data/light_sphere.obj"));
-	//renderer.Init(programManager.Get("data/shaders/deferred_rendering.json"), geometryManager.Get("data/quad.obj"));
+	renderer.Init();
 
 	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
 	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc());
 
-	const ShaderProgram* program = programManager.Get("data/shaders/phong.json");
-	const ShaderProgram* pbr_program = programManager.Get("data/shaders/pbr.json");
+	
+
+	ShaderProgram* program = Engine::programManager.Get("data/shaders/phong.json");
+	ShaderProgram* pbr_program = Engine::programManager.Get("data/shaders/pbr.json");
 
 	// const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
-	const Geometry* cubeGeo = geometryManager.Get("data/cube.obj");
-	const Geometry* sphereGeo = geometryManager.Get("data/sphere.obj");
+	const Geometry* cubeGeo = Engine::geometryManager.Get("data/cube.obj");
+	const Geometry* sphereGeo = Engine::geometryManager.Get("data/sphere.obj");
 
 	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 76.8f);
 	PhongMaterial ruby(program, {0.1745f, 0.01175f, 0.01175f}, {0.61424f, 0.04136f, 0.04136f}, {0.727811f, 0.626959f, 0.626959f}, 76.8f);
 	PhongMaterial silver(program, {0.23125f, 0.23125f, 0.23125f}, {0.2775f, 0.2775f, 0.2775f}, {0.773911f, 0.773911f, 0.773911f}, 89.6f);
 
 	PbrMaterial brick(pbr_program,
-					 textureManager.Get("textures/brickAlbedo.png"),
-					 textureManager.Get("textures/brickNormalMap.png"),
-					 textureManager.Get("textures/brickMetallic.png"),
-					 textureManager.Get("textures/brickRoughness.png"),
-					 textureManager.Get("textures/brickAO.png")
+					 Engine::textureManager.Get("textures/brickAlbedo.png"),
+					 Engine::textureManager.Get("textures/brickNormalMap.png"),
+					 Engine::textureManager.Get("textures/brickMetallic.png"),
+					 Engine::textureManager.Get("textures/brickRoughness.png"),
+					 Engine::textureManager.Get("textures/brickAO.png")
 					);
 
 	PbrMaterial wood(pbr_program,
-					 textureManager.Get("textures/woodAlbedo.png"),
-					 textureManager.Get("textures/woodNormalMap.png"),
-					 textureManager.Get("textures/woodMetallic.png"),
-					 textureManager.Get("textures/woodRoughness.png"),
-					 textureManager.Get("textures/woodAO.png")
-					);
-
-			
-	SpotLight light(program, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.7, 0.7, 0.0}, {0.0f, 25.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 30.0f);
-	light.setAttenuation(1.0f);
-	light.SetInnerUniforms();
-	
+					 Engine::textureManager.Get("textures/woodAlbedo.png"),
+					 Engine::textureManager.Get("textures/woodNormalMap.png"),
+					 Engine::textureManager.Get("textures/woodMetallic.png"),
+					 Engine::textureManager.Get("textures/woodRoughness.png"),
+					 Engine::textureManager.Get("textures/woodAO.png")
+					);	
 
 	entt::registry registry;
-
-	/*
-	Mesh dragon_mesh = { {dragonGeo, &ruby} };
-	Mesh dragon_mesh2 = { {dragonGeo, &silver} };
-	Mesh cube_mesh = { {cubeGeo, &emerald} };
-	Mesh sphere_mesh = { {sphereGeo, &brick} };
-
-	auto dragon = registry.create();
-	auto dragon2 = registry.create();
-	auto cube = registry.create();
-	auto sphere = registry.create(); 
-
-	Transform dragon_transform;
-	dragon_transform.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
-	dragon_transform.Translate({-7.0f, 0.0f, 0.0f});
-
-	Transform dragon_transform2;
-	dragon_transform2.Rotate({0.0f, 1.0f, 0.0f}, 90.0f);
-	dragon_transform2.Translate({7.0f, 0.0f, 0.0f});
-	*/
 
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
+	glm::vec3 colors[9];
+	colors[0] = {1.0f , 0.0f, 0.0f};
+	colors[1] = {0.0f , 1.0f, 0.0f};
+	colors[2] = {0.0f , 0.0f, 1.0f};
+	colors[3] = {1.0f , 1.0f, 0.0f};
+	colors[4] = {1.0f , 0.0f, 1.0f};
+	colors[5] = {0.0f , 1.0f, 1.0f};
+	colors[6] = {1.0f , 1.0f, 1.0f};
+	colors[7] = {1.0f , 1.0f, 0.0f};
+	colors[8] = {1.0f , 1.0f, 1.0f};
 
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
 			auto sphere = registry.create();
 			Transform sphere_transform;
 			sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*2) - 5.0f});
+
+			PointLight pl(colors[3*i+j], {static_cast<float>(i*3 - 5.0f), 4.0f, static_cast<float>(j*2) - 5.0f}, 5.0f);
+			pl.SetAttenuation(0.0f, 0.0f, 2.0f);
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);
+			registry.assign<PointLight>(sphere, pl);
 		}
 	}
+
 	auto cube = registry.create();
 	Transform cube_transform;
-
-	/*
-	cube_transform.Scale({34.0f, 0.15f, 35.0f});
-
-	Transform sphere_transform;
-	sphere_transform.Translate({0.0f, 3.0f, 0.0f});
-	sphere_transform.Rotate({1.0f, 0.0f, 0.0f}, 45);
-
-	registry.assign<Mesh>(dragon, std::move(dragon_mesh) );
-	registry.assign<Transform>(dragon, std::move(dragon_transform));
-	registry.assign<Mesh>(dragon2, std::move(dragon_mesh2) );
-	registry.assign<Transform>(dragon2, std::move(dragon_transform2));
-	*/
 
 	cube_transform.Translate({7.0f, 0.0f, 7.0f});
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
-	//registry.assign<Mesh>(sphere, std::move(sphere_mesh));
-	//registry.assign<Transform>(sphere, std::move(sphere_transform));
 	
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)

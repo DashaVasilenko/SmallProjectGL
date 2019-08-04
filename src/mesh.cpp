@@ -1,17 +1,17 @@
 #include "mesh.h"
 
-SubMesh::SubMesh(const Geometry* geometry, const Material* material) {
+SubMesh::SubMesh(const Geometry* geometry, Material* material) {
     this->geometry = geometry;
     this->material = material;
 }
 
-void SubMesh::Draw() const {
+void SubMesh::Draw() {
     material->SetInnerUniforms();
     geometry->Draw();
 }
 
-void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) const {
-    for (const auto& subMesh: subMeshes) {
+void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) {
+    for (auto& subMesh: subMeshes) {
         auto material = subMesh.GetMaterial();
         material->Bind();
         material->SetProjectionMatrix(projection);

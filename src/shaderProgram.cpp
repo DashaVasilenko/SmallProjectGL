@@ -3,9 +3,6 @@
 #include <fstream>
 #include <streambuf>
 
-std::string& ShaderProgram::operator[] (const GLenum& shader_type) {
-    return mapSources[shader_type];
-}
 
 void ShaderProgram::Load(const std::string& fileName) {
     std::ifstream input(fileName);
@@ -91,72 +88,139 @@ void ShaderProgram::Run() const {
     glUseProgram(descriptor); // использование созданной программы
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix) const {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-    if (location == -1) {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
+void ShaderProgram::SetUniform(const std::string& name, const glm::mat4& matrix) {
+   GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
     }
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
+    }
+     
+    if (location != -1) {
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+    }
+    else {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+    }
+
     // обработка ошибок!!!
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::mat3& matrix) const {
+void ShaderProgram::SetUniform(const std::string& name, const glm::mat3& matrix) {
     // получить индекс формы (переменная программы-шейдера, название формы, определенной внутри этой программы)
-    GLint location = glGetUniformLocation(descriptor, name);   
-    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)); // установка значения формы
-    if (location == -1) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
+    }
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
+    }
+     
+    if (location != -1) {
+        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)); // установка значения формы
+    }
+    else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
+    }
+
+    // обработка ошибок!!!
+}
+
+void ShaderProgram::SetUniform(const std::string& name, const glm::vec4& vector) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
+    }
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
+    }
+
+    if (location != -1) {
+        glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+    }
+    else {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+    }
+
+    // обработка ошибок!!!
+}
+
+void ShaderProgram::SetUniform(const std::string& name, const glm::vec3& vector) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
+    }
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
+    }
+
+    if (location != -1) {
+        glUniform3f(location, vector.x, vector.y, vector.z);
+    }
+    else {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
     // обработка ошибок!!!
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::vec4& vector) const {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
-    if (location == -1) {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
+void ShaderProgram::SetUniform(const std::string& name, const glm::vec2& vector) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
     }
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
+    }
+    
+    if (location != -1) {
+        glUniform2f(location, vector.x, vector.y);
+    }
+    else {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+    }
+
     // обработка ошибок!!!
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::vec3& vector) const {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniform3f(location, vector.x, vector.y, vector.z);
-    if (location == -1) {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
+void ShaderProgram::SetUniform(const std::string& name, float value) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
     }
-    // обработка ошибок!!!
-}
-
-void ShaderProgram::SetUniform(const char* name, const glm::vec2& vector) const {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniform2f(location, vector.x, vector.y);
-    if (location == -1) {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
     }
-    // обработка ошибок!!!
-}
 
-void ShaderProgram::SetUniform(const char* name, float value) const {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniform1f(location, value);
-    if (location == -1) {
+    if (location != -1) {
+        glUniform1f(location, value);
+    }
+    else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
     }
 }
 
-void ShaderProgram::SetUniform(const char* name, int value) const {
-    GLint location = glGetUniformLocation(descriptor, name);
-    glUniform1i(location, value);
-    if (location == -1) {
+void ShaderProgram::SetUniform(const std::string& name, int value) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
+    }
+    else {
+        location = glGetUniformLocation(descriptor, name.c_str()); 
+        uniformCache[name] = location;
+    }
+   
+    if (location != -1) {
+        glUniform1i(location, value);
+    }
+    else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
-        exit(EXIT_FAILURE);
     }
 }
 

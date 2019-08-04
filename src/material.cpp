@@ -1,6 +1,6 @@
 #include "material.h"
 
-void Material::SetProjectionMatrix(const glm::mat4& projection) const {
+void Material::SetProjectionMatrix(const glm::mat4& projection) {
     shaderProgram->SetUniform("Projection", projection); // перегоняет в координаты clip space;
 }
 
@@ -17,7 +17,7 @@ void Material::SetNormalMatrix(const glm::mat3& normalMatrix) const {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-PhongMaterial::PhongMaterial(const ShaderProgram* shaderProgram, const glm::vec3& kA, const glm::vec3& kD, const glm::vec3& kS, float s) {
+PhongMaterial::PhongMaterial(ShaderProgram* shaderProgram, const glm::vec3& kA, const glm::vec3& kD, const glm::vec3& kS, float s) {
     this->shaderProgram = shaderProgram;
     this->ambientColor = kA;
     this->diffuseColor = kD;
@@ -25,7 +25,7 @@ PhongMaterial::PhongMaterial(const ShaderProgram* shaderProgram, const glm::vec3
     this->shininess = s;
 }
 
-void PhongMaterial::SetInnerUniforms() const {
+void PhongMaterial::SetInnerUniforms() {
     shaderProgram->SetUniform("material.ambientColor", ambientColor);
     shaderProgram->SetUniform("material.diffuseColor", diffuseColor);
     shaderProgram->SetUniform("material.specularColor", specularColor);
@@ -34,7 +34,7 @@ void PhongMaterial::SetInnerUniforms() const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 PhongTextureMaterial::PhongTextureMaterial(
-                        const ShaderProgram* shaderProgram, 
+                        ShaderProgram* shaderProgram, 
                         const Texture* ambientColor,
                         const Texture* diffuseColor, 
                         const Texture* specularColor,
@@ -55,7 +55,7 @@ PhongTextureMaterial::PhongTextureMaterial(
     shaderProgram->SetUniform("normalMap", 3);
 }
 
-void PhongTextureMaterial::SetInnerUniforms() const {
+void PhongTextureMaterial::SetInnerUniforms() {
     glActiveTexture(GL_TEXTURE0);
     ambientMap->Bind();
 
@@ -73,7 +73,7 @@ void PhongTextureMaterial::SetInnerUniforms() const {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 PbrMaterial::PbrMaterial(
-                        const ShaderProgram* shaderProgram, 
+                        ShaderProgram* shaderProgram, 
                         const Texture* albedo,
                         const Texture* normals, 
                         const Texture* metallic,
@@ -95,7 +95,7 @@ PbrMaterial::PbrMaterial(
     shaderProgram->SetUniform("aoMap", 4);
 }
 
-void PbrMaterial::SetInnerUniforms() const {
+void PbrMaterial::SetInnerUniforms() {
     glActiveTexture(GL_TEXTURE0);
     albedoMap->Bind();
 

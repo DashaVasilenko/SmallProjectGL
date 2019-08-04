@@ -7,19 +7,19 @@
 class Material {
 public:
     inline void Bind() const { shaderProgram->Run(); }
-    virtual void SetInnerUniforms() const = 0;
-    void SetProjectionMatrix(const glm::mat4&) const;
+    virtual void SetInnerUniforms() = 0;
+    void SetProjectionMatrix(const glm::mat4&);
     void SetViewMatrix(const glm::mat4&) const;
     void SetModelMatrix(const glm::mat4&) const;
     void SetNormalMatrix(const glm::mat3&) const;
 protected:
-    const ShaderProgram* shaderProgram;
+    ShaderProgram* shaderProgram;
 };
 
 class PhongMaterial: public Material{
 public:
-    PhongMaterial(const ShaderProgram* shaderProgram, const glm::vec3&, const glm::vec3&, const glm::vec3&, float);
-    void SetInnerUniforms() const override;
+    PhongMaterial(ShaderProgram* shaderProgram, const glm::vec3&, const glm::vec3&, const glm::vec3&, float);
+    void SetInnerUniforms() override;
 private:
     glm::vec3 ambientColor;
     glm::vec3 diffuseColor;
@@ -29,8 +29,8 @@ private:
 
 class PhongTextureMaterial: public Material{
 public:
-    PhongTextureMaterial(const ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, float);
-    void SetInnerUniforms() const override;
+    PhongTextureMaterial(ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, float);
+    void SetInnerUniforms() override;
 private:
     const Texture* ambientMap;
     const Texture* diffuseMap;
@@ -41,8 +41,8 @@ private:
 
 class PbrMaterial: public Material{
 public:
-    PbrMaterial(const ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, const Texture*);
-    void SetInnerUniforms() const override;
+    PbrMaterial(ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, const Texture*);
+    void SetInnerUniforms() override;
 private:
     const Texture* albedoMap;
     const Texture* normalMap;

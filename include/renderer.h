@@ -14,13 +14,28 @@
 
 class Renderer {
 public:
-    void SetWidth(int);
-    void SetHeight(int);
     void SetFrameBuffer(GLuint);
     void SetActiveCamera(const Camera* camera);
     void AddMesh(const Mesh*);
-    void Init(const ShaderProgram*, const Geometry*);
+    void Init();
     void Update(entt::registry& registry);
+
+
+    static void SetWidth(int w) {
+        width = w;
+    }
+
+    static void SetHeight(int h) {
+        height = h;
+    }
+
+    static int GetWidth() {
+        return width;
+    }
+
+    static int GetHeight() {
+        return height;
+    }
 
     ConsoleFunction GetWireFrameFunc() { return std::bind(&Renderer::WireFrame, this, std::placeholders::_1); }
     ConsoleFunction GetViewBufferFunc() { return std::bind(&Renderer::ViewBuffer, this, std::placeholders::_1);}
@@ -30,15 +45,18 @@ private:
     bool ViewBuffer(const std::vector<std::string>& );
     glm::mat4 projection;
     const Camera* camera;
-    int width;
-    int height;
+   
 
     FrameBuffer fbo;
     GBuffer gbuffer;
-    const Geometry* quad_geometry;
-    const ShaderProgram* quad_program;
 
     unsigned int current_view_buffer;
+
+
+    static int width;
+    static int height;
 };
+
+
 
 #endif /* End of __RENDERER__ */

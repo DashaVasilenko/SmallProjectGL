@@ -7,18 +7,18 @@
 
 class SubMesh {
 public:
-    SubMesh(const Geometry* geometry, const Material* material);
-    const Material* GetMaterial() const { return material; }
-    void Draw() const;
+    SubMesh(const Geometry* geometry, Material* material);
+    Material* GetMaterial() { return material; }
+    void Draw();
 private:
     const Geometry* geometry;
-    const Material* material;
+    Material* material;
 };
 
 class Mesh {
 public:
     Mesh(const std::initializer_list<SubMesh>& t_subMeshes): subMeshes(t_subMeshes) {}
-    void Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) const;
+    void Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model);
 private:
     std::vector<SubMesh> subMeshes;
 };

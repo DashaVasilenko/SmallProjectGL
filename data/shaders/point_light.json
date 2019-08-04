@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/point_light_vertex.glsl",
+    "fragment": "glsl/point_light_pixel.glsl"
+}
