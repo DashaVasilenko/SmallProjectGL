@@ -11,6 +11,7 @@
 #include "geometry.h"
 #include "shaderProgram.h"
 #include "resourceManager.h"
+#include "engine.h"
 
 class Renderer {
 public:
@@ -53,7 +54,6 @@ private:
     glm::mat4 projection;
     const Camera* camera;
    
-
     FrameBuffer fbo;
     GBuffer gbuffer;
 

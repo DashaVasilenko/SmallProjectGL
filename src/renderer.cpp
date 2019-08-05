@@ -26,9 +26,8 @@ void Renderer::GeometryPass(entt::registry& registry) {
     glDepthMask(GL_TRUE); // только проход геометрии обновляет буффер глубины
     // включаем тест глубины чтобы яйки друг за другом рисовались без багов
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
     glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND); // выключаем блендинг
 
     // Проход геометрии
     glm::mat4 viewMatrix = camera->GetViewMatrix();
@@ -49,7 +48,7 @@ void Renderer::GeometryPass(entt::registry& registry) {
 
 void Renderer::BeginLightPass() {
     gbuffer.LightPassBind();
-    glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+    glStencilFunc(GL_NOTEQUAL, 0x00, 0xFF);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
@@ -67,9 +66,11 @@ void Renderer::EndLightPass() {
 void Renderer::BeginStencilPass() {
     gbuffer.StencilPassBind();
     glEnable(GL_DEPTH_TEST);
+
     glDisable(GL_CULL_FACE);
+    
     glClear(GL_STENCIL_BUFFER_BIT);
-    glStencilFunc(GL_ALWAYS, 0, 0);
+    glStencilFunc(GL_ALWAYS, 0x00, 0x01); // bug was here!
     glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
     glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 }
@@ -85,10 +86,8 @@ void Renderer::LightPass(entt::registry& registry) {
         pl.StencilPass(projection, viewMatrix);
 
         BeginLightPass();
-       
-        pl.SetInnerUniforms();        
+        pl.SetInnerUniforms();
         pl.Draw(projection, viewMatrix);
-
         EndLightPass();   
     }
     glDisable(GL_STENCIL_TEST);
@@ -96,9 +95,12 @@ void Renderer::LightPass(entt::registry& registry) {
 }
 
 void Renderer::FinalPass() {
+
     gbuffer.FinalPassBind();
     glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
                       0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    gbuffer.Unbind();
+
 }
 
 void Renderer::Update(entt::registry& registry) {

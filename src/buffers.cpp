@@ -236,12 +236,9 @@ void GBuffer::BufferInit(int width, int  height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, result, 0);
-
-    // укажем OpenGL, какие буферы мы будем использовать при рендеринге
-    unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-    glDrawBuffers(4, attachments);
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
+
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);  
@@ -282,8 +279,9 @@ void GBuffer::LightPassBind() const {
 
 
 void GBuffer::FinalPassBind() const {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glDrawBuffer(GL_COLOR_ATTACHMENT4);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glReadBuffer(GL_COLOR_ATTACHMENT4);
 }
 
