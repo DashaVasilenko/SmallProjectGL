@@ -70,7 +70,7 @@ void Renderer::BeginStencilPass() {
     glDisable(GL_CULL_FACE);
     
     glClear(GL_STENCIL_BUFFER_BIT);
-    glStencilFunc(GL_ALWAYS, 0x00, 0x01); // bug was here!
+    glStencilFunc(GL_ALWAYS, 0, 0);
     glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
     glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 }
@@ -82,6 +82,7 @@ void Renderer::LightPass(entt::registry& registry) {
     auto lights = registry.view<PointLight>();
     for (auto entity: lights) {
         auto& pl = lights.get(entity);
+        // Прежде чем рисовать свет нужно отбросить все что не попадает в сферу
         BeginStencilPass();
         pl.StencilPass(projection, viewMatrix);
 
@@ -105,7 +106,9 @@ void Renderer::FinalPass() {
 
 void Renderer::Update(entt::registry& registry) {
     gbuffer.StartFrame();
+    // Рисуем позиции нормали альбедо мрао в color_attachment 0 1 2 3
     GeometryPass(registry);
+    // Рисуем финальный результат в color_attachment4
     LightPass(registry);
     FinalPass();
 }

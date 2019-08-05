@@ -1,4 +1,4 @@
 {
     "vertex": "glsl/stencil_vertex.glsl",
-    "fragment": "glsl/stencil_fragment.glsl"
+    "fragment": "glsl/stencil_pixel.glsl"
 }
