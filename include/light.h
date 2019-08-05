@@ -11,6 +11,7 @@ public:
     virtual void SetInnerUniforms() = 0;
     virtual void Draw(const glm::mat4& projection, const glm::mat4& view) = 0;
     virtual void StencilPass(const glm::mat4& projection, const glm::mat4& view) = 0;
+    virtual ~Light(){} 
 protected:
     /* Теперь у света есть своя геометрия */
     Geometry* geometry;
@@ -40,6 +41,7 @@ public:
     void SetInnerUniforms() override;
     void Draw(const glm::mat4&, const glm::mat4&) override;
     void StencilPass(const glm::mat4&, const glm::mat4&) override;
+    virtual ~PointLight(){}
 private:
 
     /* по дефолту свет затухает с квадратичной скоростью */
