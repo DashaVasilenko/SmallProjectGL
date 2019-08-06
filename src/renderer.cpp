@@ -54,8 +54,7 @@ void Renderer::BeginLightPass() {
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_ONE, GL_ONE);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+    
 }
 
 void Renderer::EndLightPass() {
@@ -76,9 +75,9 @@ void Renderer::BeginStencilPass() {
 }
 
 void Renderer::LightPass(entt::registry& registry) {
+    glm::mat4 viewMatrix = camera->GetViewMatrix();
 
     glEnable(GL_STENCIL_TEST);
-    glm::mat4 viewMatrix = camera->GetViewMatrix();
     auto lights = registry.view<PointLight>();
     for (auto entity: lights) {
         auto& pl = lights.get(entity);
@@ -87,11 +86,43 @@ void Renderer::LightPass(entt::registry& registry) {
         pl.StencilPass(projection, viewMatrix);
 
         BeginLightPass();
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
         pl.SetInnerUniforms();
         pl.Draw(projection, viewMatrix);
         EndLightPass();   
     }
+
+    auto spotlights = registry.view<SpotLight>();
+    for (auto entity: spotlights) {
+        auto& sl = spotlights.get(entity);
+
+        BeginStencilPass();
+        sl.StencilPass(projection, viewMatrix);
+
+        BeginLightPass();
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+        sl.SetInnerUniforms();
+        sl.Draw(projection, viewMatrix);
+        EndLightPass();
+    }
+
     glDisable(GL_STENCIL_TEST);
+
+    auto dlights = registry.view<DirectionalLight>();
+
+    for (auto entity: dlights) {
+        auto& dl = dlights.get(entity);
+
+        BeginLightPass();
+        dl.SetInnerUniforms();
+        dl.Draw(viewMatrix);
+        glDisable(GL_BLEND);
+
+        //EndLightPass();
+    }
+    
     // Here do directional light!
 }
 

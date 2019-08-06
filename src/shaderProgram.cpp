@@ -105,7 +105,7 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::mat4& matrix)
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 
     // обработка ошибок!!!
@@ -126,7 +126,7 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::mat3& matrix)
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)); // установка значения формы
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 
     // обработка ошибок!!!
@@ -146,7 +146,7 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec4& vector)
         glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 
     // обработка ошибок!!!
@@ -166,7 +166,7 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec3& vector)
         glUniform3f(location, vector.x, vector.y, vector.z);
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
     // обработка ошибок!!!
 }
@@ -185,7 +185,7 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec2& vector)
         glUniform2f(location, vector.x, vector.y);
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 
     // обработка ошибок!!!
@@ -205,7 +205,7 @@ void ShaderProgram::SetUniform(const std::string& name, float value) {
         glUniform1f(location, value);
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 }
 
@@ -223,7 +223,7 @@ void ShaderProgram::SetUniform(const std::string& name, int value) {
         glUniform1i(location, value);
     }
     else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
+        //std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 }
 

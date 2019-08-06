@@ -9,14 +9,12 @@
 class Light {
 public:
     virtual void SetInnerUniforms() = 0;
-    virtual void Draw(const glm::mat4& projection, const glm::mat4& view) = 0;
-    virtual void StencilPass(const glm::mat4& projection, const glm::mat4& view) = 0;
     virtual ~Light(){} 
 protected:
     /* Теперь у света есть своя геометрия */
     Geometry* geometry;
     ShaderProgram* shaderProgram;
-    ShaderProgram* stencilProgram;
+   
     glm::vec3 color;
     /* Позиции в WorldSpace*/
     glm::vec3 position_WS;
@@ -33,27 +31,52 @@ private:
 };*/
 
 
+class DirectionalLight : public Light{
+public:
+    DirectionalLight(const glm::vec3&, const glm::vec3&);
+    void SetInnerUniforms() override;
+    void Draw(const glm::mat4& view);
+    virtual ~DirectionalLight(){}
+private:
+    glm::vec3 direction;
+};
+
+
 class PointLight : public Light{
 public:
-    PointLight(const glm::vec3&, const glm::vec3&, float intensity = 100.0f);
+    PointLight(const glm::vec3&, const glm::vec3&, float intensity = 10.0f);
     void SetAttenuation(float k1, float k2, float k3); 
     void CalculateRadius();
     void SetInnerUniforms() override;
-    void Draw(const glm::mat4&, const glm::mat4&) override;
-    void StencilPass(const glm::mat4&, const glm::mat4&) override;
+    void Draw(const glm::mat4&, const glm::mat4&);
+    void StencilPass(const glm::mat4&, const glm::mat4&);
     virtual ~PointLight(){}
 private:
-
-    /* по дефолту свет затухает с квадратичной скоростью */
+    ShaderProgram* stencilProgram;
     glm::mat4 model = glm::mat4(1.0f);
-
+    /* по дефолту свет затухает с квадратичной скоростью */
     float Kc = 0.0f; // константный коэффициент
     float Kl = 0.0f; // линейный коэффициент
     float Kq = 1.0f; // квадратичный коэффициент
     float radius;
 };
 
+class SpotLight : public Light{
+public:
+    SpotLight(const glm::vec3& color, const glm::vec3& pos, const glm::vec3& dir, float angle, float intensity = 1.0f, float exponent = 15.0f);
+    void SetAttenuation(float k1) { assert(k1 >= 0); exponent = k1;  } // затухание света
+    void SetInnerUniforms() override;
+    void Draw(const glm::mat4& projection, const glm::mat4& view);
+    void StencilPass(const glm::mat4& projection, const glm::mat4& view);
+    virtual ~SpotLight() {}
 
+private:
+    ShaderProgram* stencilProgram;
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::vec3 direction;
+    float cutoff;
+    float exponent;
+};
 
 
 /*class SpotLight : public Light{

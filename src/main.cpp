@@ -12,9 +12,7 @@
 
 #include "entt/entt.hpp"
 
-
-float get_random()
-{
+float get_random() {
     static std::default_random_engine e;
     static std::uniform_real_distribution<float> dis(0, 1);
     return dis(e);
@@ -30,7 +28,6 @@ int main() {
 	SystemGUI gui;
 	gui.Init(window.GetPointer());
 	auto& console = gui.GetConsole();
-
 	
 	Renderer::SetWidth(window.GetWidth());
 	Renderer::SetHeight(window.GetHeight());
@@ -39,8 +36,6 @@ int main() {
 
 	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
 	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc());
-
-	
 
 	ShaderProgram* program = Engine::programManager.Get("data/shaders/phong.json");
 	ShaderProgram* pbr_program = Engine::programManager.Get("data/shaders/pbr.json");
@@ -69,13 +64,10 @@ int main() {
 					 Engine::textureManager.Get("textures/woodAO.png")
 					);	
 
-	entt::registry registry;
+	entt::registry registry; // библиотечная штука. почитать!!!
 
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
-
-	std::default_random_engine generator;
-	std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
@@ -85,21 +77,26 @@ int main() {
 			float r =  get_random();
 			float g = get_random();
 			float b = get_random();
-			PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 15.0f);
+			SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 100.0f);
+			//PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 15.0f);
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);
-			registry.assign<PointLight>(sphere, pl);
+			registry.assign<SpotLight>(sphere, sl);
+			//registry.assign<PointLight>(sphere, pl);
 		}
 	}
 
 	auto cube = registry.create();
 	Transform cube_transform;
+	DirectionalLight dl({1000.0f, 1000.0f, 1000.0f}, {1.0f, -1.0f, 0.0f});
+
 
 	cube_transform.Translate({7.0f, 0.0f, 7.0f});
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
-	
+	registry.assign<DirectionalLight>(cube, dl);
+
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());

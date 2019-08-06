@@ -1,16 +1,13 @@
-#version 330 // установка версии GLSL        
+#version 330 // установка версии GLSL
 
-uniform vec2 ScreenWidthHeight;       
+in vec2 outTexCoord;     
 
-struct PointLight {
+struct DirectionalLight {
     vec3 color; 
-    vec3 position;
-    float Kc;
-    float Kl;
-    float Kq;
+    vec3 direction;
 };
 
-uniform PointLight point_light;
+uniform DirectionalLight directional_light;
 
 uniform sampler2D positionMap;
 uniform sampler2D normalMap;
@@ -48,14 +45,10 @@ float GeometrySmith(vec3 normal, vec3 lightDir, vec3 inEye, float roughness) {
 } 
 
 vec4 PBR() {	
-    vec2 outTexCoord = gl_FragCoord.xy/ScreenWidthHeight;
 
     vec3 outPos = texture(positionMap, outTexCoord).rgb;
     vec3 outEye = normalize(outPos);
-    vec3 light_direction_unnormalized = point_light.position - outPos;
-    float distance = length(light_direction_unnormalized);
-    float attenuation = 1.0 / (point_light.Kc + distance*(point_light.Kl + point_light.Kq*distance)); //затухание света
-    vec3 light_direction = normalize(light_direction_unnormalized);
+    vec3 light_direction = directional_light.direction;
 
     vec3 normal = texture(normalMap, outTexCoord).rgb;
     vec3 albedo = texture(albedoMap, outTexCoord).rgb;
@@ -92,7 +85,7 @@ vec4 PBR() {
             
     // прибавляем результат к исходящей энергетической яркости Lo
     float NdotL = max(dot(normal, light_direction), 0.0);     
-    vec3 radiance = point_light.color*attenuation*NdotL;
+    vec3 radiance = directional_light.color*NdotL;
 
     Lo += (kD*albedo/PI + specular) * radiance * NdotL;   
   
