@@ -77,18 +77,22 @@ int main() {
 			float r =  get_random();
 			float g = get_random();
 			float b = get_random();
-			SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 100.0f);
-			//PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 15.0f);
+			SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 10.0f);
+			PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 15.0f);
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);
-			registry.assign<SpotLight>(sphere, sl);
-			//registry.assign<PointLight>(sphere, pl);
+			if ( j%2 == 0) {
+				registry.assign<SpotLight>(sphere, sl);
+			}
+			else{
+				registry.assign<PointLight>(sphere, pl);
+			}
 		}
 	}
 
 	auto cube = registry.create();
 	Transform cube_transform;
-	DirectionalLight dl({1000.0f, 1000.0f, 1000.0f}, {1.0f, -1.0f, 0.0f});
+	DirectionalLight dl({10.0f, 10.0f, 10.0f}, {1.0f, -1.0f, 0.0f});
 
 
 	cube_transform.Translate({7.0f, 0.0f, 7.0f});

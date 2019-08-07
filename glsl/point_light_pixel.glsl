@@ -58,8 +58,8 @@ vec4 PBR() {
     vec3 light_direction = normalize(light_direction_unnormalized);
 
     vec3 normal = texture(normalMap, outTexCoord).rgb;
-    vec3 albedo = texture(albedoMap, outTexCoord).rgb;
-    //vec3 albedo = pow(texture(albedoMap, outTexCoord).rgb, vec3(2.2));
+    //vec3 albedo = texture(albedoMap, outTexCoord).rgb;
+    vec3 albedo = pow(texture(albedoMap, outTexCoord).rgb, vec3(2.2));
     // выборка вектора из карты нормалей с областью значений [0,1] и перевод вектора нормали в интервал [-1,1]
    
     float metallic = texture(mraoMap, outTexCoord).r;
@@ -102,7 +102,7 @@ vec4 PBR() {
 	
     // чтобы избежать потери HDR величин, перед гамма-коррекцией необходимо провести тональную компрессию
     color = color / (color + vec3(1.0));
-    //color = pow(color, vec3(1.0/2.2));  
+    color = pow(color, vec3(1.0/2.2));  
    
     return vec4(color, 1.0);
     //return vec4(texture(albedoMap, outTexCoord).rgb, 1.0);

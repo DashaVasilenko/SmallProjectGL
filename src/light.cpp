@@ -32,7 +32,7 @@ DirectionalLight::DirectionalLight(const glm::vec3& color, const glm::vec3& dir)
 
 void DirectionalLight::SetInnerUniforms() {
     shaderProgram->Run();
-    shaderProgram->SetUniform("direct_light.color", color);
+    shaderProgram->SetUniform("directional_light.color", color);
 }
 
 void DirectionalLight::Draw(const glm::mat4& view) {

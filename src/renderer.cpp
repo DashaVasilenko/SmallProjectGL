@@ -109,7 +109,7 @@ void Renderer::LightPass(entt::registry& registry) {
     }
 
     glDisable(GL_STENCIL_TEST);
-
+    glDisable(GL_CULL_FACE);
     auto dlights = registry.view<DirectionalLight>();
 
     for (auto entity: dlights) {
