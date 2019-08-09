@@ -1,6 +1,11 @@
 #include "system_gui.h"
 #include "inputSystem.h"
 
+void DirectionalLightMenu::Render() {
+     ImGui::Begin("Light Menu", NULL);
+     ImGui::End();
+}
+
 void SystemGUI::Init(GLFWwindow* window) {
     const char* glsl_version = "#version 150";
 
@@ -15,6 +20,7 @@ void SystemGUI::Init(GLFWwindow* window) {
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     console = std::make_unique<Console>();
+    lightMenu = std::make_unique<DirectionalLightMenu>();
 }
 
 void SystemGUI::Update() {
@@ -22,7 +28,8 @@ void SystemGUI::Update() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     if (InputSystem::draw_gui) {    
-        console->Render();   
+        console->Render();
+        lightMenu->Render();   
     }
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

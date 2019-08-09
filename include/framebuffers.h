@@ -48,7 +48,7 @@ public:
 private:
     GLuint descriptor;
     unsigned int depthMap;
-    unsigned int size = 512; // размер мапы
+    unsigned int size = 1024; // размер мапы
 };
 
 #endif /* End of __FRAMEBUFFERS__ */

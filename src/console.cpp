@@ -66,8 +66,8 @@ void Console::Render() {
         }
     }
 
-    ImGui::SetItemDefaultFocus();
-    ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+    //ImGui::SetItemDefaultFocus();
+    //ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 
 	ImGui::End();
 

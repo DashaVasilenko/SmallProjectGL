@@ -47,7 +47,7 @@ void Renderer::GeometryPass(entt::registry& registry) {
 
     const Camera* camera_save = camera;
 
-
+    glCullFace(GL_FRONT);
     for (auto entity: dir_lights) {
         auto& light = dir_lights.get(entity);
         cam.SetPosition(glm::vec3(-10.0f, 10.0f, 10.0f));
@@ -61,6 +61,7 @@ void Renderer::GeometryPass(entt::registry& registry) {
             mesh.DepthPass(projection, cam.GetViewMatrix(), transform.GetModelMatrix());
         }
     }
+    glCullFace(GL_BACK);
     SetActiveCamera(camera_save);
     glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
 

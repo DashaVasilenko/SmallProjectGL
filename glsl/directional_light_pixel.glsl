@@ -46,7 +46,7 @@ float GeometrySmith(vec3 normal, vec3 lightDir, vec3 inEye, float roughness) {
     return ggx1*ggx2;
 } 
 
-float calculateShadow(vec4 outPos_LS) {
+float calculateShadow(vec4 outPos_LS, vec3 normal, vec3 light_dir ) {
     // perform perspective divide
     vec3 projCoords = outPos_LS.xyz / outPos_LS.w;
     // transform to [0,1] range
@@ -56,7 +56,9 @@ float calculateShadow(vec4 outPos_LS) {
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+    float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
+
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
     return shadow;
 }
@@ -104,7 +106,7 @@ vec4 PBR() {
     float NdotL = max(dot(normal, light_direction), 0.0);     
     vec3 radiance = directional_light.color*NdotL;
 
-    float shadow = calculateShadow(outPos_LS);
+    float shadow = calculateShadow(outPos_LS, normal, light_direction);
     vec3 Lo = (1.0f - shadow)*(kD*albedo/PI + specular) * radiance * NdotL;   
   
     // добавляем подобие фоновой компоненты освещения к результатам расчета непосредственного источника света  
