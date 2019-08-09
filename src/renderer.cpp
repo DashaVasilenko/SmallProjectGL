@@ -13,37 +13,79 @@ void Renderer::SetActiveCamera(const Camera* camera) {
     this->camera = camera;
     this->projection = camera->GetProjectionMatrix();
 }
- 
+
+
 void Renderer::Init() {
 	glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
     gbuffer.BufferInit(Renderer::width, Renderer::height);
+    shadowbuffer.BufferInit(Renderer::width, Renderer::height);
     current_view_buffer = gbuffer.GetAlbedoDescriptor();
 }
 
 void Renderer::GeometryPass(entt::registry& registry) {
-    // Бинд буффера геометрии, теперь рисуем всё в него    
+    // Бинд буффера геометрии, теперь рисуем всё в него  
+
+
+
+    glm::mat4 viewMatrix = camera->GetViewMatrix();
+    auto meshes = registry.view<Mesh, Transform>();
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE); 
+
+
+    // Заполнение карты теней
+    glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize()); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
+    shadowbuffer.Bind();
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glDrawBuffer(GL_NONE); // Никакого рендеринга
+   
+    auto dir_lights = registry.view<DirectionalLight>();
+    OrthoCamera cam;
+    cam.SetAspect(width/height);
+    cam.SetProjection(-30.0f*cam.GetAspect(), 30.0f*cam.GetAspect(), -30.0f, 30.0f, 0.1f, 100.0f);
+
+    const Camera* camera_save = camera;
+
+
+    for (auto entity: dir_lights) {
+        auto& light = dir_lights.get(entity);
+        cam.SetPosition(glm::vec3(-10.0f, 10.0f, 10.0f));
+        cam.SetFront(-light.GetDirection());
+        SetActiveCamera(&cam);
+        lightMatrix = projection*cam.GetViewMatrix();
+
+        for (auto entity: meshes) {
+            auto& mesh = meshes.get<Mesh>(entity);
+            auto& transform = meshes.get<Transform>(entity);
+            mesh.DepthPass(projection, cam.GetViewMatrix(), transform.GetModelMatrix());
+        }
+    }
+    SetActiveCamera(camera_save);
+    glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
+
+
+
     gbuffer.GeometryPassBind();
-    glDepthMask(GL_TRUE); // только проход геометрии обновляет буффер глубины
     // включаем тест глубины чтобы яйки друг за другом рисовались без багов
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
-    glEnable(GL_DEPTH_TEST);
+    //
 
-    // Проход геометрии
-    glm::mat4 viewMatrix = camera->GetViewMatrix();
-    auto meshes = registry.view<Mesh, Transform>();
+    
     for (auto entity: meshes) {
         auto& mesh = meshes.get<Mesh>(entity);
         auto& transform = meshes.get<Transform>(entity);
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
 
-    glDepthMask(GL_FALSE); // запрещаем менять Depth buffer
+     
+    
+    
 
-    // Копируем буффер глубины из gBuffer -> screen
-    //glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.GetDescriptor()); // откуда с джибуффера
-    //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // куда в экран
-    //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height, 0, 0, Renderer::width, Renderer::height, GL_DEPTH_BUFFER_BIT, GL_NEAREST); // копируем
+    glDepthMask(GL_FALSE);
+
+    // Конец заполнения карты теней
 }
 
 void Renderer::BeginLightPass() {
@@ -53,8 +95,6 @@ void Renderer::BeginLightPass() {
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_ONE, GL_ONE);
-
-    
 }
 
 void Renderer::EndLightPass() {
@@ -116,8 +156,11 @@ void Renderer::LightPass(entt::registry& registry) {
         auto& dl = dlights.get(entity);
 
         BeginLightPass();
+        shadowbuffer.Bind();
+        shadowbuffer.LightPassBind();
+        gbuffer.Bind();
         dl.SetInnerUniforms();
-        dl.Draw(viewMatrix);
+        dl.Draw(viewMatrix, lightMatrix); // set uniform ViewToLightSpace
         glDisable(GL_BLEND);
 
         //EndLightPass();
@@ -133,6 +176,20 @@ void Renderer::FinalPass() {
                       0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     gbuffer.Unbind();
 
+    /*shadowbuffer.Bind();
+    shadowbuffer.BindDepth();
+    shadowbuffer.Unbind();
+
+
+    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/quad.json");
+    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
+
+    quadProgram->Run();
+    quadProgram->SetUniform("map", 0);
+    quad->Draw(); 
+
+    
+    shadowbuffer.Unbind();*/
 }
 
 void Renderer::Update(entt::registry& registry) {

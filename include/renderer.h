@@ -29,22 +29,10 @@ public:
     void StencilPass(entt::registry& registry);
     void FinalPass();
 
-
-    static void SetWidth(int w) {
-        width = w;
-    }
-
-    static void SetHeight(int h) {
-        height = h;
-    }
-
-    static int GetWidth() {
-        return width;
-    }
-
-    static int GetHeight() {
-        return height;
-    }
+    static void SetWidth(int w) { width = w; }
+    static void SetHeight(int h) { height = h; }
+    static int GetWidth() { return width; }
+    static int GetHeight() { return height; }
 
     ConsoleFunction GetWireFrameFunc() { return std::bind(&Renderer::WireFrame, this, std::placeholders::_1); }
     ConsoleFunction GetViewBufferFunc() { return std::bind(&Renderer::ViewBuffer, this, std::placeholders::_1);}
@@ -53,18 +41,17 @@ private:
     bool WireFrame(const std::vector<std::string>& );
     bool ViewBuffer(const std::vector<std::string>& );
     glm::mat4 projection;
+    glm::mat4 lightMatrix;
     const Camera* camera;
    
     FrameBuffer fbo;
     GBuffer gbuffer;
+    ShadowBuffer shadowbuffer;
 
     unsigned int current_view_buffer;
-
 
     static int width;
     static int height;
 };
-
-
 
 #endif /* End of __RENDERER__ */

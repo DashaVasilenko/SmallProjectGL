@@ -7,5 +7,7 @@ uniform sampler2D map;
 out vec4 outColor;
 
 void main() {
-    outColor = texture(map, outTexCoord);
+    float value = texture(map, outTexCoord).r;
+    outColor = vec4(vec3(value), 1.0f);
+    
 }

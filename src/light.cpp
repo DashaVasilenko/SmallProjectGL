@@ -21,13 +21,15 @@ DirectionalLight::DirectionalLight(const glm::vec3& color, const glm::vec3& dir)
     this->geometry = Engine::geometryManager.Get("data/quad.obj");
 
     this->color = color;
-    this->direction = -dir;
+    this->direction = -glm::normalize(dir);
     this->shaderProgram->Run();
     
     this->shaderProgram->SetUniform("positionMap", 0);
     this->shaderProgram->SetUniform("normalMap", 1);
     this->shaderProgram->SetUniform("albedoMap", 2);
     this->shaderProgram->SetUniform("mraoMap", 3);
+    this->shaderProgram->SetUniform("depthMap", 4);
+
 }
 
 void DirectionalLight::SetInnerUniforms() {
@@ -35,8 +37,9 @@ void DirectionalLight::SetInnerUniforms() {
     shaderProgram->SetUniform("directional_light.color", color);
 }
 
-void DirectionalLight::Draw(const glm::mat4& view) {
-    shaderProgram->SetUniform("directional_light.direction", glm::normalize(glm::vec3(view*glm::vec4(direction, 0.0f))));   
+void DirectionalLight::Draw(const glm::mat4& view, const glm::mat4& light) {
+    shaderProgram->SetUniform("directional_light.direction", glm::normalize(glm::vec3(view*glm::vec4(direction, 0.0f)))); 
+    shaderProgram->SetUniform("ViewToLightSpace", light*glm::inverse(view));  
 
     geometry->Draw();
 }

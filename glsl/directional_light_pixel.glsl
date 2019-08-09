@@ -8,11 +8,13 @@ struct DirectionalLight {
 };
 
 uniform DirectionalLight directional_light;
+uniform mat4 ViewToLightSpace; 
 
 uniform sampler2D positionMap;
 uniform sampler2D normalMap;
 uniform sampler2D albedoMap;
 uniform sampler2D mraoMap;
+uniform sampler2D depthMap; 
 
 out vec4 outColor;              
 
@@ -44,9 +46,25 @@ float GeometrySmith(vec3 normal, vec3 lightDir, vec3 inEye, float roughness) {
     return ggx1*ggx2;
 } 
 
+float calculateShadow(vec4 outPos_LS) {
+    // perform perspective divide
+    vec3 projCoords = outPos_LS.xyz / outPos_LS.w;
+    // transform to [0,1] range
+    projCoords = projCoords*0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(depthMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 vec4 PBR() {	
 
     vec3 outPos = texture(positionMap, outTexCoord).rgb;
+    vec4 outPos_LS = ViewToLightSpace*vec4(outPos, 1.0f);
     vec3 outEye = normalize(outPos);
     vec3 light_direction = directional_light.direction;
 
@@ -65,8 +83,7 @@ vec4 PBR() {
     F0 = mix(F0, albedo, metallic); // смешиваем, если metallic будет 0.0, то получим 0.04 для неметаллов
 	           
     // выражение отражающей способности
-    vec3 Lo = vec3(0.0);
-    // for(int i = 0; i < cntLight; ++i) // цикл по количеству источников (расчет энергетической яркости для каждого источника света)
+
     vec3 h = normalize(eye + light_direction); // медианный вектор
  
     // Cook-Torrance BRDF
@@ -87,11 +104,12 @@ vec4 PBR() {
     float NdotL = max(dot(normal, light_direction), 0.0);     
     vec3 radiance = directional_light.color*NdotL;
 
-    Lo += (kD*albedo/PI + specular) * radiance * NdotL;   
+    float shadow = calculateShadow(outPos_LS);
+    vec3 Lo = (1.0f - shadow)*(kD*albedo/PI + specular) * radiance * NdotL;   
   
     // добавляем подобие фоновой компоненты освещения к результатам расчета непосредственного источника света  
     vec3 ambient = vec3(0.03) * albedo * ao;
-    vec3 color = Lo;
+    vec3 color = Lo + ambient;
 	
     // чтобы избежать потери HDR величин, перед гамма-коррекцией необходимо провести тональную компрессию
     color = color / (color + vec3(1.0));

@@ -9,6 +9,7 @@ public:
     GLuint GetDescriptor() { return descriptor; }
     void BufferInit(int width, int  height);
     void StartFrame() const;
+    void Bind() const;
     void GeometryPassBind() const;
     void StencilPassBind() const;
     void LightPassBind() const;
@@ -29,6 +30,25 @@ private:
     unsigned int metallRoughAO;
     unsigned int result;
     unsigned int rbo;
+};
+
+class ShadowBuffer {
+public:
+    ShadowBuffer();
+    GLuint GetDescriptor() { return descriptor; }
+    void BufferInit(int width, int  height);
+    void Bind();
+    void BindDepth();
+    void Unbind() const;
+    void LightPassBind() const;
+
+    unsigned int GetSize() { return size; }
+
+    ~ShadowBuffer();
+private:
+    GLuint descriptor;
+    unsigned int depthMap;
+    unsigned int size = 512; // размер мапы
 };
 
 #endif /* End of __FRAMEBUFFERS__ */

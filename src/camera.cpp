@@ -21,6 +21,10 @@ void Camera::SetPitch(float pitch) {
     }
 }
 
+void  Camera::SetFront(const glm::vec3& dir) {
+    front = dir;
+}
+
 void Camera::Update(const float& delta) {
     UpdatePosition(delta);
     UpdateVectors();

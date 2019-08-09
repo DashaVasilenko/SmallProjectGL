@@ -28,6 +28,7 @@ public:
     void SetUniform(const std::string&, int);
     ~ShaderProgram();
 private:
+    std::string name;
     std::unordered_map<std::string, GLint> uniformCache;
     std::map<GLenum, std::string> mapSources;
     std::map<GLenum, GLuint> mapShaders;

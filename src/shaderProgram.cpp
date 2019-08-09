@@ -9,6 +9,8 @@ void ShaderProgram::Load(const std::string& fileName) {
     json shaderData;
     input >> shaderData;
 
+    name = fileName;
+
     mapSources[GL_VERTEX_SHADER] = shaderData["vertex"];
     
     if (shaderData.find("fragment") != shaderData.end()) {
@@ -56,7 +58,7 @@ void ShaderProgram::Compile() {
             if (logLen > 0) {
                 char *infoLog = new char[logLen];
                 glGetShaderInfoLog(shader_descriptor, logLen, NULL, infoLog);
-                std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+                std::cout << "ERROR::SHADER::COMPILATION_FAILED::" << name << "\n" << infoLog << std::endl;
                 delete[] infoLog;
             }
 	    }
@@ -81,7 +83,7 @@ void ShaderProgram::Link() {
         if (logLen > 0) {
             char *infoLog = new char[logLen];
 		    glGetProgramInfoLog(descriptor, logLen, NULL, infoLog);
-            std::cout << "ERROR::SHADER::LINKING_FAILED\n" << infoLog << std::endl;
+            std::cout << "ERROR::SHADER::LINKING_FAILED::" << name << "\n"<< infoLog << std::endl;
             delete[] infoLog;
         }
 	}

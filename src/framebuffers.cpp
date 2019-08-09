@@ -65,6 +65,10 @@ void GBuffer::BufferInit(int width, int  height) {
     Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
 }
 
+void GBuffer::Bind() const {
+    glBindFramebuffer(GL_FRAMEBUFFER, descriptor);
+}
+
 void GBuffer::GeometryPassBind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, descriptor);  // привязываем как текущий активный буфер кадра 
     unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
@@ -76,6 +80,7 @@ void GBuffer::StencilPassBind() const {
 }
 
 void GBuffer::LightPassBind() const {
+    //glBindBuffer(GL_FRAMEBUFFER, descriptor);
     glDrawBuffer(GL_COLOR_ATTACHMENT4);
 
     glActiveTexture(GL_TEXTURE0);
@@ -89,8 +94,8 @@ void GBuffer::LightPassBind() const {
 
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, metallRoughAO);
+    
 }
-
 
 void GBuffer::FinalPassBind() const {
     glDrawBuffer(GL_COLOR_ATTACHMENT4);
@@ -110,5 +115,60 @@ void GBuffer::Unbind() const {
 }
 
 GBuffer::~GBuffer() {
+    glDeleteFramebuffers(1, &descriptor);  // удаляем ненужный буфер
+}
+
+
+//------------------------------------------------------------------------------------------------
+ShadowBuffer::ShadowBuffer() {
+    glGenFramebuffers(1, &descriptor); // создаем ShadowBuffer, 1 - кол-во буферов
+}
+
+// дописать эту функцию 
+void ShadowBuffer::BufferInit(int width, int  height) {
+    Bind();
+    //unsigned int gPosition, gNormal, gColorSpec;
+
+    // буфер позиций
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // присоединение текстуры к объекту текущего кадрового буфера
+    // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
+    //Bind();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    // указываем, что не будем рендерить цвет, так как нас интересует только глубины
+    glDrawBuffer(GL_NONE);  
+    glReadBuffer(GL_NONE);
+
+    //проверяем текущий привязанный кадровый буфер на завершенность
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
+}
+
+void ShadowBuffer::Bind() {
+    glBindFramebuffer(GL_FRAMEBUFFER, descriptor);
+}
+
+void ShadowBuffer::BindDepth() {
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+}
+
+void ShadowBuffer::Unbind() const {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
+}
+
+void ShadowBuffer::LightPassBind() const {
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+}
+
+ShadowBuffer::~ShadowBuffer() {
     glDeleteFramebuffers(1, &descriptor);  // удаляем ненужный буфер
 }

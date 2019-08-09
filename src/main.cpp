@@ -82,10 +82,10 @@ int main() {
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);
 			if ( j%2 == 0) {
-				registry.assign<SpotLight>(sphere, sl);
+				//registry.assign<SpotLight>(sphere, sl);
 			}
 			else{
-				registry.assign<PointLight>(sphere, pl);
+				//registry.assign<PointLight>(sphere, pl);
 			}
 		}
 	}

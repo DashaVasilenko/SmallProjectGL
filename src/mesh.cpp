@@ -23,3 +23,11 @@ void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view, const glm::m
         subMesh.Draw();
     }
 }
+
+void Mesh::DepthPass(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) {
+    for (auto& subMesh: subMeshes) {
+        depthProgram->Run();
+        depthProgram->SetUniform("MVP", projection*view*model);
+        subMesh.Draw();
+    }
+}

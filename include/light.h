@@ -3,6 +3,7 @@
 
 #include "shaderProgram.h"
 #include "geometry.h"
+#include "camera.h"
 
 
 /* Базовый класс для любого света кроме Directional */
@@ -35,7 +36,8 @@ class DirectionalLight : public Light{
 public:
     DirectionalLight(const glm::vec3&, const glm::vec3&);
     void SetInnerUniforms() override;
-    void Draw(const glm::mat4& view);
+    void Draw(const glm::mat4& view, const glm::mat4& light);
+    glm::vec3 GetDirection() { return direction; }
     virtual ~DirectionalLight(){}
 private:
     glm::vec3 direction;

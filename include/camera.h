@@ -15,6 +15,8 @@ public:
     void SetPitch(float);
     void SetAspect(float a) { aspect = a; }
     float GetAspect() { return this->aspect; }
+    void SetFront(const glm::vec3&);
+
 protected:
     Camera(const glm::vec3& = glm::vec3(0.0f, 0.0f, 3.0f) );
     glm::mat4 projection;
