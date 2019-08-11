@@ -48,8 +48,10 @@ float GeometrySmith(vec3 normal, vec3 lightDir, vec3 inEye, float roughness) {
 
 float calculateShadow(vec4 outPos_LS, vec3 normal, vec3 light_dir ) {
     // perform perspective divide
+    
     vec3 projCoords = outPos_LS.xyz / outPos_LS.w;
     // transform to [0,1] range
+    
     projCoords = projCoords*0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     float closestDepth = texture(depthMap, projCoords.xy).r; 
@@ -59,6 +61,9 @@ float calculateShadow(vec4 outPos_LS, vec3 normal, vec3 light_dir ) {
     float bias = max(0.05 * (1.0 - dot(normal, light_dir)), 0.005);
 
     float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
 
     return shadow;
 }

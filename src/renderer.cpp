@@ -43,7 +43,7 @@ void Renderer::GeometryPass(entt::registry& registry) {
     auto dir_lights = registry.view<DirectionalLight>();
     OrthoCamera cam;
     cam.SetAspect(width/height);
-    cam.SetProjection(-30.0f*cam.GetAspect(), 30.0f*cam.GetAspect(), -30.0f, 30.0f, 0.1f, 100.0f);
+    cam.SetProjection(-30.0f*cam.GetAspect(), 30.0f*cam.GetAspect(), -30.0f, 30.0f, 0.05f, 50.0f);
 
     const Camera* camera_save = camera;
 
