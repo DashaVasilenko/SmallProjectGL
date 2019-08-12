@@ -46,7 +46,7 @@ void GBuffer::BufferInit(int width, int  height) {
 
     glGenTextures(1, &result);
     glBindTexture(GL_TEXTURE_2D, result);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, result, 0);
@@ -98,10 +98,15 @@ void GBuffer::LightPassBind() const {
 }
 
 void GBuffer::FinalPassBind() const {
-    glDrawBuffer(GL_COLOR_ATTACHMENT4);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glReadBuffer(GL_COLOR_ATTACHMENT4);
+    Bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, result);
+    Unbind();
+
+    //glDrawBuffer(GL_COLOR_ATTACHMENT4);
+    //glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
+    //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    //glReadBuffer(GL_COLOR_ATTACHMENT4);
 }
 
 void GBuffer::StartFrame() const {

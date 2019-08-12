@@ -173,13 +173,15 @@ void Renderer::LightPass(entt::registry& registry) {
 void Renderer::FinalPass() {
 
     gbuffer.FinalPassBind();
-    glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
-                      0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-    gbuffer.Unbind();
+    //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
+    //                  0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    //gbuffer.Unbind();
+
+
 
     /*shadowbuffer.Bind();
     shadowbuffer.BindDepth();
-    shadowbuffer.Unbind();
+    shadowbuffer.Unbind();*/
 
 
     ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/quad.json");
@@ -190,7 +192,7 @@ void Renderer::FinalPass() {
     quad->Draw(); 
 
     
-    shadowbuffer.Unbind();*/
+    //shadowbuffer.Unbind();
 }
 
 void Renderer::Update(entt::registry& registry) {

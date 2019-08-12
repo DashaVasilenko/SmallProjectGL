@@ -98,11 +98,11 @@ vec4 PBR() {
   
     // добавляем подобие фоновой компоненты освещения к результатам расчета непосредственного источника света  
     vec3 ambient = vec3(0.03) * albedo * ao;
-    vec3 color = Lo;
+    vec3 color = Lo + ambient;
 	
     // чтобы избежать потери HDR величин, перед гамма-коррекцией необходимо провести тональную компрессию
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2));  
+    //color = color / (color + vec3(1.0));
+    //color = pow(color, vec3(1.0/2.2));  
    
     return vec4(color, 1.0);
     //return vec4(texture(albedoMap, outTexCoord).rgb, 1.0);

@@ -77,7 +77,7 @@ int main() {
 			float r =  get_random();
 			float g = get_random();
 			float b = get_random();
-			SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 10.0f);
+			SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 500.0f);
 			PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 15.0f);
 			registry.assign<Mesh>(sphere, sphere_mesh);
 			registry.assign<Transform>(sphere, sphere_transform);
