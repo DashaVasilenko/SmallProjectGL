@@ -51,4 +51,18 @@ private:
     unsigned int size = 4096; // размер мапы
 };
 
+class PostProcessBuffer {
+public:
+    PostProcessBuffer();
+    void BufferInit(int width, int  height);
+    void Bind() const;
+    void Unbind() const;
+    void BindTextures();
+    ~PostProcessBuffer();
+private:
+    GLuint descriptor;
+    unsigned int hdrMap;
+    unsigned int brightMap;
+};
+
 #endif /* End of __FRAMEBUFFERS__ */

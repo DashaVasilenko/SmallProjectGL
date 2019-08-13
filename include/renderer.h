@@ -47,6 +47,7 @@ private:
     FrameBuffer fbo;
     GBuffer gbuffer;
     ShadowBuffer shadowbuffer;
+    PostProcessBuffer postprocessbuffer;
 
     unsigned int current_view_buffer;
 

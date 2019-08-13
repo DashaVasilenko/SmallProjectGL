@@ -19,6 +19,7 @@ void Renderer::Init() {
 	glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
     gbuffer.BufferInit(Renderer::width, Renderer::height);
     shadowbuffer.BufferInit(Renderer::width, Renderer::height);
+    postprocessbuffer.BufferInit(Renderer::width, Renderer::height);
     current_view_buffer = gbuffer.GetAlbedoDescriptor();
 }
 
@@ -171,10 +172,45 @@ void Renderer::LightPass(entt::registry& registry) {
 }
 
 void Renderer::FinalPass() {
+    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
 
     gbuffer.FinalPassBind();
+
+    // framebuffer = окно
+    /* postprocessbuffer.Bind();
+    // framebuffer - postprocess
+    glClear(GL_COLOR_BUFFER_BIT);
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, attachments);
+
+    
+    // render targets - 2 текстуры
+    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
+    
+
+    quadProgram->Run();
+    quadProgram->SetUniform("map", 0);
+    quad->Draw(); 
+
+    // записали текстуры ??
+
+
+    // забиндили hdrMap на 0 слот
+    postprocessbuffer.BindTextures();*/
+
+    // отрисовка текстуры
+    ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
+    finalProgram->Run();
+    finalProgram->SetUniform("themap", 0);
+    quad->Draw();
+    
+
+    
+    //shadowbuffer.Unbind();
+
+    
     //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
-    //                  0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+      //                0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
     //gbuffer.Unbind();
 
 
@@ -182,17 +218,6 @@ void Renderer::FinalPass() {
     /*shadowbuffer.Bind();
     shadowbuffer.BindDepth();
     shadowbuffer.Unbind();*/
-
-
-    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/quad.json");
-    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
-
-    quadProgram->Run();
-    quadProgram->SetUniform("map", 0);
-    quad->Draw(); 
-
-    
-    //shadowbuffer.Unbind();
 }
 
 void Renderer::Update(entt::registry& registry) {
