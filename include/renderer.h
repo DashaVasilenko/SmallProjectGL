@@ -21,8 +21,10 @@ public:
     void AddMesh(const Mesh*);
     void Init();
     void Update(entt::registry& registry);
+    void ShadowMapPass(entt::registry& registry);
     void GeometryPass(entt::registry& registry);
     void LightPass(entt::registry& registry);
+    void ClearResult();
     void BeginLightPass();
     void EndLightPass();
     void BeginStencilPass();

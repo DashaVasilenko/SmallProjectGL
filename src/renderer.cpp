@@ -20,28 +20,35 @@ void Renderer::Init() {
     gbuffer.BufferInit(Renderer::width, Renderer::height);
     shadowbuffer.BufferInit(Renderer::width, Renderer::height);
     postprocessbuffer.BufferInit(Renderer::width, Renderer::height);
-    current_view_buffer = gbuffer.GetAlbedoDescriptor();
+    current_view_buffer = postprocessbuffer.hdrMap;
 }
 
-void Renderer::GeometryPass(entt::registry& registry) {
-    // Бинд буффера геометрии, теперь рисуем всё в него  
+void Renderer::ClearResult() {
+    gbuffer.Bind();
+    glDrawBuffer(GL_COLOR_ATTACHMENT4);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
 
-
-
-    glm::mat4 viewMatrix = camera->GetViewMatrix();
+void Renderer::ShadowMapPass(entt::registry& registry) {
+    // что рисуем
     auto meshes = registry.view<Mesh, Transform>();
 
+    // включаем тест глубины
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE); 
 
-
-    // Заполнение карты теней
-    glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize()); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
+    // ставим размер карты
+    glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize());
+    // начинаем рендер в карту теней
     shadowbuffer.Bind();
     glClear(GL_DEPTH_BUFFER_BIT);
-    glDrawBuffer(GL_NONE); // Никакого рендеринга
+
+    // TODO: Заменить на метод Framebuffer.SetDrawBuffers
+    glDrawBuffer(GL_NONE);
    
     auto dir_lights = registry.view<DirectionalLight>();
+
+    // TODO: Убрать OrhtoCamera в Renderer!
     OrthoCamera cam;
     cam.SetAspect(width/height);
     cam.SetProjection(-30.0f*cam.GetAspect(), 30.0f*cam.GetAspect(), -30.0f, 30.0f, 0.05f, 50.0f);
@@ -64,34 +71,53 @@ void Renderer::GeometryPass(entt::registry& registry) {
     }
     glCullFace(GL_BACK);
     SetActiveCamera(camera_save);
-    glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
+    glViewport(0, 0, Renderer::width, Renderer::height);
+    // Конец заполнения карты теней 
+}
 
+void Renderer::GeometryPass(entt::registry& registry) {
+    glm::mat4 viewMatrix = camera->GetViewMatrix();
+    auto meshes = registry.view<Mesh, Transform>();
 
-
-    gbuffer.GeometryPassBind();
-    // включаем тест глубины чтобы яйки друг за другом рисовались без багов
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
-    //
-
+    // Биндим gbuffer указываем 4 выхода шейдерам
+    gbuffer.Bind();
+    // TODO: Строчки ниже убрать в метод фреймбуффера SetDrawBuffers
+    unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers(4, attachments);
     
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // заполнение карт в gbufferе
     for (auto entity: meshes) {
         auto& mesh = meshes.get<Mesh>(entity);
         auto& transform = meshes.get<Transform>(entity);
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
 
-     
-    
-    
-
-    glDepthMask(GL_FALSE);
-
-    // Конец заполнения карты теней
+    // Запрещаем менять буффер глубины
+    glDepthMask(GL_FALSE);    
 }
 
 void Renderer::BeginLightPass() {
-    gbuffer.LightPassBind();
+    // TODO: Заменить на метод FrameBuffer.SetDrawBuffers();
+    glDrawBuffer(GL_COLOR_ATTACHMENT4);
+
+    // TODO: Заменить на метод Texture.Bind(GLenum)
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.position);
+
+    // TODO: Заменить на метод Texture.Bind(GLenum)
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.normal);
+
+    // TODO: Заменить на метод Texture.Bind(GLenum)
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.albedo);
+
+    // TODO: Заменить на метод Texture.Bind(GLenum)
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.metallRoughAO);
+
     glStencilFunc(GL_NOTEQUAL, 0x00, 0xFF);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -105,7 +131,7 @@ void Renderer::EndLightPass() {
 }
 
 void Renderer::BeginStencilPass() {
-    gbuffer.StencilPassBind();
+    glDrawBuffer(GL_NONE);
     glEnable(GL_DEPTH_TEST);
 
     glDisable(GL_CULL_FACE);
@@ -158,73 +184,54 @@ void Renderer::LightPass(entt::registry& registry) {
         auto& dl = dlights.get(entity);
 
         BeginLightPass();
-        shadowbuffer.Bind();
-        shadowbuffer.LightPassBind();
-        gbuffer.Bind();
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, shadowbuffer.depthMap);
         dl.SetInnerUniforms();
-        dl.Draw(viewMatrix, lightMatrix); // set uniform ViewToLightSpace
+        dl.Draw(viewMatrix, lightMatrix);
         glDisable(GL_BLEND);
-
-        //EndLightPass();
-    }
-    
-    // Here do directional light!
+    }    
 }
 
 void Renderer::FinalPass() {
-    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
+   
+    // Биндим резалт текстуру
 
-    gbuffer.FinalPassBind();
+    // TODO: Заменить на метод Texture.Bind(GLenum)
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.result);
 
-    // framebuffer = окно
-    /* postprocessbuffer.Bind();
-    // framebuffer - postprocess
+    // Биндим фреймбуффер для постпроцессинга и указываем 2 выхода
+    postprocessbuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT);
+    // TODO: Заменить на метод класса framebuffer
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, attachments);
+    glDrawBuffers(2, attachments);    
 
-    
-    // render targets - 2 текстуры
+    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
     ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
-    
-
     quadProgram->Run();
     quadProgram->SetUniform("map", 0);
     quad->Draw(); 
+    // Заполнили hdrMap и brightMap
 
-    // записали текстуры ??
 
+    postprocessbuffer.Unbind();
 
-    // забиндили hdrMap на 0 слот
-    postprocessbuffer.BindTextures();*/
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, current_view_buffer);
 
-    // отрисовка текстуры
     ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
     finalProgram->Run();
     finalProgram->SetUniform("themap", 0);
+
+    // Вывели hdrmap на экран
     quad->Draw();
-    
-
-    
-    //shadowbuffer.Unbind();
-
-    
-    //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
-      //                0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-    //gbuffer.Unbind();
-
-
-
-    /*shadowbuffer.Bind();
-    shadowbuffer.BindDepth();
-    shadowbuffer.Unbind();*/
 }
 
 void Renderer::Update(entt::registry& registry) {
-    gbuffer.StartFrame();
-    // Рисуем позиции нормали альбедо мрао в color_attachment 0 1 2 3
+    ClearResult();
+    ShadowMapPass(registry);
     GeometryPass(registry);
-    // Рисуем финальный результат в color_attachment4
     LightPass(registry);
     FinalPass();
 }
@@ -247,19 +254,35 @@ bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
 bool Renderer::ViewBuffer(const std::vector<std::string>& arguments) {
     if (arguments.size() == 1) {
         if (arguments[0] == "normal") {
-            current_view_buffer = gbuffer.GetNormalDescriptor();
+            current_view_buffer = gbuffer.normal;
             return true;
         }
         else if (arguments[0] == "position") {
-            current_view_buffer = gbuffer.GetPositionDescriptor();
+            current_view_buffer = gbuffer.position;
             return true;
         }
         else if (arguments[0] == "albedo") {
-            current_view_buffer = gbuffer.GetAlbedoDescriptor();
+            current_view_buffer = gbuffer.albedo;
             return true;
         }
         else if (arguments[0] == "mrao") {
-            current_view_buffer = gbuffer.GetMetallRoughAODescriptor();
+            current_view_buffer = gbuffer.metallRoughAO;
+            return true;
+        }
+        else if (arguments[0] == "nohdr") {
+            current_view_buffer = gbuffer.result;
+            return true;
+        }
+        else if (arguments[0] == "hdr") {
+            current_view_buffer = postprocessbuffer.hdrMap;
+            return true;
+        }
+        else if (arguments[0] == "shadowmap") {
+            current_view_buffer = shadowbuffer.depthMap;
+            return true;
+        }
+        else if (arguments[0] == "brightmap") {
+            current_view_buffer = postprocessbuffer.brightMap;
             return true;
         }
         return false;
