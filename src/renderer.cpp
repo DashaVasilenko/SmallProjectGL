@@ -62,7 +62,7 @@ void Renderer::ShadowMapPass(entt::registry& registry) {
     orthoCamera.SetProjection(-30.0f*orthoCamera.GetAspect(), 30.0f*orthoCamera.GetAspect(), -30.0f, 30.0f, 0.05f, 50.0f);
     const Camera* camera_save = camera;
     SetActiveCamera(&orthoCamera);
-    
+
     glCullFace(GL_FRONT);
     for (auto entity: dir_lights) {
         auto& light = dir_lights.get(entity);
@@ -231,12 +231,45 @@ void Renderer::PostProcess() {
     quad->Draw();
 }
 
+void Renderer::BeginForwardRendering() {
+    // копируем буффер глубины в окошко!
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.descriptor);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // буфер глубины по-умолчанию
+    glBlitFramebuffer(
+        0, 0, Renderer::width, Renderer::height, 0, 0, Renderer::width, Renderer::height, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+    );
+}
+
+void Renderer::DebugLightDraw(entt::registry& registry) {
+    glm::mat4 viewMatrix = camera->GetViewMatrix();
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    auto point_lights = registry.view<PointLight>();
+    for (auto entity: point_lights) {
+        auto& pl = point_lights.get(entity);    
+        pl.DebugDraw(projection, viewMatrix);
+    }
+
+    auto spotlights = registry.view<SpotLight>();
+    for (auto entity: spotlights) {
+        auto& sl = spotlights.get(entity);
+        sl.DebugDraw(projection, viewMatrix);
+    }
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void Renderer::Update(entt::registry& registry) {
     ClearResult();
     ShadowMapPass(registry);
     GeometryPass(registry);
     LightPass(registry);
     PostProcess();
+    
+    if (light_debug) {
+        BeginForwardRendering();
+        DebugLightDraw(registry);
+    }
+   
 }
 
 bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
@@ -247,6 +280,20 @@ bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
         }
         else {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+        return true;
+    }
+    return false;
+} 
+
+bool Renderer::DebugLight(const std::vector<std::string>& arguments) {
+    if (arguments.size() == 1) {
+        bool flag = std::stoi(arguments[0]);
+        if (flag) {
+            light_debug = true;
+        }
+        else {
+            light_debug = false;
         }
         return true;
     }

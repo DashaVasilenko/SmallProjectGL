@@ -51,10 +51,12 @@ public:
     void CalculateRadius();
     void SetInnerUniforms() override;
     void Draw(const glm::mat4&, const glm::mat4&);
+    void DebugDraw(const glm::mat4&, const glm::mat4&);
     void StencilPass(const glm::mat4&, const glm::mat4&);
     virtual ~PointLight(){}
 private:
     ShaderProgram* stencilProgram;
+    ShaderProgram* debugProgram;
     glm::mat4 model = glm::mat4(1.0f);
     /* по дефолту свет затухает с квадратичной скоростью */
     float Kc = 0.0f; // константный коэффициент
@@ -69,11 +71,14 @@ public:
     void SetAttenuation(float k1) { assert(k1 >= 0); exponent = k1;  } // затухание света
     void SetInnerUniforms() override;
     void Draw(const glm::mat4& projection, const glm::mat4& view);
+    void DebugDraw(const glm::mat4& projection, const glm::mat4& view);
     void StencilPass(const glm::mat4& projection, const glm::mat4& view);
     virtual ~SpotLight() {}
 
 private:
     ShaderProgram* stencilProgram;
+    ShaderProgram* debugProgram;
+    
     glm::mat4 model = glm::mat4(1.0f);
     glm::vec3 direction;
     float cutoff;

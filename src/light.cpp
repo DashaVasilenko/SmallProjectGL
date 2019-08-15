@@ -59,6 +59,7 @@ PointLight::PointLight(const glm::vec3& color,
 
     this->shaderProgram = Engine::programManager.Get("data/shaders/point_light.json");
     this->stencilProgram = Engine::programManager.Get("data/shaders/stencil.json");
+    this->debugProgram = Engine::programManager.Get("data/shaders/light_debug.json");
     this->color = color*intensity;
     this->intensity = intensity;
     this->position_WS = pos;
@@ -67,18 +68,16 @@ PointLight::PointLight(const glm::vec3& color,
     CalculateRadius();
     /* Сетим юниформы которые не меняются каждый кадр, сетим слоты текстур */
     this->shaderProgram->Run();
-    
     this->shaderProgram->SetUniform("ScreenWidthHeight", glm::vec2(Renderer::GetWidth(), Renderer::GetHeight()));
-
     this->shaderProgram->SetUniform("positionMap", 0);
     this->shaderProgram->SetUniform("normalMap", 1);
     this->shaderProgram->SetUniform("albedoMap", 2);
     this->shaderProgram->SetUniform("mraoMap", 3);
-
-    
     this->shaderProgram->SetUniform("point_light.Kc", Kc);
     this->shaderProgram->SetUniform("point_light.Kl", Kl);
     this->shaderProgram->SetUniform("point_light.Kq", Kq);
+
+
 }
 
 void PointLight::CalculateRadius() {
@@ -116,6 +115,12 @@ void PointLight::Draw(const glm::mat4& projection, const glm::mat4& view) {
     geometry->Draw();
 }
 
+void PointLight::DebugDraw(const glm::mat4& projection, const glm::mat4& view) {
+    debugProgram->Run();
+    debugProgram->SetUniform("MVP", projection*view*model);
+    debugProgram->SetUniform("color", glm::vec3(1.0f, 1.0f, 0.0f));
+    geometry->Draw();
+}
 
 void PointLight::StencilPass(const glm::mat4& projection, const glm::mat4& view) {
     stencilProgram->Run();
@@ -129,6 +134,8 @@ void PointLight::StencilPass(const glm::mat4& projection, const glm::mat4& view)
 SpotLight::SpotLight(const glm::vec3& color, const glm::vec3& pos, const glm::vec3& dir, float angle, float intensity, float exponent) {
     this->shaderProgram = Engine::programManager.Get("data/shaders/spot_light.json");
     this->stencilProgram = Engine::programManager.Get("data/shaders/stencil.json");
+    this->debugProgram = Engine::programManager.Get("data/shaders/light_debug.json");
+
     this->geometry = Engine::geometryManager.Get("data/light_cone.obj");
     this->color = color*intensity;
     this->position_WS = pos;
@@ -138,10 +145,9 @@ SpotLight::SpotLight(const glm::vec3& color, const glm::vec3& pos, const glm::ve
     this->exponent = exponent;
 
     this->model = glm::translate(glm::mat4(1.0f), position_WS)*glm::scale(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, 3.0f));
-    this->shaderProgram->Run();
-    
-    this->shaderProgram->SetUniform("ScreenWidthHeight", glm::vec2(Renderer::GetWidth(), Renderer::GetHeight()));
 
+    this->shaderProgram->Run();
+    this->shaderProgram->SetUniform("ScreenWidthHeight", glm::vec2(Renderer::GetWidth(), Renderer::GetHeight()));
     this->shaderProgram->SetUniform("positionMap", 0);
     this->shaderProgram->SetUniform("normalMap", 1);
     this->shaderProgram->SetUniform("albedoMap", 2);
@@ -161,6 +167,13 @@ void SpotLight::Draw(const glm::mat4& projection, const glm::mat4& view) {
     shaderProgram->SetUniform("Projection", projection);
     shaderProgram->SetUniform("spot_light.position", glm::vec3(view*glm::vec4(position_WS, 1.0f)));   
     shaderProgram->SetUniform("spot_light.direction", glm::vec3(view*glm::vec4(direction, 0.0f)));
+    geometry->Draw();
+}
+
+void SpotLight::DebugDraw(const glm::mat4& projection, const glm::mat4& view) {
+    debugProgram->Run();
+    debugProgram->SetUniform("MVP", projection*view*model);
+    debugProgram->SetUniform("color", glm::vec3(0.0f, 0.0f, 1.0f));
     geometry->Draw();
 }
 

@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/stencil_vertex.glsl",
+    "fragment": "glsl/light_debug_pixel.glsl"
+}

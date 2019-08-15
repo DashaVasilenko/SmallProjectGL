@@ -36,6 +36,7 @@ int main() {
 
 	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
 	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc());
+	console->AddCommand("debuglight", renderer.GetDebugLightFunc());
 
 	ShaderProgram* program = Engine::programManager.Get("data/shaders/phong.json");
 	ShaderProgram* pbr_program = Engine::programManager.Get("data/shaders/pbr.json");
