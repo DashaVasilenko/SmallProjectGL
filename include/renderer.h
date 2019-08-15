@@ -18,18 +18,9 @@ class Renderer {
 public:
     void SetFrameBuffer(GLuint);
     void SetActiveCamera(const Camera* camera);
-    void AddMesh(const Mesh*);
     void Init();
     void Update(entt::registry& registry);
-    void ShadowMapPass(entt::registry& registry);
-    void GeometryPass(entt::registry& registry);
-    void LightPass(entt::registry& registry);
-    void ClearResult();
-    void BeginLightPass();
-    void EndLightPass();
-    void BeginStencilPass();
-    void StencilPass(entt::registry& registry);
-    void FinalPass();
+   
 
     static void SetWidth(int w) { width = w; }
     static void SetHeight(int h) { height = h; }
@@ -40,6 +31,18 @@ public:
     ConsoleFunction GetViewBufferFunc() { return std::bind(&Renderer::ViewBuffer, this, std::placeholders::_1);}
 
 private:
+    void ShadowMapPass(entt::registry& registry);
+    void GeometryPass(entt::registry& registry);
+    void LightPass(entt::registry& registry);
+    void ClearResult();
+    void BeginLightPass();
+    void EndLightPass();
+    void BeginStencilPass();
+    void PostProcess();
+
+
+
+
     bool WireFrame(const std::vector<std::string>& );
     bool ViewBuffer(const std::vector<std::string>& );
     glm::mat4 projection;
@@ -50,6 +53,12 @@ private:
     GBuffer gbuffer;
     ShadowBuffer shadowbuffer;
     PostProcessBuffer postprocessbuffer;
+
+
+    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
+    // PostProcessing programs
+    ShaderProgram* toneMapPlusBrightness = Engine::programManager.Get("data/shaders/postprocess.json");
+    ShaderProgram* textureView = Engine::programManager.Get("data/shaders/quad.json");
 
     unsigned int current_view_buffer;
 

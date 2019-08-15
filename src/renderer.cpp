@@ -16,15 +16,24 @@ void Renderer::SetActiveCamera(const Camera* camera) {
 
 
 void Renderer::Init() {
-	glViewport(0, 0, Renderer::width, Renderer::height); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
+    glViewport(0, 0, Renderer::width, Renderer::height);
     gbuffer.BufferInit(Renderer::width, Renderer::height);
     shadowbuffer.BufferInit(Renderer::width, Renderer::height);
     postprocessbuffer.BufferInit(Renderer::width, Renderer::height);
     current_view_buffer = postprocessbuffer.hdrMap;
+
+
+// Говорим на какие слоты ждать текстуры
+    toneMapPlusBrightness->Run();
+    toneMapPlusBrightness->SetUniform("map", 0);
+
+    textureView->Run();
+    textureView->SetUniform("themap", 0);
 }
 
 void Renderer::ClearResult() {
     gbuffer.Bind();
+    // TODO: Заменить на метод SetDrawBuffer
     glDrawBuffer(GL_COLOR_ATTACHMENT4);
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -192,9 +201,8 @@ void Renderer::LightPass(entt::registry& registry) {
     }    
 }
 
-void Renderer::FinalPass() {
-   
-    // Биндим резалт текстуру
+void Renderer::PostProcess() {
+      // Биндим резалт текстуру
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     glActiveTexture(GL_TEXTURE0);
@@ -207,24 +215,20 @@ void Renderer::FinalPass() {
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glDrawBuffers(2, attachments);    
 
-    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
-    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
-    quadProgram->Run();
-    quadProgram->SetUniform("map", 0);
+    toneMapPlusBrightness->Run();
     quad->Draw(); 
     // Заполнили hdrMap и brightMap
-
-
     postprocessbuffer.Unbind();
 
+
+
+
+
+    // Выводим результат на экран
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, current_view_buffer);
 
-    ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
-    finalProgram->Run();
-    finalProgram->SetUniform("themap", 0);
-
-    // Вывели hdrmap на экран
+    textureView->Run();
     quad->Draw();
 }
 
@@ -233,7 +237,7 @@ void Renderer::Update(entt::registry& registry) {
     ShadowMapPass(registry);
     GeometryPass(registry);
     LightPass(registry);
-    FinalPass();
+    PostProcess();
 }
 
 bool Renderer::WireFrame(const std::vector<std::string>& arguments) {
