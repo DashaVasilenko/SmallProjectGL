@@ -57,25 +57,24 @@ void Renderer::ShadowMapPass(entt::registry& registry) {
    
     auto dir_lights = registry.view<DirectionalLight>();
 
-    // TODO: Убрать OrhtoCamera в Renderer!
-    OrthoCamera cam;
-    cam.SetAspect(width/height);
-    cam.SetProjection(-30.0f*cam.GetAspect(), 30.0f*cam.GetAspect(), -30.0f, 30.0f, 0.05f, 50.0f);
-
+    OrthoCamera orthoCamera;
+    orthoCamera.SetAspect(width/height);
+    orthoCamera.SetProjection(-30.0f*orthoCamera.GetAspect(), 30.0f*orthoCamera.GetAspect(), -30.0f, 30.0f, 0.05f, 50.0f);
     const Camera* camera_save = camera;
-
+    SetActiveCamera(&orthoCamera);
+    
     glCullFace(GL_FRONT);
     for (auto entity: dir_lights) {
         auto& light = dir_lights.get(entity);
-        cam.SetPosition(glm::vec3(-10.0f, 10.0f, 10.0f));
-        cam.SetFront(-light.GetDirection());
-        SetActiveCamera(&cam);
-        lightMatrix = projection*cam.GetViewMatrix();
+        orthoCamera.SetPosition(glm::vec3(-10.0f, 10.0f, 10.0f));
+        orthoCamera.SetFront(-light.GetDirection());
+       
+        lightMatrix = projection*orthoCamera.GetViewMatrix();
 
         for (auto entity: meshes) {
             auto& mesh = meshes.get<Mesh>(entity);
             auto& transform = meshes.get<Transform>(entity);
-            mesh.DepthPass(projection, cam.GetViewMatrix(), transform.GetModelMatrix());
+            mesh.DepthPass(lightMatrix, transform.GetModelMatrix());
         }
     }
     glCullFace(GL_BACK);
