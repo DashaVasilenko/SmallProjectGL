@@ -56,17 +56,10 @@ PhongTextureMaterial::PhongTextureMaterial(
 }
 
 void PhongTextureMaterial::SetInnerUniforms() {
-    glActiveTexture(GL_TEXTURE0);
-    ambientMap->Bind();
-
-    glActiveTexture(GL_TEXTURE1);
-    diffuseMap->Bind();
-   
-    glActiveTexture(GL_TEXTURE2);
-    specularMap->Bind();
-
-    glActiveTexture(GL_TEXTURE3);
-    normalMap->Bind();
+    ambientMap->Bind(GL_TEXTURE0);
+    diffuseMap->Bind(GL_TEXTURE1);   
+    specularMap->Bind(GL_TEXTURE2);
+    normalMap->Bind(GL_TEXTURE3);
    
     shaderProgram->SetUniform("material.shininess", shininess);
 }
@@ -96,18 +89,9 @@ PbrMaterial::PbrMaterial(
 }
 
 void PbrMaterial::SetInnerUniforms() {
-    glActiveTexture(GL_TEXTURE0);
-    albedoMap->Bind();
-
-    glActiveTexture(GL_TEXTURE1);
-    normalMap->Bind();
-   
-    glActiveTexture(GL_TEXTURE2);
-    metallicMap->Bind();
-
-    glActiveTexture(GL_TEXTURE3);
-    roughnessMap->Bind();
-
-    glActiveTexture(GL_TEXTURE4);
-    aoMap->Bind();
+    albedoMap->Bind(GL_TEXTURE0);
+    normalMap->Bind(GL_TEXTURE1);
+    metallicMap->Bind(GL_TEXTURE2);
+    roughnessMap->Bind(GL_TEXTURE3);
+    aoMap->Bind(GL_TEXTURE4);
 }
