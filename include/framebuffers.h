@@ -48,24 +48,12 @@ public:
     void BufferInit(int width, int  height);
     void Bind() const;
     void Unbind() const;
-<<<<<<< HEAD
-    void BindTextures();
-    unsigned int GetHorizontalDescriptor() { return horizontalGauss; }
-    unsigned int GetVerticalDescriptor() { return verticalGauss; }
-    unsigned int GetBrightMapDescriptor() { return brightMap; }
-=======
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
     ~PostProcessBuffer();
 private:
     GLuint descriptor;
     unsigned int hdrMap;
     unsigned int brightMap;
-<<<<<<< HEAD
-    unsigned int horizontalGauss;
-    unsigned int verticalGauss;
-=======
     unsigned int depthMap;
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
 };
 
 #endif /* End of __FRAMEBUFFERS__ */

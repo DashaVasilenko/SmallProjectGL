@@ -179,47 +179,6 @@ void PostProcessBuffer::Bind() const {
 
 void PostProcessBuffer::Unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-<<<<<<< HEAD
-}
-
-void PostProcessBuffer::BindTextures() {
-    Bind();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, hdrMap);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, brightMap);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, horizontalGauss);
-
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, verticalGauss);
-
-
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, hdrMap);
-
-    //glActiveTexture(GL_TEXTURE1);
-    //glBindTexture(GL_TEXTURE_2D, brightMap);
-
-    //glActiveTexture(GL_TEXTURE2);
-    //glBindTexture(GL_TEXTURE_2D, horizontalGauss);
-
-    //glActiveTexture(GL_TEXTURE3);
-    //glBindTexture(GL_TEXTURE_2D, verticalGauss);
-
-    Unbind();
-
-
-    //glDrawBuffer(GL_COLOR_ATTACHMENT2);
-    //glReadBuffer(GL_COLOR_ATTACHMENT8);
-    //glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
-    //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-   
-=======
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
 }
 
 PostProcessBuffer::~PostProcessBuffer() {

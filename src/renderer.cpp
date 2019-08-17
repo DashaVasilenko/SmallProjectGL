@@ -23,9 +23,6 @@ void Renderer::Init() {
     current_view_buffer = postprocessbuffer.hdrMap;
 
 
-<<<<<<< HEAD
-    glm::mat4 viewMatrix = camera->GetViewMatrix();
-=======
 // Говорим на какие слоты ждать текстуры
     toneMapPlusBrightness->Run();
     toneMapPlusBrightness->SetUniform("map", 0);
@@ -43,21 +40,15 @@ void Renderer::ClearResult() {
 
 void Renderer::ShadowMapPass(entt::registry& registry) {
     // что рисуем
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
     auto meshes = registry.view<Mesh, Transform>();
 
     // включаем тест глубины
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE); 
 
-<<<<<<< HEAD
-    // Заполнение карты теней
-    glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize()); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
-=======
     // ставим размер карты
     glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize());
     // начинаем рендер в карту теней
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
     shadowbuffer.Bind();
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -208,14 +199,6 @@ void Renderer::LightPass(entt::registry& registry) {
         glDisable(GL_BLEND);
     }    
 }
-<<<<<<< HEAD
-/* 
-void Renderer::FinalPass() {
-    // биндим резалт текстуру
-    gbuffer.FinalPassBind();
-
-    // биндин фреймбуфер для постпроцессинга и указываем 2 выхода
-=======
 
 void Renderer::PostProcess() {
       // Биндим резалт текстуру
@@ -225,34 +208,10 @@ void Renderer::PostProcess() {
     glBindTexture(GL_TEXTURE_2D, gbuffer.result);
 
     // Биндим фреймбуффер для постпроцессинга и указываем 2 выхода
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
     postprocessbuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT);
     // TODO: Заменить на метод класса framebuffer
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-<<<<<<< HEAD
-    glDrawBuffers(2, attachments);
-
-    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
-    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
-    quadProgram->Run();
-    quadProgram->SetUniform("map", 0);
-    quad->Draw(); 
-    // заполнили hdMap и brightMap
-
-    // забиндили hdrMap на 0 слот
-    postprocessbuffer.BindTextures();
-
-    // отрисовка текстуры
-    ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
-    finalProgram->Run();
-    finalProgram->SetUniform("themap", 0);
-
-    // вывели hdrMap на экран
-    quad->Draw();
-    
-    //shadowbuffer.Unbind();
-=======
     glDrawBuffers(2, attachments);    
 
     toneMapPlusBrightness->Run();
@@ -267,7 +226,6 @@ void Renderer::PostProcess() {
     // Выводим результат на экран
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, current_view_buffer);
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
 
     textureView->Run();
     quad->Draw();
@@ -285,96 +243,6 @@ void Renderer::BeginForwardRendering() {
 void Renderer::DebugLightDraw(entt::registry& registry) {
     glm::mat4 viewMatrix = camera->GetViewMatrix();
 
-<<<<<<< HEAD
-    //shadowbuffer.Bind();
-    //shadowbuffer.BindDepth();
-    //shadowbuffer.Unbind();
-}*/
-
-void Renderer::FinalPass() {
-    // биндим резалт текстуру
-    gbuffer.FinalPassBind();
-
-    // биндин фреймбуфер для постпроцессинга и указываем 2 выхода
-    postprocessbuffer.Bind();
-    glClear(GL_COLOR_BUFFER_BIT);
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments);
-
-    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
-    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
-    quadProgram->Run();
-    quadProgram->SetUniform("map", 0);
-    quad->Draw(); 
-    // заполнили hdrMap и brightMap
-
-    //postprocessbuffer.BindTextures();
-/* 
-    bool horizontal = true;
-    bool first_iteration = true;
-    int cnt = 5;
-    ShaderProgram* gaussProgram = Engine::programManager.Get("data/shaders/gaussian_blur.json");
-    gaussProgram->Run();
-    gaussProgram->SetUniform("brightMap", 0);
-    gaussProgram->SetUniform("horizontal", horizontal);
-    //gaussProgram->SetUniform("brightMap", 0);
-
-    for (unsigned int i = 0; i < cnt; i++) {
-         
-        glDrawBuffer(GL_COLOR_ATTACHMENT2);
-        if (first_iteration) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, postprocessbuffer.GetBrightMapDescriptor()); 
-            first_iteration = false;
-        }
-        else {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, postprocessbuffer.GetHorizontalDescriptor()); 
-        }
-
-        gaussProgram->Run();
-        quad->Draw();
-        horizontal = !horizontal;
-        gaussProgram->SetUniform("horizontal", horizontal);
-
-
-
-        glDrawBuffer(GL_COLOR_ATTACHMENT3);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, postprocessbuffer.GetVerticalDescriptor()); 
-        gaussProgram->Run();
-        quad->Draw();
-        horizontal = !horizontal;
-        gaussProgram->SetUniform("horizontal", horizontal);
-
-    }
-*/
-
-
-    // забиндили hdrMap на 0 слот, brightMap на 1 слот
-    postprocessbuffer.BindTextures();
-    // отрисовка текстуры
-    ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
-    finalProgram->Run();
-    finalProgram->SetUniform("themap", 0);
-    //finalProgram->SetUniform("hdrMap", 0);
-    //finalProgram->SetUniform("brightMap", 1);
-
-    // вывели hdrMap на экран
-    quad->Draw();
-    
-    //shadowbuffer.Unbind();
-
-    //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
-      //                0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-    //gbuffer.Unbind();
-
-    //shadowbuffer.Bind();
-    //shadowbuffer.BindDepth();
-    //shadowbuffer.Unbind();
-} 
-  
-=======
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     auto point_lights = registry.view<PointLight>();
     for (auto entity: point_lights) {
@@ -389,7 +257,6 @@ void Renderer::FinalPass() {
     }
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
->>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
 
 void Renderer::Update(entt::registry& registry) {
     ClearResult();
