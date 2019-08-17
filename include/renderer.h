@@ -69,6 +69,8 @@ private:
     // PostProcessing programs
     ShaderProgram* toneMapPlusBrightness = Engine::programManager.Get("data/shaders/postprocess.json");
     ShaderProgram* textureView = Engine::programManager.Get("data/shaders/quad.json");
+    ShaderProgram* gaussProgram = Engine::programManager.Get("data/shaders/gaussian_blur.json");
+    ShaderProgram* bloomProgram = Engine::programManager.Get("data/shaders/bloom.json");
 
     unsigned int current_view_buffer;
     bool light_debug = false;

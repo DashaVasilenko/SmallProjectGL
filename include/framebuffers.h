@@ -53,6 +53,9 @@ private:
     GLuint descriptor;
     unsigned int hdrMap;
     unsigned int brightMap;
+    unsigned int horizontalGauss;
+    unsigned int verticalGauss;
+    unsigned int bloom;
     unsigned int depthMap;
 };
 

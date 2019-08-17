@@ -105,7 +105,7 @@ int main() {
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
-	//registry.assign<DirectionalLight>(cube, dl);
+	registry.assign<DirectionalLight>(cube, dl);
 
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)

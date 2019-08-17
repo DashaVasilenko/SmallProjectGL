@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/bloom_vertex.glsl",
+    "fragment": "glsl/bloom_pixel.glsl"
+}

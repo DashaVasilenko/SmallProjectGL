@@ -29,6 +29,14 @@ void Renderer::Init() {
 
     textureView->Run();
     textureView->SetUniform("themap", 0);
+
+    gaussProgram->Run();
+    gaussProgram->SetUniform("brightMap", 0);
+    gaussProgram->SetUniform("horizontal", true);
+
+    bloomProgram->Run();
+    bloomProgram->SetUniform("hdrMap", 0);
+    bloomProgram->SetUniform("bloomBlur", 1);
 }
 
 void Renderer::ClearResult() {
@@ -217,11 +225,80 @@ void Renderer::PostProcess() {
     toneMapPlusBrightness->Run();
     quad->Draw(); 
     // Заполнили hdrMap и brightMap
+
+
+//////////////////////////////////////////// 
+  /*  bool horizontal = true;
+
+    glDrawBuffer(GL_COLOR_ATTACHMENT2);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postprocessbuffer.brightMap);
+
+    gaussProgram->Run();
+    gaussProgram->SetUniform("horizontal", horizontal);
+    quad->Draw();
+    horizontal = !horizontal;
+
+    glDrawBuffer(GL_COLOR_ATTACHMENT3);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, postprocessbuffer.horizontalGauss); 
+        
+    gaussProgram->Run();
+    gaussProgram->SetUniform("horizontal", horizontal);
+    quad->Draw();
+    horizontal = !horizontal;*/
+ 
+
+///////////////////////////////////////////
+
+ 
+    bool horizontal = true;
+    bool first_iteration = true;
+    int cnt = 5;
+ 
+    for (unsigned int i = 0; i < cnt; i++) {
+         
+        glDrawBuffer(GL_COLOR_ATTACHMENT2);
+        if (first_iteration) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, postprocessbuffer.brightMap); 
+            first_iteration = false;
+        }
+        else {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, postprocessbuffer.verticalGauss); 
+        }
+
+        gaussProgram->Run();
+        gaussProgram->SetUniform("horizontal", horizontal);
+        quad->Draw();
+        horizontal = !horizontal;
+
+        glDrawBuffer(GL_COLOR_ATTACHMENT3);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, postprocessbuffer.horizontalGauss); 
+        gaussProgram->Run();
+        gaussProgram->SetUniform("horizontal", horizontal);
+        quad->Draw();
+        horizontal = !horizontal;
+     }
+
+
+    glDrawBuffer(GL_COLOR_ATTACHMENT4); // указали, в какой канал будем рисовать
+
+    glActiveTexture(GL_TEXTURE0); // прифигачили одну текстуру на 0 слот
+    glBindTexture(GL_TEXTURE_2D, postprocessbuffer.hdrMap);
+
+    glActiveTexture(GL_TEXTURE1); // прифигачили вторую текстуру на 1 слот
+    glBindTexture(GL_TEXTURE_2D, postprocessbuffer.verticalGauss);
+
+    bloomProgram->Run();
+    quad->Draw();
+    
+
+
+
     postprocessbuffer.Unbind();
-
-
-
-
 
     // Выводим результат на экран
     glActiveTexture(GL_TEXTURE0);
@@ -333,6 +410,15 @@ bool Renderer::ViewBuffer(const std::vector<std::string>& arguments) {
         }
         else if (arguments[0] == "brightmap") {
             current_view_buffer = postprocessbuffer.brightMap;
+            return true;
+        }
+        else if (arguments[0] == "gauss") {
+            current_view_buffer = postprocessbuffer.verticalGauss;
+            //current_view_buffer = postprocessbuffer.horizontalGauss;
+            return true;
+        }
+        else if (arguments[0] == "bloom") {
+            current_view_buffer = postprocessbuffer.bloom;
             return true;
         }
         return false;

@@ -20,8 +20,8 @@ void main() {
     // HDR End
 
     //// Bright
-    brightMap = vec3(0.0f, 1.0f, 0.0f);
-/*
+    //brightMap = vec3(0.0f, 1.0f, 0.0f);
+
     // проверка фрагмента на превышение по яркости заданного порога
     // если ярче - вывести в отдельный буфер, хранящий яркие участки
     float brightness = dot(fragColor, vec3(0.2126, 0.7152, 0.0722));
@@ -30,6 +30,6 @@ void main() {
         //outColor = vec4(color, 1.0);
     else
         brightMap = vec3(0.0, 0.0, 0.0);
-        //outColor = vec4(0.0, 0.0, 0.0, 1.0);*/
+        //outColor = vec4(0.0, 0.0, 0.0, 1.0);
 
 }
