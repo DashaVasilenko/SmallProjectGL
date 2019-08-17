@@ -73,7 +73,7 @@ private:
     ShaderProgram* bloomProgram = Engine::programManager.Get("data/shaders/bloom.json");
 
     unsigned int current_view_buffer;
-    bool light_debug = false;
+    bool light_debug = true;
 
     static int width;
     static int height;

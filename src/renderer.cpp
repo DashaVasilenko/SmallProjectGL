@@ -320,6 +320,9 @@ void Renderer::BeginForwardRendering() {
 void Renderer::DebugLightDraw(entt::registry& registry) {
     glm::mat4 viewMatrix = camera->GetViewMatrix();
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     auto point_lights = registry.view<PointLight>();
     for (auto entity: point_lights) {

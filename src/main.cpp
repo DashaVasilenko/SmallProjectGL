@@ -70,6 +70,9 @@ int main() {
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
+
+
+/* 
 	 for (int i = 0; i < 10; i++) {
 	 	for (int j = 0; j < 10; j++) {
 	 		auto sphere = registry.create();
@@ -90,8 +93,12 @@ int main() {
 	 		}
 	 	}
 	 }
+*/
 
-
+	auto spot_light_game_object = registry.create();
+	//SpotLight sl ({1.0, 1.0, 1.0}, {0.0f, 2.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 26.5650512f, 100.0f);
+	SpotLight sl ({1.0, 1.0, 1.0}, {-5.0f, 10.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, 10.0f, 100.0f);
+	registry.assign<SpotLight>(spot_light_game_object, sl);
 
 
 
