@@ -108,7 +108,11 @@ int main() {
 	SpotLight sl3 ({0.0, 0.0, 1.0}, {5.0f, 5.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, 30.0f, 18.0f);
 	registry.assign<SpotLight>(spot_light_game_object3, sl3);
 
-
+	auto sphere = registry.create();
+	Transform sphere_transform;
+	sphere_transform.Translate({0.0f, 1.0f, 0.0f});
+	registry.assign<Mesh>(sphere, sphere_mesh);
+	registry.assign<Transform>(sphere, sphere_transform);
 
 
 	auto cube = registry.create();
