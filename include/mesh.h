@@ -22,7 +22,7 @@ public:
         depthProgram = Engine::programManager.Get("data/shaders/depth.json");
     }
     void Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model);
-    void DepthPass(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model);
+    void DepthPass(const glm::mat4& lightMatrix, const glm::mat4& model);
 private:
     std::vector<SubMesh> subMeshes;
     ShaderProgram* depthProgram;

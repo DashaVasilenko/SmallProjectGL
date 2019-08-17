@@ -36,6 +36,7 @@ int main() {
 
 	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
 	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc());
+	console->AddCommand("debuglight", renderer.GetDebugLightFunc());
 
 	ShaderProgram* program = Engine::programManager.Get("data/shaders/phong.json");
 	ShaderProgram* pbr_program = Engine::programManager.Get("data/shaders/pbr.json");
@@ -69,26 +70,28 @@ int main() {
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			auto sphere = registry.create();
-			Transform sphere_transform;
-			sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*3) - 5.0f});
-			float r =  get_random();
-			float g = get_random();
-			float b = get_random();
-			SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 100.0f);
-			PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, 25.0f);
-			registry.assign<Mesh>(sphere, sphere_mesh);
-			registry.assign<Transform>(sphere, sphere_transform);
-			if ( j%2 == 0) {
-				registry.assign<SpotLight>(sphere, sl);
-			}
-			else{
-				registry.assign<PointLight>(sphere, pl);
-			}
-		}
-	}
+	 for (int i = 0; i < 10; i++) {
+	 	for (int j = 0; j < 10; j++) {
+	 		auto sphere = registry.create();
+	 		Transform sphere_transform;
+	 		sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*3) - 5.0f});
+	 		float r =  get_random();
+	 		float g = get_random();
+	 		float b = get_random();
+	 		SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 100.0f);
+	 		PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 2.0f, static_cast<float>(j*3) - 5.0f}, 25.0f);
+	 		registry.assign<Mesh>(sphere, sphere_mesh);
+	 		registry.assign<Transform>(sphere, sphere_transform);
+	 		if ( j%2 == 0) {
+	 			registry.assign<SpotLight>(sphere, sl);
+	 		}
+	 		else{
+	 			registry.assign<PointLight>(sphere, pl);
+	 		}
+	 	}
+	 }
+
+
 
 
 
@@ -102,7 +105,7 @@ int main() {
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
-	registry.assign<DirectionalLight>(cube, dl);
+	//registry.assign<DirectionalLight>(cube, dl);
 
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)

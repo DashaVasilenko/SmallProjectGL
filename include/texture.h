@@ -10,6 +10,7 @@ class Texture {
 public:
     Texture();
     void Bind() const;
+    void Bind(GLenum slot) const;
     void Load(const std::string& filename);
    
     void Unbind() const;

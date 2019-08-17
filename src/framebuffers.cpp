@@ -69,46 +69,6 @@ void GBuffer::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, descriptor);
 }
 
-void GBuffer::GeometryPassBind() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, descriptor);  // привязываем как текущий активный буфер кадра 
-    unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-    glDrawBuffers(4, attachments);
-}
-
-void GBuffer::StencilPassBind() const {
-    glDrawBuffer(GL_NONE);
-}
-
-void GBuffer::LightPassBind() const {
-    //glBindBuffer(GL_FRAMEBUFFER, descriptor);
-    glDrawBuffer(GL_COLOR_ATTACHMENT4);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, position);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, normal);
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, albedo);
-
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, metallRoughAO);
-    
-}
-
-void GBuffer::FinalPassBind() const {
-    Bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, result);
-    Unbind();
-
-    //glDrawBuffer(GL_COLOR_ATTACHMENT4);
-    //glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
-    //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    //glReadBuffer(GL_COLOR_ATTACHMENT4);
-}
-
 void GBuffer::StartFrame() const {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, descriptor);
     glDrawBuffer(GL_COLOR_ATTACHMENT4);
@@ -149,8 +109,8 @@ void ShadowBuffer::BufferInit(int width, int  height) {
     //Bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
     // указываем, что не будем рендерить цвет, так как нас интересует только глубины
-    glDrawBuffer(GL_NONE);  
-    glReadBuffer(GL_NONE);
+    // glDrawBuffer(GL_NONE);  
+    // glReadBuffer(GL_NONE);
 
     //проверяем текущий привязанный кадровый буфер на завершенность
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -162,18 +122,9 @@ void ShadowBuffer::Bind() {
     glBindFramebuffer(GL_FRAMEBUFFER, descriptor);
 }
 
-void ShadowBuffer::BindDepth() {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
-}
 
 void ShadowBuffer::Unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
-}
-
-void ShadowBuffer::LightPassBind() const {
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
 }
 
 ShadowBuffer::~ShadowBuffer() {
@@ -187,7 +138,6 @@ PostProcessBuffer::PostProcessBuffer() {
 }
 
 void PostProcessBuffer::BufferInit(int width, int height) {
-
     Bind();
     glGenTextures(1, &hdrMap);
     glBindTexture(GL_TEXTURE_2D, hdrMap);
@@ -229,6 +179,7 @@ void PostProcessBuffer::Bind() const {
 
 void PostProcessBuffer::Unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+<<<<<<< HEAD
 }
 
 void PostProcessBuffer::BindTextures() {
@@ -267,6 +218,8 @@ void PostProcessBuffer::BindTextures() {
     //glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
     //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
    
+=======
+>>>>>>> ee67200a04908b3af4515e3bd97fe1ddc989e3ce
 }
 
 PostProcessBuffer::~PostProcessBuffer() {

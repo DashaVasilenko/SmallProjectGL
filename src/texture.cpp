@@ -7,7 +7,12 @@ Texture::Texture() {
 
 void Texture::Bind() const {
     glBindTexture(GL_TEXTURE_2D, descriptor); // привязка текстуры
- }
+}
+
+void Texture::Bind(GLenum slot) const {
+    glActiveTexture(slot);
+    glBindTexture(GL_TEXTURE_2D, descriptor); // привязка текстуры
+}
 
 void Texture::Load(const std::string& filename) {
     // (путь, ширина, высота, количество каналов при загрузке изображения, количество каналов для отображения)
