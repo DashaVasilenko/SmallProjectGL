@@ -26,14 +26,11 @@ void Renderer::Init() {
 void Renderer::GeometryPass(entt::registry& registry) {
     // Бинд буффера геометрии, теперь рисуем всё в него  
 
-
-
     glm::mat4 viewMatrix = camera->GetViewMatrix();
     auto meshes = registry.view<Mesh, Transform>();
 
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE); 
-
 
     // Заполнение карты теней
     glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize()); // позиция нижнего левого угла окна и размер области в окне, в котором рисуем   
@@ -170,41 +167,34 @@ void Renderer::LightPass(entt::registry& registry) {
     
     // Here do directional light!
 }
-
+/* 
 void Renderer::FinalPass() {
-    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
-
+    // биндим резалт текстуру
     gbuffer.FinalPassBind();
 
-    // framebuffer = окно
-    /* postprocessbuffer.Bind();
-    // framebuffer - postprocess
+    // биндин фреймбуфер для постпроцессинга и указываем 2 выхода
+    postprocessbuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT);
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glDrawBuffers(2, attachments);
 
-    
-    // render targets - 2 текстуры
+    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
     ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
-    
-
     quadProgram->Run();
     quadProgram->SetUniform("map", 0);
     quad->Draw(); 
-
-    // записали текстуры ??
-
+    // заполнили hdMap и brightMap
 
     // забиндили hdrMap на 0 слот
-    postprocessbuffer.BindTextures();*/
+    postprocessbuffer.BindTextures();
 
     // отрисовка текстуры
     ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
     finalProgram->Run();
     finalProgram->SetUniform("themap", 0);
-    quad->Draw();
-    
 
+    // вывели hdrMap на экран
+    quad->Draw();
     
     //shadowbuffer.Unbind();
 
@@ -215,10 +205,94 @@ void Renderer::FinalPass() {
 
 
 
-    /*shadowbuffer.Bind();
-    shadowbuffer.BindDepth();
-    shadowbuffer.Unbind();*/
-}
+    //shadowbuffer.Bind();
+    //shadowbuffer.BindDepth();
+    //shadowbuffer.Unbind();
+}*/
+
+void Renderer::FinalPass() {
+    // биндим резалт текстуру
+    gbuffer.FinalPassBind();
+
+    // биндин фреймбуфер для постпроцессинга и указываем 2 выхода
+    postprocessbuffer.Bind();
+    glClear(GL_COLOR_BUFFER_BIT);
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
+
+    Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
+    ShaderProgram* quadProgram = Engine::programManager.Get("data/shaders/postprocess.json");
+    quadProgram->Run();
+    quadProgram->SetUniform("map", 0);
+    quad->Draw(); 
+    // заполнили hdrMap и brightMap
+
+    //postprocessbuffer.BindTextures();
+/* 
+    bool horizontal = true;
+    bool first_iteration = true;
+    int cnt = 5;
+    ShaderProgram* gaussProgram = Engine::programManager.Get("data/shaders/gaussian_blur.json");
+    gaussProgram->Run();
+    gaussProgram->SetUniform("brightMap", 0);
+    gaussProgram->SetUniform("horizontal", horizontal);
+    //gaussProgram->SetUniform("brightMap", 0);
+
+    for (unsigned int i = 0; i < cnt; i++) {
+         
+        glDrawBuffer(GL_COLOR_ATTACHMENT2);
+        if (first_iteration) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, postprocessbuffer.GetBrightMapDescriptor()); 
+            first_iteration = false;
+        }
+        else {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, postprocessbuffer.GetHorizontalDescriptor()); 
+        }
+
+        gaussProgram->Run();
+        quad->Draw();
+        horizontal = !horizontal;
+        gaussProgram->SetUniform("horizontal", horizontal);
+
+
+
+        glDrawBuffer(GL_COLOR_ATTACHMENT3);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, postprocessbuffer.GetVerticalDescriptor()); 
+        gaussProgram->Run();
+        quad->Draw();
+        horizontal = !horizontal;
+        gaussProgram->SetUniform("horizontal", horizontal);
+
+    }
+*/
+
+
+    // забиндили hdrMap на 0 слот, brightMap на 1 слот
+    postprocessbuffer.BindTextures();
+    // отрисовка текстуры
+    ShaderProgram* finalProgram = Engine::programManager.Get("data/shaders/quad.json");
+    finalProgram->Run();
+    finalProgram->SetUniform("themap", 0);
+    //finalProgram->SetUniform("hdrMap", 0);
+    //finalProgram->SetUniform("brightMap", 1);
+
+    // вывели hdrMap на экран
+    quad->Draw();
+    
+    //shadowbuffer.Unbind();
+
+    //glBlitFramebuffer(0, 0, Renderer::width, Renderer::height,
+      //                0, 0, Renderer::width, Renderer::height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    //gbuffer.Unbind();
+
+    //shadowbuffer.Bind();
+    //shadowbuffer.BindDepth();
+    //shadowbuffer.Unbind();
+} 
+  
 
 void Renderer::Update(entt::registry& registry) {
     gbuffer.StartFrame();

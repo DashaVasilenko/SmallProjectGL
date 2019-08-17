@@ -90,6 +90,9 @@ int main() {
 		}
 	}
 
+
+
+
 	auto cube = registry.create();
 	Transform cube_transform;
 	DirectionalLight dl({10.0f, 10.0f, 10.0f}, {1.0f, -1.0f, 0.0f});

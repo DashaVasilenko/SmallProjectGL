@@ -58,11 +58,16 @@ public:
     void Bind() const;
     void Unbind() const;
     void BindTextures();
+    unsigned int GetHorizontalDescriptor() { return horizontalGauss; }
+    unsigned int GetVerticalDescriptor() { return verticalGauss; }
+    unsigned int GetBrightMapDescriptor() { return brightMap; }
     ~PostProcessBuffer();
 private:
     GLuint descriptor;
     unsigned int hdrMap;
     unsigned int brightMap;
+    unsigned int horizontalGauss;
+    unsigned int verticalGauss;
 };
 
 #endif /* End of __FRAMEBUFFERS__ */

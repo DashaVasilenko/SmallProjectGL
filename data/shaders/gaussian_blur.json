@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/gaussian_blur_vertex.glsl",
+    "fragment": "glsl/gaussian_blur_pixel.glsl"
+}

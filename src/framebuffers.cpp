@@ -203,6 +203,20 @@ void PostProcessBuffer::BufferInit(int width, int height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, brightMap, 0);
 
+    glGenTextures(1, &horizontalGauss);
+    glBindTexture(GL_TEXTURE_2D, horizontalGauss);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, brightMap, 0);
+
+    glGenTextures(1, &verticalGauss);
+    glBindTexture(GL_TEXTURE_2D, verticalGauss);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, brightMap, 0);
+
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
@@ -210,26 +224,47 @@ void PostProcessBuffer::BufferInit(int width, int height) {
 }
 
 void PostProcessBuffer::Bind() const {
-    glBindBuffer(GL_FRAMEBUFFER, descriptor);
+    glBindFramebuffer(GL_FRAMEBUFFER, descriptor);
 }
 
 void PostProcessBuffer::Unbind() const {
-    glBindBuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void PostProcessBuffer::BindTextures() {
     Bind();
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hdrMap);
-    Unbind();
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, brightMap);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, horizontalGauss);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, verticalGauss);
+
 
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, hdrMap);
 
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, brightMap);
 
-     //glDrawBuffer(GL_COLOR_ATTACHMENT2);
+    //glActiveTexture(GL_TEXTURE2);
+    //glBindTexture(GL_TEXTURE_2D, horizontalGauss);
+
+    //glActiveTexture(GL_TEXTURE3);
+    //glBindTexture(GL_TEXTURE_2D, verticalGauss);
+
+    Unbind();
+
+
+    //glDrawBuffer(GL_COLOR_ATTACHMENT2);
     //glReadBuffer(GL_COLOR_ATTACHMENT8);
-   // glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
+    //glBindFramebuffer(GL_READ_FRAMEBUFFER, descriptor);
     //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
    
 }
