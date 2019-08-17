@@ -96,23 +96,29 @@ int main() {
 */
 
 	auto spot_light_game_object = registry.create();
-	//SpotLight sl ({1.0, 1.0, 1.0}, {0.0f, 2.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, 26.5650512f, 100.0f);
-	SpotLight sl ({1.0, 1.0, 1.0}, {-5.0f, 10.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, 10.0f, 100.0f);
+	SpotLight sl ({1.0, 0.0, 0.0}, {-5.0f, 5.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, 30.0f, 18.0f);
 	registry.assign<SpotLight>(spot_light_game_object, sl);
+
+
+	auto spot_light_game_object2 = registry.create();
+	SpotLight sl2 ({0.0, 1.0, 1.0}, {0.0f, 5.0f, -6.0f}, {0.0f, -1.0f, 1.0f}, 30.0f, 18.0f);
+	registry.assign<SpotLight>(spot_light_game_object2, sl2);
+
+	auto spot_light_game_object3 = registry.create();
+	SpotLight sl3 ({0.0, 0.0, 1.0}, {5.0f, 5.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, 30.0f, 18.0f);
+	registry.assign<SpotLight>(spot_light_game_object3, sl3);
 
 
 
 
 	auto cube = registry.create();
 	Transform cube_transform;
-	DirectionalLight dl({10.0f, 10.0f, 10.0f}, {1.0f, -1.0f, 0.0f});
+	DirectionalLight dl({3.0f, 3.0f, 3.0f}, {1.0f, -1.0f, 0.0f});
 
-
-	cube_transform.Translate({7.0f, 0.0f, 7.0f});
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
-	registry.assign<DirectionalLight>(cube, dl);
+	//registry.assign<DirectionalLight>(cube, dl);
 
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)

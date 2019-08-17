@@ -20,7 +20,7 @@ void Renderer::Init() {
     gbuffer.BufferInit(Renderer::width, Renderer::height);
     shadowbuffer.BufferInit(Renderer::width, Renderer::height);
     postprocessbuffer.BufferInit(Renderer::width, Renderer::height);
-    current_view_buffer = postprocessbuffer.hdrMap;
+    current_view_buffer = postprocessbuffer.bloom;
 
 
 // Говорим на какие слоты ждать текстуры
@@ -256,7 +256,7 @@ void Renderer::PostProcess() {
     bool first_iteration = true;
     int cnt = 5;
  
-    for (unsigned int i = 0; i < cnt; i++) {
+    for (int i = 0; i < cnt; i++) {
          
         glDrawBuffer(GL_COLOR_ATTACHMENT2);
         if (first_iteration) {

@@ -180,7 +180,7 @@ SpotLight::SpotLight(const glm::vec3& color, const glm::vec3& pos, const glm::ve
 
     float radius = tanf(glm::radians(angle))*2.0f;
     this->model = glm::translate(glm::mat4(1.0f), position_WS)*rotation*
-                  glm::scale(glm::mat4(1.0f), {intensity, intensity, intensity})*
+                  glm::scale(glm::mat4(1.0f), {intensity/2.0f, intensity/2.0f, intensity/2.0f})*
                   glm::scale(glm::mat4(1.0f), {radius, 1.0f , radius});
 
 
