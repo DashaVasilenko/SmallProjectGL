@@ -1,0 +1,4 @@
+{
+    "vertex": "glsl/skybox_vertex.glsl",
+    "fragment": "glsl/skybox_pixel.glsl"
+}

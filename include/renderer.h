@@ -13,6 +13,7 @@
 #include "shaderProgram.h"
 #include "resourceManager.h"
 #include "engine.h"
+#include "skybox.h"
 
 class Renderer {
 public:
@@ -37,9 +38,10 @@ private:
     void GeometryPass(entt::registry& registry);
     void LightPass(entt::registry& registry);
     void PostProcess();
-    void BeginForwardRendering();
+    void SkyBoxRender(entt::registry& registry);
+    //void BeginForwardRendering();
     void DebugLightDraw(entt::registry& registry);
-
+ 
 
 
 
@@ -63,6 +65,7 @@ private:
     GBuffer gbuffer;
     ShadowBuffer shadowbuffer;
     PostProcessBuffer postprocessbuffer;
+    //SkyBox skybox;
 
 
     Geometry* quad = Engine::geometryManager.Get("data/quad.obj");
@@ -73,7 +76,7 @@ private:
     ShaderProgram* bloomProgram = Engine::programManager.Get("data/shaders/bloom.json");
 
     unsigned int current_view_buffer;
-    bool light_debug = true;
+    bool light_debug = false;
 
     static int width;
     static int height;

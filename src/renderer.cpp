@@ -308,6 +308,36 @@ void Renderer::PostProcess() {
     quad->Draw();
 }
 
+
+void Renderer::SkyBoxRender(entt::registry& registry) {
+
+    glm::mat4 view = glm::mat4(glm::mat3(camera->GetViewMatrix()));  // куб мапа двигается вместе со мной
+    //glm::mat4 view = camera->GetViewMatrix();
+    //skybox.Draw(projection, view);
+
+
+    auto skyboxes = registry.view<SkyBox>();
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glDepthFunc(GL_LEQUAL);
+    
+
+    for (auto entity: skyboxes) {
+        auto& skybox = skyboxes.get(entity);
+        skybox.Draw(projection, view);
+    }
+
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
+    glDisable(GL_DEPTH_TEST); 
+    
+
+
+}
+
+
+/* 
 void Renderer::BeginForwardRendering() {
     // копируем буффер глубины в окошко!
     glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.descriptor);
@@ -316,6 +346,8 @@ void Renderer::BeginForwardRendering() {
         0, 0, Renderer::width, Renderer::height, 0, 0, Renderer::width, Renderer::height, GL_DEPTH_BUFFER_BIT, GL_NEAREST
     );
 }
+*/
+
 
 void Renderer::DebugLightDraw(entt::registry& registry) {
     glm::mat4 viewMatrix = camera->GetViewMatrix();
@@ -343,12 +375,15 @@ void Renderer::Update(entt::registry& registry) {
     ShadowMapPass(registry);
     GeometryPass(registry);
     LightPass(registry);
-    PostProcess();
+
+    SkyBoxRender(registry);
     
     if (light_debug) {
-        BeginForwardRendering();
+    // здесь рисуем прозрачные штуки и разные вещи, которые не вписываются в deferred rendering
         DebugLightDraw(registry);
     }
+
+    PostProcess();
    
 }
 

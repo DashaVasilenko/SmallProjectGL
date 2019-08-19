@@ -70,7 +70,17 @@ int main() {
 	Mesh cube_mesh = { {cubeGeo, &wood} };
 	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
-
+	std::array<std::string, 6> fileNames = { "textures/skybox/front.tga",
+											 "textures/skybox/back.tga",
+											 "textures/skybox/up.tga",
+											  
+											 "textures/skybox/down.tga",
+											 "textures/skybox/right.tga",
+											 "textures/skybox/left.tga"
+											 };
+	
+	SkyBox skybox;
+	skybox.Init(fileNames);
 
 /* 
 	 for (int i = 0; i < 10; i++) {
@@ -95,6 +105,8 @@ int main() {
 	 }
 */
 
+
+/* 
 	auto spot_light_game_object = registry.create();
 	SpotLight sl ({1.0, 0.0, 0.0}, {-5.0f, 5.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, 30.0f, 18.0f);
 	registry.assign<SpotLight>(spot_light_game_object, sl);
@@ -113,7 +125,7 @@ int main() {
 	sphere_transform.Translate({0.0f, 1.0f, 0.0f});
 	registry.assign<Mesh>(sphere, sphere_mesh);
 	registry.assign<Transform>(sphere, sphere_transform);
-
+*/
 
 	auto cube = registry.create();
 	Transform cube_transform;
@@ -122,7 +134,9 @@ int main() {
 	cube_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(cube, std::move(cube_mesh));
 	registry.assign<Transform>(cube, std::move(cube_transform));
-	//registry.assign<DirectionalLight>(cube, dl);
+	registry.assign<DirectionalLight>(cube, dl);
+	registry.assign<SkyBox>(cube, skybox);
+
 
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
