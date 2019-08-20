@@ -150,14 +150,11 @@ int main() {
 	double currentTime = 0.0;
 	double lastTime = 0.0;
 	
-	
-
-    
 	// игровой цикл
 	while (!glfwWindowShouldClose(window.GetPointer())) {
+		glfwPollEvents(); // проверяет события (ввод с клавиатуры, перемещение мыши) и вызывает функции обратного вызова(callback))
+
 		//calculate time
-		glfwPollEvents(); // вызывает callback функции
-		
 		currentTime = glfwGetTime();
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
@@ -166,14 +163,8 @@ int main() {
 		renderer.Update(registry);
 		gui.Update();
     	
-
-		// заменяет цветовой буфер, который использовался для отрисовки на данной итерации и выводит результат на экран
-
-		glfwSwapBuffers(window.GetPointer());
- 		// проверяем события (ввод с клавиатуры, перемещение мыши) и вызываем функции обратного вызова(callback))
-    	
+ 		glfwSwapBuffers(window.GetPointer()); // заменяет цветовой буфер на следующий и выводит результат на экран
 	}	
-	window.Delete(); // убрать в деструктор 
 
 	return 0;
 }

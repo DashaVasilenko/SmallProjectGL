@@ -11,16 +11,16 @@ void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action,
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
     if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
-        if (!cursor_enabled) {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
-            glfwSetCursorPosCallback(window, nullptr);
+        if (!cursor_enabled) { // когда окно гуи нужно включить
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // включает курсор в окне гуи
+            glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback); // чтобы гуи читала нажатие клавиш
+            glfwSetCursorPosCallback(window, nullptr); // отключить колбэк на курсор. чтобы он не двигался в окне гуи (чтобы камера не двигалась)
             InputSystem::firstMouseMove = true;
         }
-        else {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            glfwSetCursorPosCallback(window, OnMouseMove);
-            glfwSetKeyCallback(window, OnKeyPressed);            
+        else { // когда окно гуи нужно выключить
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // выключаем курсор в окне гуи
+            glfwSetCursorPosCallback(window, OnMouseMove); // включить колбэк для курсора
+            glfwSetKeyCallback(window, OnKeyPressed); // включить колюэк для клавиатуры        
         }
         cursor_enabled = !cursor_enabled;
         InputSystem::draw_gui = !InputSystem::draw_gui;
@@ -59,11 +59,13 @@ int Window::Init() {
 	// Mac OS build fix
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 
+    // создание окна
     window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // скрыть курсор мыши 
 	// context
     glfwSetCursorPosCallback(window, OnMouseMove); // передача функции для курсора в GLFW
@@ -76,7 +78,7 @@ int Window::Init() {
     return 0;
 }
 
-void Window::Delete() {
+Window::~Window() {
     glfwDestroyWindow(window);
     glfwTerminate();
 }

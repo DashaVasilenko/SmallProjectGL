@@ -21,18 +21,20 @@ public:
     int GetWidth() { return this->width; }
     int GetHeight() { return this->height; }
     int Init();
-    void Delete();
      
     static void OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode);
     static void OnMouseMove(GLFWwindow* window, double xpos, double ypos);
 
+    ~Window();
+
 private:
-    void SwitchMode();
-    static bool cursor_enabled;
     GLFWwindow* window; 
     int width = 640;
     int height = 480;
     std::string name = "Window";
+
+    void SwitchMode();
+    static bool cursor_enabled;
 };
 
 #endif /* End of __WINDOW__ */
