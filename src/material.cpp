@@ -1,4 +1,6 @@
 #include "material.h"
+#include "engine.h"
+#include <iostream>
 
 void Material::SetProjectionMatrix(const glm::mat4& projection) {
     shaderProgram->SetUniform("Projection", projection); // перегоняет в координаты clip space;
@@ -94,4 +96,143 @@ void PbrMaterial::SetInnerUniforms() {
     metallicMap->Bind(GL_TEXTURE2);
     roughnessMap->Bind(GL_TEXTURE3);
     aoMap->Bind(GL_TEXTURE4);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+void MaterialPBR::SetAlbedo(const std::string& fileName) {
+    albedoMap = Engine::textureManager.Get(fileName);
+    albedo_texture = true;
+}
+
+void MaterialPBR::SetAlbedo(const glm::vec3& color) {
+    albedo_color = color;
+    albedo_texture = false;
+}
+
+void MaterialPBR::SetRoughness(const std::string& fileName) {
+    roughnessMap = Engine::textureManager.Get(fileName);
+    roughness_texture = true;
+}
+
+void MaterialPBR::SetRoughness(float r) {
+    roughness = r;
+    roughness_texture = false;
+}
+
+void MaterialPBR::SetMetallic(const std::string& fileName) {
+    metallicMap = Engine::textureManager.Get(fileName);
+    metallic_texture = true;
+}
+
+void MaterialPBR::SetMetallic(float m) {
+    metallic = m;
+    metallic_texture = false;
+}
+
+void MaterialPBR::SetNormalMap(const std::string& fileName, NormalFlag flag) {
+    switch(flag) {
+        case NORMAL_MAP:
+            normalMap = Engine::textureManager.Get(fileName);
+            normal_texture = true;
+            break;
+        case DISPLACEMENT_MAP:
+            displacementMap = Engine::textureManager.Get(fileName);
+            displacement_texture = true;
+    }
+}
+
+void MaterialPBR::SetAO(const std::string& fileName) {
+    aoMap = Engine::textureManager.Get(fileName);
+    ao_texture = true;
+}
+
+void MaterialPBR::SetScale(float scale) {
+    texture_scale = scale;
+}
+
+void MaterialPBR::Init() {
+    std::string program_name = "pbr_";
+
+    if (albedo_texture) {
+        program_name +="a";
+    }
+    if (normal_texture) {
+        program_name +="n";
+    }
+    if (roughness_texture) {
+        program_name +="r";
+    }
+    if (metallic_texture) {
+        program_name +="m";
+    }
+    if (ao_texture) {
+        program_name +="ao";
+    }
+
+    if (!albedo_texture && !normal_texture && !roughness_texture && !metallic_texture && !ao_texture) {
+        program_name ="pbr";
+    }
+
+    program_name += ".json";
+
+    shaderProgram = Engine::programManager.Get("data/shaders/"+program_name);
+
+    shaderProgram->Run();
+    if (albedo_texture) {
+        shaderProgram->SetUniform("albedoMap", 0);
+    }
+    else {
+        shaderProgram->SetUniform("albedo", albedo_color);
+    }
+        
+    if (normal_texture) {
+        shaderProgram->SetUniform("normalMap", 1);
+    }
+
+
+    if (metallic_texture) {
+         shaderProgram->SetUniform("metallicMap", 2);
+    }
+    else {
+        shaderProgram->SetUniform("metallic", metallic);
+    }
+       
+    if (roughness_texture) {
+        shaderProgram->SetUniform("roughnessMap", 3);
+    }
+    else {
+        shaderProgram->SetUniform("roughness", roughness);
+    }
+       
+    if (ao_texture) {
+        shaderProgram->SetUniform("aoMap", 4);
+    }
+
+    if (albedo_texture || normal_texture || roughness_texture || metallic_texture || ao_texture) {
+        shaderProgram->SetUniform("texture_scale", texture_scale);
+    }
+}
+
+
+void MaterialPBR::SetInnerUniforms() {
+    if (albedo_texture) {
+        albedoMap->Bind(GL_TEXTURE0);
+    }
+        
+    if (normal_texture) {
+        normalMap->Bind(GL_TEXTURE1);
+    }
+
+    if (metallic_texture) {
+        metallicMap->Bind(GL_TEXTURE2);
+    }
+       
+    if (roughness_texture) {
+        roughnessMap->Bind(GL_TEXTURE3);
+    }
+       
+    if (ao_texture) {
+        aoMap->Bind(GL_TEXTURE4);
+    }
 }

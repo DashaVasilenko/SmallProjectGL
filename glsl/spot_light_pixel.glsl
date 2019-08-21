@@ -1,4 +1,4 @@
-#version 330 // установка версии GLSL       
+//#version 330 core
 
 uniform vec2 ScreenWidthHeight;       
 

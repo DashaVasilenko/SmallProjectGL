@@ -1,6 +1,4 @@
-// PBR. Все векторы переводяться в пространство камеры, и дальнейшие вычисления ведутся в нем
-
-#version 330 core // установка версии GLSL
+//#version 330 core
 
 in vec3 outNormal;       
 in vec3 outEye;          

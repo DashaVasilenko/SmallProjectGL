@@ -38,38 +38,18 @@ int main() {
 	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc());
 	console->AddCommand("debuglight", renderer.GetDebugLightFunc());
 
-	ShaderProgram* program = Engine::programManager.Get("data/shaders/phong.json");
-	ShaderProgram* pbr_program = Engine::programManager.Get("data/shaders/pbr.json");
+	
 
-	// const Geometry* dragonGeo = geometryManager.Get("data/dragon.obj");
-	const Geometry* cubeGeo = Engine::geometryManager.Get("data/cube.obj");
-	const Geometry* sphereGeo = Engine::geometryManager.Get("data/sphere.obj");
 
-	PhongMaterial emerald(program, {0.0215, 0.1745, 0.0215}, {0.07568, 0.61424, 0.07568}, {0.633, 0.727811, 0.633}, 76.8f);
-	PhongMaterial ruby(program, {0.1745f, 0.01175f, 0.01175f}, {0.61424f, 0.04136f, 0.04136f}, {0.727811f, 0.626959f, 0.626959f}, 76.8f);
-	PhongMaterial silver(program, {0.23125f, 0.23125f, 0.23125f}, {0.2775f, 0.2775f, 0.2775f}, {0.773911f, 0.773911f, 0.773911f}, 89.6f);
 
-	PbrMaterial brick(pbr_program,
-					 Engine::textureManager.Get("textures/brickAlbedo.png"),
-					 Engine::textureManager.Get("textures/brickNormalMap.png"),
-					 Engine::textureManager.Get("textures/brickMetallic.png"),
-					 Engine::textureManager.Get("textures/brickRoughness.png"),
-					 Engine::textureManager.Get("textures/brickAO.png")
-					);
 
-	PbrMaterial wood(pbr_program,
-					 Engine::textureManager.Get("textures/woodAlbedo.png"),
-					 Engine::textureManager.Get("textures/woodNormalMap.png"),
-					 Engine::textureManager.Get("textures/woodMetallic.png"),
-					 Engine::textureManager.Get("textures/woodRoughness.png"),
-					 Engine::textureManager.Get("textures/woodAO.png")
-					);	
+//// Создаем сцену
 
+	// Все хранится в registry!!!
 	entt::registry registry; // библиотечная штука. почитать!!!
 
-	Mesh cube_mesh = { {cubeGeo, &wood} };
-	Mesh sphere_mesh = { {sphereGeo, &brick} };
 
+	// Создаем небо
 	std::array<std::string, 6> fileNames = { "textures/skybox/front.tga",
 											 "textures/skybox/back.tga",
 											 "textures/skybox/up.tga",
@@ -81,63 +61,115 @@ int main() {
 	
 	SkyBox skybox;
 	skybox.Init(fileNames);
-
-/* 
-	 for (int i = 0; i < 10; i++) {
-	 	for (int j = 0; j < 10; j++) {
-	 		auto sphere = registry.create();
-	 		Transform sphere_transform;
-	 		sphere_transform.Translate({static_cast<float>(i*3 - 5.0f), 1.0f, static_cast<float>(j*3) - 5.0f});
-	 		float r =  get_random();
-	 		float g = get_random();
-	 		float b = get_random();
-	 		SpotLight sl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 3.0f, static_cast<float>(j*3) - 5.0f}, {0.0f, -1.0f, 0.0f}, 30.0f, 100.0f);
-	 		PointLight pl ({r, g, b}, {static_cast<float>(i*3 - 5.0f), 2.0f, static_cast<float>(j*3) - 5.0f}, 25.0f);
-	 		registry.assign<Mesh>(sphere, sphere_mesh);
-	 		registry.assign<Transform>(sphere, sphere_transform);
-	 		if ( j%2 == 0) {
-	 			registry.assign<SpotLight>(sphere, sl);
-	 		}
-	 		else{
-	 			registry.assign<PointLight>(sphere, pl);
-	 		}
-	 	}
-	 }
-*/
-
-
-/* 
-	auto spot_light_game_object = registry.create();
-	SpotLight sl ({1.0, 0.0, 0.0}, {-5.0f, 5.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, 30.0f, 18.0f);
-	registry.assign<SpotLight>(spot_light_game_object, sl);
-
-
-	auto spot_light_game_object2 = registry.create();
-	SpotLight sl2 ({0.0, 1.0, 1.0}, {0.0f, 5.0f, -6.0f}, {0.0f, -1.0f, 1.0f}, 30.0f, 18.0f);
-	registry.assign<SpotLight>(spot_light_game_object2, sl2);
-
-	auto spot_light_game_object3 = registry.create();
-	SpotLight sl3 ({0.0, 0.0, 1.0}, {5.0f, 5.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, 30.0f, 18.0f);
-	registry.assign<SpotLight>(spot_light_game_object3, sl3);
-
-	auto sphere = registry.create();
-	Transform sphere_transform;
-	sphere_transform.Translate({0.0f, 1.0f, 0.0f});
-	registry.assign<Mesh>(sphere, sphere_mesh);
-	registry.assign<Transform>(sphere, sphere_transform);
-*/
-
-	auto cube = registry.create();
-	Transform cube_transform;
 	DirectionalLight dl({3.0f, 3.0f, 3.0f}, {1.0f, -1.0f, 0.0f});
 
-	cube_transform.Scale({40.0f, 0.15f, 40.0f});
-	registry.assign<Mesh>(cube, std::move(cube_mesh));
-	registry.assign<Transform>(cube, std::move(cube_transform));
-	registry.assign<DirectionalLight>(cube, dl);
-	registry.assign<SkyBox>(cube, skybox);
+	auto sky = registry.create();
+	registry.assign<DirectionalLight>(sky, dl);
+	registry.assign<SkyBox>(sky, skybox);
+
+	// Конец неба
+
+	// Грузим необходимую геометрию
+	const Geometry* cubeGeo = Engine::geometryManager.Get("data/cube.obj");
+	const Geometry* sphereGeo = Engine::geometryManager.Get("data/sphere_highpoly.obj");
+	const Geometry* dragonGeo = Engine::geometryManager.Get("data/dragon.obj");
+
+	// Создаем пол
+
+	MaterialPBR floor_Material;
+	floor_Material.SetAlbedo("textures/7/d.png");
+	floor_Material.SetRoughness("textures/7/r.png");
+	floor_Material.SetNormalMap("textures/7/n.png", NORMAL_MAP);
+	floor_Material.SetScale(2.0f);
+	floor_Material.Init();
+
+	Mesh floor_mesh { {cubeGeo, &floor_Material} };
+
+	auto floor = registry.create();
+	Transform floor_transform;
+	floor_transform.Scale({40.0f, 0.15f, 40.0f});
+	registry.assign<Mesh>(floor, floor_mesh);
+	registry.assign<Transform>(floor, floor_transform);
+
+	// конец Пола
+	
+
+	// Создаем дракона
+	MaterialPBR dragon_Material;
+
+	dragon_Material.SetAlbedo(glm::vec3(0.207, 0.556, 0.737));
+	dragon_Material.SetRoughness(0.4f);
+	dragon_Material.Init();
+
+	Mesh dragon_mesh { {dragonGeo, &dragon_Material} };
+	auto dragon = registry.create();
+	Transform dragon_transform;
+
+	registry.assign<Transform>(dragon, dragon_transform);
+	registry.assign<Mesh>(dragon, dragon_mesh);
+	
+	// Cоздаем сферы
+	MaterialPBR sphere_Material;
+	sphere_Material.SetAlbedo("textures/8/d.png");
+	sphere_Material.SetRoughness("textures/8/r.png");
+	sphere_Material.SetMetallic("textures/8/m.png");
+	sphere_Material.SetNormalMap("textures/8/n.png", NORMAL_MAP);
+	sphere_Material.Init();
+	Mesh sphere_mesh { {sphereGeo, &sphere_Material} };
+
+	for (int i = 0; i < 10; i++) {
+		Transform sphere_transform;
+		sphere_transform.Translate({-18.0f+4*i, 1.0f, 6.0f});
+		auto sphere = registry.create();
+		registry.assign<Transform>(sphere, sphere_transform);
+		registry.assign<Mesh>(sphere, sphere_mesh);
+	}
+
+	// Создаём кубики
+	MaterialPBR cube_Material;
+	cube_Material.SetAlbedo("textures/5/d.png");
+	cube_Material.SetRoughness("textures/5/r.png");
+	cube_Material.SetNormalMap("textures/5/n.png", NORMAL_MAP);
+	cube_Material.Init();
+
+	Mesh cube_mesh { {cubeGeo, &cube_Material} };
+	for (int i = 0; i < 9; i++) {
+		Transform cube_transform;
+		cube_transform.Scale({2.0f, 2.0f, 2.0f});
+		cube_transform.Translate({-16.0f+4*i, 1.0f, 9.0f});
+		auto cube = registry.create();
+		registry.assign<Transform>(cube, cube_transform);
+		registry.assign<Mesh>(cube, cube_mesh);
+	}
+
+	// Прожектор
+	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 60.0f, 35.0f);
+	auto spotlight = registry.create();
+	registry.assign<SpotLight>(spotlight, sl);
 
 
+	// Точечные источники
+
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			
+			float r = get_random();
+			float g = get_random();
+			float b = get_random();
+			auto pointLight = registry.create();
+			PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 50.0f);
+			registry.assign<PointLight>(pointLight, pl);
+		}
+	}
+
+
+
+	
+
+	
+
+	
+	
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
