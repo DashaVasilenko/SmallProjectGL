@@ -1,4 +1,4 @@
-#version 330 // установка версии GLSL
+//#version 330 core
 !!! // фигня переписать все
 in vec3 outNormal;
 in vec3 inEye;

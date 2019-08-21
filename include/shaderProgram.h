@@ -30,6 +30,7 @@ public:
     ~ShaderProgram();
 private:
     std::string name;
+    std::string defines_source = "";
     std::unordered_map<std::string, GLint> uniformCache;
     std::map<GLenum, std::string> mapSources;
     std::map<GLenum, GLuint> mapShaders;

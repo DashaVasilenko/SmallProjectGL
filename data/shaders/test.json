@@ -1,0 +1,5 @@
+{
+    "vertex": "glsl/test_vertex.glsl",
+    "fragment": "glsl/test_pixel.glsl",
+    "defines": ["RED_COLOR"]
+}

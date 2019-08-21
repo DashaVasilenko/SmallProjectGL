@@ -51,5 +51,44 @@ private:
     const Texture* aoMap;
 };
 
+enum NormalFlag { NORMAL_MAP, DISPLACEMENT_MAP };
+
+class MaterialPBR: public Material {
+public:
+    MaterialPBR(){}
+    void SetAlbedo(const std::string& fileName);
+    void SetAlbedo(const glm::vec3& color);
+    void SetNormalMap(const std::string& fileName, NormalFlag flag);
+    void SetRoughness(const std::string& fileName);
+    void SetRoughness(float roughness);
+    void SetMetallic(const std::string& fileName);
+    void SetMetallic(float metallic);
+    void SetAO(const std::string& fileName);
+    void SetScale(float scale);
+
+    void Init();
+    void SetInnerUniforms() override;
+private:
+    const Texture* albedoMap;
+    const Texture* metallicMap;
+    const Texture* roughnessMap;
+    const Texture* normalMap;
+    const Texture* displacementMap;
+    const Texture* aoMap;
+
+    glm::vec3 albedo_color = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    float roughness = 0.0f;
+    float metallic = 0.0f;
+
+    float texture_scale = 1.0f;
+
+    bool albedo_texture = false;
+    bool normal_texture = false;
+    bool displacement_texture = false;
+    bool roughness_texture = false;
+    bool metallic_texture = false;
+    bool ao_texture = false;
+};
 
 #endif /* End of Material */

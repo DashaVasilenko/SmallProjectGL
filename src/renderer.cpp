@@ -66,15 +66,14 @@ void Renderer::ShadowMapPass(entt::registry& registry) {
     auto dir_lights = registry.view<DirectionalLight>();
 
     OrthoCamera orthoCamera;
-    orthoCamera.SetAspect(width/height);
-    orthoCamera.SetProjection(-30.0f*orthoCamera.GetAspect(), 30.0f*orthoCamera.GetAspect(), -30.0f, 30.0f, 0.05f, 50.0f);
+    orthoCamera.SetProjection(-20.0f, 20.0f, -20.0f, 20.0f, 0.05f, 50.0f);
     const Camera* camera_save = camera;
     SetActiveCamera(&orthoCamera);
 
     glCullFace(GL_FRONT);
     for (auto entity: dir_lights) {
         auto& light = dir_lights.get(entity);
-        orthoCamera.SetPosition(glm::vec3(-10.0f, 10.0f, 10.0f));
+        orthoCamera.SetPosition(glm::vec3(-20.0f, 20.0f, 0.0f));
         orthoCamera.SetFront(-light.GetDirection());
        
         lightMatrix = projection*orthoCamera.GetViewMatrix();
@@ -310,19 +309,13 @@ void Renderer::PostProcess() {
 
 
 void Renderer::SkyBoxRender(entt::registry& registry) {
-
-    glm::mat4 view = glm::mat4(glm::mat3(camera->GetViewMatrix()));  // куб мапа двигается вместе со мной
-    //glm::mat4 view = camera->GetViewMatrix();
-    //skybox.Draw(projection, view);
-
-
-    auto skyboxes = registry.view<SkyBox>();
-
+    glm::mat4 view = glm::mat4(glm::mat3(camera->GetViewMatrix()));
+    
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
     
-
+    auto skyboxes = registry.view<SkyBox>();
     for (auto entity: skyboxes) {
         auto& skybox = skyboxes.get(entity);
         skybox.Draw(projection, view);
@@ -332,8 +325,6 @@ void Renderer::SkyBoxRender(entt::registry& registry) {
     glDepthMask(GL_TRUE);
     glDisable(GL_DEPTH_TEST); 
     
-
-
 }
 
 
@@ -368,6 +359,9 @@ void Renderer::DebugLightDraw(entt::registry& registry) {
         sl.DebugDraw(projection, viewMatrix);
     }
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    glDepthMask(GL_FALSE);
+    glDisable(GL_DEPTH_TEST);
 }
 
 void Renderer::Update(entt::registry& registry) {
@@ -375,13 +369,12 @@ void Renderer::Update(entt::registry& registry) {
     ShadowMapPass(registry);
     GeometryPass(registry);
     LightPass(registry);
-
-    SkyBoxRender(registry);
-    
-    if (light_debug) {
     // здесь рисуем прозрачные штуки и разные вещи, которые не вписываются в deferred rendering
+    SkyBoxRender(registry);
+    if (light_debug) {
         DebugLightDraw(registry);
     }
+    
 
     PostProcess();
    

@@ -28,6 +28,16 @@ void ShaderProgram::Load(const std::string& fileName) {
     if (shaderData.find("geometry") != shaderData.end()) {
         mapSources[GL_GEOMETRY_SHADER] = shaderData["geometry"];
     }
+
+    
+    // Новое, разбираемся с дефайнами до компиляции
+    auto it = shaderData.find("defines");
+    if (it != shaderData.end()) {
+        for (json::iterator iter = it->begin(); iter != it->end(); ++iter) {
+            defines_source += "#define " + iter->get<std::string>() + std::string("\n");
+        }
+    }
+
     Compile();
     Link();
     Delete();
@@ -45,9 +55,10 @@ void ShaderProgram::Compile() {
         mapShaders[element.first] = glCreateShader(element.first); // создать объект шейдера (в скобках тип шейдера)
         GLuint& shader_descriptor = mapShaders[element.first];
 	    
-	    const char* source =  source_cpp.c_str();
-	    // привязываем исходный код шейдера к объекту шейдера (шейдер, кол-во строк, текст шейдера, NULL)
-	    glShaderSource(shader_descriptor, 1, &source, NULL);  
+	   
+        // TODO:: Убрать хардкод версии шейдера - перенести версию в json файл
+        const char *sources[3] = { "#version 330 core\n", defines_source.c_str(), source_cpp.c_str() };
+	    glShaderSource(shader_descriptor, 3, sources, NULL);  
 	    glCompileShader(shader_descriptor); // компилируем шейдер
 
 	    // проверка на ошибки при сборке шейдера

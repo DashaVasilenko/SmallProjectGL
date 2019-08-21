@@ -1,4 +1,4 @@
-#version 330 // установка версии GLSL
+// #version 330
 layout (location = 0) out vec3 hdrMap;
 layout (location = 1) out vec3 brightMap;
 

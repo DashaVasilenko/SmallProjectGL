@@ -1,4 +1,4 @@
-#version 330 core // установка версии GLSL
+//#version 330 core
 
 void main() {
     

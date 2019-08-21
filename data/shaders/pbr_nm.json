@@ -1,0 +1,5 @@
+{
+    "vertex": "glsl/deferred_rendering_vertex.glsl",
+    "fragment": "glsl/deferred_rendering_pixel.glsl",
+    "defines": ["NORMAL_TEXTURE", "METALLIC_TEXTURE"]
+}
