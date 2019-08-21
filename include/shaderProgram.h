@@ -18,6 +18,7 @@ public:
     void Load(const std::string& filename);
     void Compile();
     void Link();
+    void Delete();
     void Run() const;
     void SetUniform(const std::string&, const glm::mat4&);
     void SetUniform(const std::string&, const glm::mat3&);

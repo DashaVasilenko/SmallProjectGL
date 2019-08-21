@@ -30,6 +30,7 @@ void ShaderProgram::Load(const std::string& fileName) {
     }
     Compile();
     Link();
+    Delete();
 }
 
 void ShaderProgram::Compile() {
@@ -229,9 +230,15 @@ void ShaderProgram::SetUniform(const std::string& name, int value) {
     }
 }
 
-ShaderProgram::~ShaderProgram(){
+void ShaderProgram::Delete() {
     for (auto& element: mapShaders) {
 	    glDeleteShader(element.second);
     }
+}
+
+ShaderProgram::~ShaderProgram(){
+    //for (auto& element: mapShaders) {
+	//    glDeleteShader(element.second);
+    //}
     glDeleteProgram(descriptor);
 }

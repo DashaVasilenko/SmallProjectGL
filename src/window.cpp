@@ -1,11 +1,9 @@
 #include "window.h"
 #include "inputSystem.h"
 
-// (указатель на GLFWwindow, код нажатой клавиши, действие над клавишей,
-// число описывающее модификаторы (shift, control, alt или super) ) 
-
 bool Window::cursor_enabled = false;
 
+// (указатель на GLFWwindow, код нажатой клавиши, действие над клавишей, число описывающее модификаторы (shift, control, alt или super) ) 
 void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -13,14 +11,14 @@ void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action,
     if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
         if (!cursor_enabled) { // когда окно гуи нужно включить
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // включает курсор в окне гуи
-            glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback); // чтобы гуи читала нажатие клавиш
+            glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback); // чтобы гуи читала нажатие клавиш (колбэк на гуи)
             glfwSetCursorPosCallback(window, nullptr); // отключить колбэк на курсор. чтобы он не двигался в окне гуи (чтобы камера не двигалась)
             InputSystem::firstMouseMove = true;
         }
         else { // когда окно гуи нужно выключить
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // выключаем курсор в окне гуи
             glfwSetCursorPosCallback(window, OnMouseMove); // включить колбэк для курсора
-            glfwSetKeyCallback(window, OnKeyPressed); // включить колюэк для клавиатуры        
+            glfwSetKeyCallback(window, OnKeyPressed); // включить колбэк для клавиатуры        
         }
         cursor_enabled = !cursor_enabled;
         InputSystem::draw_gui = !InputSystem::draw_gui;
