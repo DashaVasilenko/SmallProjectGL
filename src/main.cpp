@@ -95,72 +95,75 @@ int main() {
 	
 
 	// Создаем дракона
-	MaterialPBR dragon_Material;
+	// MaterialPBR dragon_Material;
 
-	dragon_Material.SetAlbedo(glm::vec3(0.207, 0.556, 0.737));
-	dragon_Material.SetRoughness(0.4f);
-	dragon_Material.Init();
+	// dragon_Material.SetAlbedo(glm::vec3(0.207, 0.556, 0.737));
+	// dragon_Material.SetRoughness(0.4f);
+	// dragon_Material.Init();
 
-	Mesh dragon_mesh { {dragonGeo, &dragon_Material} };
-	auto dragon = registry.create();
-	Transform dragon_transform;
+	// Mesh dragon_mesh { {dragonGeo, &dragon_Material} };
+	// auto dragon = registry.create();
+	// Transform dragon_transform;
 
-	registry.assign<Transform>(dragon, dragon_transform);
-	registry.assign<Mesh>(dragon, dragon_mesh);
+	// registry.assign<Transform>(dragon, dragon_transform);
+	// registry.assign<Mesh>(dragon, dragon_mesh);
 	
 	// Cоздаем сферы
-	MaterialPBR sphere_Material;
-	sphere_Material.SetAlbedo("textures/8/d.png");
-	sphere_Material.SetRoughness("textures/8/r.png");
-	sphere_Material.SetMetallic("textures/8/m.png");
-	sphere_Material.SetNormalMap("textures/8/n.png", NORMAL_MAP);
-	sphere_Material.Init();
-	Mesh sphere_mesh { {sphereGeo, &sphere_Material} };
+	MaterialPBR* sphere_Materials = new MaterialPBR[100];
+	
 
 	for (int i = 0; i < 10; i++) {
-		Transform sphere_transform;
-		sphere_transform.Translate({-18.0f+4*i, 1.0f, 6.0f});
-		auto sphere = registry.create();
-		registry.assign<Transform>(sphere, sphere_transform);
-		registry.assign<Mesh>(sphere, sphere_mesh);
+		for (int j = 0; j < 10; j++) {
+			sphere_Materials[10 * i + j].SetRoughness(0.1 * i);
+			sphere_Materials[10 * i + j].SetMetallic(0.1 * j);
+			sphere_Materials[10 * i + j].Init();
+
+			Mesh sphere_mesh{{sphereGeo, &sphere_Materials[10 * i + j]}};
+
+			Transform sphere_transform;
+			sphere_transform.Translate({-18.0f + 4 * i, 1.0f, -18.0f + 4 * j});
+			auto sphere = registry.create();
+			registry.assign<Transform>(sphere, sphere_transform);
+			registry.assign<Mesh>(sphere, std::move(sphere_mesh));
+		}
 	}
 
-	// Создаём кубики
-	MaterialPBR cube_Material;
-	cube_Material.SetAlbedo("textures/5/d.png");
-	cube_Material.SetRoughness("textures/5/r.png");
-	cube_Material.SetNormalMap("textures/5/n.png", NORMAL_MAP);
-	cube_Material.Init();
+	// // Создаём кубики
+	// MaterialPBR cube_Material;
+	// cube_Material.SetAlbedo("textures/5/d.png");
+	// cube_Material.SetRoughness("textures/5/r.png");
+	// cube_Material.SetNormalMap("textures/5/n.png", NORMAL_MAP);
+	// cube_Material.Init();
 
-	Mesh cube_mesh { {cubeGeo, &cube_Material} };
-	for (int i = 0; i < 9; i++) {
-		Transform cube_transform;
-		cube_transform.Scale({2.0f, 2.0f, 2.0f});
-		cube_transform.Translate({-16.0f+4*i, 1.0f, 9.0f});
-		auto cube = registry.create();
-		registry.assign<Transform>(cube, cube_transform);
-		registry.assign<Mesh>(cube, cube_mesh);
-	}
+	// Mesh cube_mesh { {cubeGeo, &cube_Material} };
+	// for (int i = 0; i < 9; i++) {
+	// 	Transform cube_transform;
+	// 	cube_transform.Scale({2.0f, 2.0f, 2.0f});
+	// 	cube_transform.Translate({-16.0f+4*i, 1.0f, 9.0f});
+	// 	auto cube = registry.create();
+	// 	registry.assign<Transform>(cube, cube_transform);
+	// 	registry.assign<Mesh>(cube, cube_mesh);
+	// }
 
-	// Прожектор
-	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 60.0f, 35.0f);
-	auto spotlight = registry.create();
-	registry.assign<SpotLight>(spotlight, sl);
+	//  Прожектор
+	//  SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 60.0f, 35.0f);
+	//  auto spotlight = registry.create();
+	//  registry.assign<SpotLight>(spotlight, sl);
 
 
 	// Точечные источники
 
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+	// for (int i = 0; i < 10; i++) {
+	// 	for (int j = 0; j < 10; j++) {
 			
-			float r = get_random();
-			float g = get_random();
-			float b = get_random();
-			auto pointLight = registry.create();
-			PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 50.0f);
-			registry.assign<PointLight>(pointLight, pl);
-		}
-	}
+	// 		float r = get_random();
+	// 		float g = get_random();
+	// 		float b = get_random();
+	// 		auto pointLight = registry.create();
+	// 		PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 50.0f);
+	// 		registry.assign<PointLight>(pointLight, pl);
+	// 	}
+	// }
 
 
 
