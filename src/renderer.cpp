@@ -45,21 +45,17 @@ void Renderer::ClearResult() {
 }
 
 void Renderer::ShadowMapPass(entt::registry& registry) {
-    // что рисуем
-    auto meshes = registry.view<Mesh, Transform>();
+    auto meshes = registry.view<Mesh, Transform>(); // что рисуем
 
-    // включаем тест глубины
-    GLCall(glEnable(GL_DEPTH_TEST));
-    GLCall(glDepthMask(GL_TRUE)); 
+    GLCall(glEnable(GL_DEPTH_TEST)); // включаем тест глубины
+    GLCall(glDepthMask(GL_TRUE)); // включаем запись в буфер глубины
 
-    // ставим размер карты
-    GLCall(glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize()));
-    // начинаем рендер в карту теней
-    shadowbuffer.Bind();
-    GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+    GLCall(glViewport(0, 0, shadowbuffer.GetSize(), shadowbuffer.GetSize())); // ставим размер карты теней
+    shadowbuffer.Bind(); // биндим карту теней
+    GLCall(glClear(GL_DEPTH_BUFFER_BIT)); // очищаем буфер глубины
 
     // TODO: Заменить на метод Framebuffer.SetDrawBuffers
-    GLCall(glDrawBuffer(GL_NONE));
+    GLCall(glDrawBuffer(GL_NONE)); // не рисуем цвета (так как они нам не нужны, нужна только глубина)
    
     auto dir_lights = registry.view<DirectionalLight>();
 
@@ -68,7 +64,7 @@ void Renderer::ShadowMapPass(entt::registry& registry) {
     const Camera* camera_save = camera;
     SetActiveCamera(&orthoCamera);
 
-    GLCall(glCullFace(GL_FRONT));
+    GLCall(glCullFace(GL_FRONT)); // рендерим передние поверхности
     for (auto entity: dir_lights) {
         auto& light = dir_lights.get(entity);
         orthoCamera.SetPosition(glm::vec3(-20.0f, 20.0f, 0.0f));
@@ -82,23 +78,20 @@ void Renderer::ShadowMapPass(entt::registry& registry) {
             mesh.DepthPass(lightMatrix, transform.GetModelMatrix());
         }
     }
-    GLCall(glCullFace(GL_BACK));
-    SetActiveCamera(camera_save);
-    GLCall(glViewport(0, 0, Renderer::width, Renderer::height));
-    // Конец заполнения карты теней 
+    GLCall(glCullFace(GL_BACK)); // рендерим задние поверхности
+    SetActiveCamera(camera_save); // возвращаем исходную камеру
+    GLCall(glViewport(0, 0, Renderer::width, Renderer::height)); // устанавливаем размер окна для рендеринга
 }
 
 void Renderer::GeometryPass(entt::registry& registry) {
     glm::mat4 viewMatrix = camera->GetViewMatrix();
     auto meshes = registry.view<Mesh, Transform>();
 
-    // Биндим gbuffer указываем 4 выхода шейдерам
-    gbuffer.Bind();
+    gbuffer.Bind(); // биндим gbuffer
     // TODO: Строчки ниже убрать в метод фреймбуффера SetDrawBuffers
-    unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-    GLCall(glDrawBuffers(4, attachments));
-    
-    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    unsigned int attachments[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3}; // выходы шейдера
+    GLCall(glDrawBuffers(4, attachments)); // куда рисуем
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)); // чистим буфферы 
     
     // заполнение карт в gbufferе
     for (auto entity: meshes) {
@@ -107,8 +100,7 @@ void Renderer::GeometryPass(entt::registry& registry) {
         mesh.Draw(projection, viewMatrix, transform.GetModelMatrix());
     }
 
-    // Запрещаем менять буффер глубины
-    GLCall(glDepthMask(GL_FALSE));    
+    GLCall(glDepthMask(GL_FALSE)); // запрещаем менять буффер глубины
 }
 
 void Renderer::BeginLightPass() {
@@ -206,7 +198,7 @@ void Renderer::LightPass(entt::registry& registry) {
 }
 
 void Renderer::PostProcess() {
-      // Биндим резалт текстуру
+    // Биндим резалт текстуру
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     GLCall(glActiveTexture(GL_TEXTURE0));
@@ -221,34 +213,8 @@ void Renderer::PostProcess() {
 
     toneMapPlusBrightness->Run();
     quad->Draw(); 
+
     // Заполнили hdrMap и brightMap
-
-
-//////////////////////////////////////////// 
-  /*  bool horizontal = true;
-
-    glDrawBuffer(GL_COLOR_ATTACHMENT2);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, postprocessbuffer.brightMap);
-
-    gaussProgram->Run();
-    gaussProgram->SetUniform("horizontal", horizontal);
-    quad->Draw();
-    horizontal = !horizontal;
-
-    glDrawBuffer(GL_COLOR_ATTACHMENT3);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, postprocessbuffer.horizontalGauss); 
-        
-    gaussProgram->Run();
-    gaussProgram->SetUniform("horizontal", horizontal);
-    quad->Draw();
-    horizontal = !horizontal;*/
- 
-
-///////////////////////////////////////////
-
- 
     bool horizontal = true;
     bool first_iteration = true;
     int cnt = 5;
@@ -373,7 +339,6 @@ void Renderer::Update(entt::registry& registry) {
         DebugLightDraw(registry);
     }
     
-
     PostProcess();
    
 }
@@ -405,7 +370,6 @@ bool Renderer::DebugLight(const std::vector<std::string>& arguments) {
     }
     return false;
 } 
-
 
 bool Renderer::ViewBuffer(const std::vector<std::string>& arguments) {
     if (arguments.size() == 1) {

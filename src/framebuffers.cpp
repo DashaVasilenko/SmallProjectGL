@@ -105,7 +105,7 @@ void ShadowBuffer::BufferInit(int width, int  height) {
     GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor)); // задаем цвет границы
     // присоединение текстуры к объекту текущего кадрового буфера
     // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
-   GLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
+    GLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
     // указываем, что не будем рендерить цвет, так как нас интересует только глубины
     // glDrawBuffer(GL_NONE);  
     // glReadBuffer(GL_NONE);
