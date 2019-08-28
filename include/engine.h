@@ -11,7 +11,8 @@ public:
     static ResourceManager<ShaderProgram> programManager;
     static ResourceManager<Texture> textureManager;
     static ResourceManager<Geometry> geometryManager;
+    
 private:
-};
+}; 
 
 #endif /* End Of Engine */

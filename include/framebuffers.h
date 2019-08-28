@@ -2,6 +2,7 @@
 #define __FRAMEBUFFERS__
 
 #include <GL/glew.h>
+#include "errors.h"
 
 class GBuffer {
 public:
@@ -14,6 +15,7 @@ public:
     void Unbind() const;
 
     ~GBuffer();
+
 private:
     GLuint descriptor;
     unsigned int position;
@@ -35,6 +37,7 @@ public:
     unsigned int GetSize() { return size; }
 
     ~ShadowBuffer();
+
 private:
     GLuint descriptor;
     unsigned int depthMap;
@@ -49,6 +52,7 @@ public:
     void Bind() const;
     void Unbind() const;
     ~PostProcessBuffer();
+    
 private:
     GLuint descriptor;
     unsigned int hdrMap;

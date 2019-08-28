@@ -11,6 +11,7 @@ using json = nlohmann::json;
 #include <map>
 #include <unordered_map>
 #include <string>
+#include "errors.h"
 
 class ShaderProgram {
 public:
@@ -18,8 +19,9 @@ public:
     void Load(const std::string& filename);
     void Compile();
     void Link();
-    void Delete();
+    void DeleteShaders();
     void Run() const;
+
     void SetUniform(const std::string&, const glm::mat4&);
     void SetUniform(const std::string&, const glm::mat3&);
     void SetUniform(const std::string&, const glm::vec4&);
@@ -27,7 +29,9 @@ public:
     void SetUniform(const std::string&, const glm::vec2&);
     void SetUniform(const std::string&, float);
     void SetUniform(const std::string&, int);
+
     ~ShaderProgram();
+
 private:
     std::string name;
     std::string defines_source = "";

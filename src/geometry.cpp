@@ -15,7 +15,6 @@ void Geometry::Load(const std::string& filename) {
             const aiMesh* mesh = pScene->mMeshes[i];
             count += mesh->mNumVertices;
         }
-        //vertices.reserve(3*count);
 
         for (uint i = 0; i < pScene->mNumMeshes; i++) {
             const aiMesh* mesh = pScene->mMeshes[i];
@@ -76,5 +75,5 @@ void Geometry::Init(const std::vector<GLfloat>& vertices, const BufferLayout& la
 
 void Geometry::Draw() const {
     vao.Bind();
-    glDrawArrays(GL_TRIANGLES, 0, count);
+    GLCall(glDrawArrays(GL_TRIANGLES, 0, count));
 }

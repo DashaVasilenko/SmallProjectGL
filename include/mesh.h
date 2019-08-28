@@ -11,6 +11,7 @@ public:
     SubMesh(const Geometry* geometry, Material* material);
     Material* GetMaterial() { return material; }
     void Draw();
+
 private:
     const Geometry* geometry;
     Material* material;
@@ -23,6 +24,7 @@ public:
     }
     void Draw(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model);
     void DepthPass(const glm::mat4& lightMatrix, const glm::mat4& model);
+    
 private:
     std::vector<SubMesh> subMeshes;
     ShaderProgram* depthProgram;

@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <string>
 #include <vector>
+#include "errors.h"
 
 class IndexBuffer {
 public:
@@ -12,6 +13,7 @@ public:
     void Bind() const;
     void Unbind() const;
     ~IndexBuffer();
+
 private:
     GLuint descriptor;
 };
@@ -23,6 +25,7 @@ public:
     void Bind() const;
     void Unbind() const;
     ~VertexBuffer();
+
 private:
     GLuint descriptor;
 };
@@ -63,6 +66,7 @@ public:
     void Bind() const;
     void AddAttributes(const VertexBuffer&, const BufferLayout&);
     ~VertexArray();
+
 private:
     GLuint descriptor;
     GLuint freeAttribNum = 0;
@@ -78,6 +82,7 @@ public:
     void Unbind() const;
     int GetTexDescriptor() { return this->tex_color_buf; }
     ~FrameBuffer();
+    
 private:
     GLuint descriptor;
     unsigned int tex_color_buf;

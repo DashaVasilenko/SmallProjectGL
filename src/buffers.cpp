@@ -2,50 +2,48 @@
 #include <iostream>
 
 IndexBuffer::IndexBuffer() {
-    glGenBuffers(1, &descriptor); // создаем буфер IBO (1 - кол-во буферов)
+    GLCall(glGenBuffers(1, &descriptor)); // создаем буфер IBO (1 - кол-во буферов)
 }
 
 void IndexBuffer::BufferData(int* data, size_t count) {
     Bind();
     // копируем вершинные данные в буфер (тип буфера, количество данных в байтах, данные, режим работы с данными)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count*sizeof(int), data, GL_STATIC_DRAW);
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count*sizeof(int), data, GL_STATIC_DRAW));
 }
 
 void IndexBuffer::Bind() const {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, descriptor); // определяем тип буфера
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, descriptor)); // определяем тип буфера
 }
 
-// !!! где-то надо отвязать (не знаю, где)
 void IndexBuffer::Unbind() const {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 IndexBuffer::~IndexBuffer() {
-    glDeleteBuffers(1, &descriptor);
+    GLCall(glDeleteBuffers(1, &descriptor));
 }
 
 //--------------------------------------------------------------------------
 VertexBuffer::VertexBuffer() {
-    glGenBuffers(1, &descriptor); // создаем буфер VBO (vertex buffer objects) 1 - кол-во буферов
+    GLCall(glGenBuffers(1, &descriptor)); // создаем буфер VBO (vertex buffer objects) 1 - кол-во буферов
 }
 
 void VertexBuffer::BufferData(void* data, size_t size) {
     Bind();
     // копируем вершинные данные в буфер (тип буфера, количество данных в байтах, данные, режим работы с данными)
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
 }
 
 void VertexBuffer::Bind() const {
-    glBindBuffer(GL_ARRAY_BUFFER, descriptor); // определяем тип буфера
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, descriptor)); // определяем тип буфера
 }
 
-// !!! где-то надо отвязать (не знаю, где)
 void VertexBuffer::Unbind() const {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
 VertexBuffer::~VertexBuffer() {
-    glDeleteBuffers(1, &descriptor);
+    GLCall(glDeleteBuffers(1, &descriptor));
 }
 
 //--------------------------------------------------------------------------
@@ -59,9 +57,7 @@ size_t BufferElement::GetCount() const {
         case Int3: return 3;
         case Int4: return 4;
 
-        default:
-                // switch to assert
-            exit(EXIT_FAILURE);
+        default: exit(EXIT_FAILURE); // switch to assert
     }
 }
 
@@ -75,9 +71,7 @@ GLenum BufferElement::GetOpenglType() const {
         case Int3: return GL_INT;
         case Int4: return GL_INT;
 
-        default:
-            // switch to assert
-            exit(EXIT_FAILURE);
+        default: exit(EXIT_FAILURE); // switch to assert
     }
 }
 
@@ -91,9 +85,7 @@ size_t BufferElement::GetSizeOfType(ShaderDataType type) {
         case Int3: return sizeof(GLint)*3;
         case Int4: return sizeof(GLint)*4;
 
-        default:
-            // switch to assert
-            exit(EXIT_FAILURE);
+        default: exit(EXIT_FAILURE); // switch to assert
     }
 }
 //--------------------------------------------------------------------------
@@ -110,11 +102,11 @@ void BufferLayout::CalculateStrideAndOffset() {
 
 //--------------------------------------------------------------------------
 VertexArray::VertexArray() {
-    glGenVertexArrays(1, &descriptor);
+    GLCall(glGenVertexArrays(1, &descriptor));
 }
 
 void VertexArray::AddAttributes(const VertexBuffer& vertexBuffer, const BufferLayout& layout) {
-
+    
     vertexBuffer.Bind();
     Bind();
 
@@ -122,27 +114,27 @@ void VertexArray::AddAttributes(const VertexBuffer& vertexBuffer, const BufferLa
         // сообщаем OpenGL как он должен интерпретировать вершинные данные
 	    // (какой аргумент шейдера мы хотим настроить(layout (location = 0)), размер аргумента в шейдере, тип данных,
 	    //  необходимость нормализовать входные данные, расстояние между наборами данных, смещение начала данных в буфере)
-        glVertexAttribPointer(
+        GLCall(glVertexAttribPointer(
                                 freeAttribNum, bufferElement.GetCount(), 
                                 bufferElement.GetOpenglType(), GL_FALSE, 
                                 layout.GetStride(), (GLvoid*)bufferElement.offset
-                             );
-	    glEnableVertexAttribArray(freeAttribNum); // включаем атрибуты, т.е. передаем вершинному атрибуту позицию аргумента
+                             ));
+	    GLCall(glEnableVertexAttribArray(freeAttribNum)); // включаем атрибуты, т.е. передаем вершинному атрибуту позицию аргумента
         freeAttribNum++;
     }
 }
 
 void VertexArray::Bind() const {
-    glBindVertexArray(descriptor);
+    GLCall(glBindVertexArray(descriptor));
 }
 
 VertexArray::~VertexArray() {
-    glDeleteVertexArrays(1, &descriptor);
+    GLCall(glDeleteVertexArrays(1, &descriptor));
 }
 
 //--------------------------------------------------------------------------
 FrameBuffer::FrameBuffer() {
-    glGenFramebuffers(1, &descriptor); // создаем буфер FBO (frame buffer objects) 1 - кол-во буферов
+    GLCall(glGenFramebuffers(1, &descriptor)); // создаем буфер FBO (frame buffer objects) 1 - кол-во буферов
 }
 
 // дописать эту функцию 
@@ -150,21 +142,21 @@ void FrameBuffer::BufferInit(int width, int  height) {
     Bind();
 
     // используем текстурные прикрепления для создания объектра буфера цвета
-    glGenTextures(1, &tex_color_buf);
-    glBindTexture(GL_TEXTURE_2D, tex_color_buf);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GLCall(glGenTextures(1, &tex_color_buf));
+    GLCall(glBindTexture(GL_TEXTURE_2D, tex_color_buf));
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     // присоединение текстуры к объекту текущего кадрового буфера
     // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex_color_buf, 0); 
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex_color_buf, 0)); 
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo); 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);  
+    GLCall(glGenRenderbuffers(1, &rbo));
+    GLCall(glBindRenderbuffer(GL_RENDERBUFFER, rbo)); 
+    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));  
     // присоединяем объект рендербуфера к совмещенной точке прикрепления глубины и трафарета буфера кадра
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo));
 
     //проверяем текущий привязанный кадровый буфер на завершенность
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -173,14 +165,14 @@ void FrameBuffer::BufferInit(int width, int  height) {
 }
 
 void FrameBuffer::Bind() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, descriptor);  // привязываем как текущий активный буфер кадра 
+    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));  // привязываем как текущий активный буфер кадра 
 }
 
 // !!! где-то надо отвязать (не знаю, где)
 void FrameBuffer::Unbind() const {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
+    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
 }
 
 FrameBuffer::~FrameBuffer() {
-    glDeleteFramebuffers(1, &descriptor);  // удаляем ненужный буфер
+    GLCall(glDeleteFramebuffers(1, &descriptor));  // удаляем ненужный буфер
 }

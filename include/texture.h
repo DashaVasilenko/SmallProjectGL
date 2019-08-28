@@ -4,6 +4,7 @@
 #include <string>
 #include <GL/glew.h>
 #include "stb_image.h"
+#include "errors.h"
 
 
 class Texture {
@@ -12,17 +13,17 @@ public:
     void Bind() const;
     void Bind(GLenum slot) const;
     void Load(const std::string& filename);
-   
+
     void Unbind() const;
     ~Texture();
 
 private:
-    void Init();
     GLuint descriptor;
     unsigned char* image;
     int width;
     int height;
     int cnt;
+    void Init();
 };
 
 #endif /* End of __TEXTURE__ */

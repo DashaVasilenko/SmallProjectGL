@@ -28,7 +28,7 @@ void Console::ExecuteCommand() {
 void Console::ParseString(const std::string& work_string) {
     command_line.clear();
     
-    std::string current_string = std::regex_replace(work_string, std::regex("^ +|( ) +"), "$1");
+    std::string current_string = std::regex_replace(work_string, std::regex("^ +|( ) +"), "$1"); // регулярная грамматика (удалить лишние пробелы)
     std::string::size_type pos = current_string.find(' ');
     std::string::size_type index = 0;
 
@@ -50,17 +50,17 @@ void Console::EnterCommand(char* buffer) {
 }
 
 void Console::Render() {
-    ImGui::Begin("Console", NULL, ImGuiWindowFlags_NoResize);
-    ImGui::BeginChild("TextWindow", ImVec2(0, 360));
+    ImGui::Begin("Console", NULL, ImGuiWindowFlags_NoResize); // создать окно
+    ImGui::BeginChild("TextWindow", ImVec2(0, 360)); // создать подокно
         for (const auto& output_str: text_buffer) {
-            ImGui::TextColored(output_str.color, "%s", output_str.data.c_str());
-            ImGui::SetScrollHere(1.0f);
+            ImGui::TextColored(output_str.color, "%s", output_str.data.c_str()); // написать текст
+            ImGui::SetScrollHere(1.0f); // скролит
         }
-    ImGui::EndChild();
-    ImGui::Separator();
+    ImGui::EndChild(); // завершить подокно
+    ImGui::Separator(); // разделитель между окном ввода и вывода текста
 
-    if (ImGui::InputText("Enter", buffer, IM_ARRAYSIZE(buffer), ImGuiInputTextFlags_EnterReturnsTrue))
-    {
+    // поле ввода (попадает текст в переменнуб buffer), если что-то было введено, то парсим строку и выполняем команду введенную
+    if (ImGui::InputText("Enter", buffer, IM_ARRAYSIZE(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
         if (buffer[0]) {
             EnterCommand(buffer);
         }
@@ -70,9 +70,7 @@ void Console::Render() {
     ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 
 	ImGui::End();
-
 }
-
 
 bool Console::Clear(const std::vector<std::string>& arguments) {
     if (arguments.size() == 0) {

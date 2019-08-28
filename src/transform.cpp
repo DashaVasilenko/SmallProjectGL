@@ -17,4 +17,4 @@ void Transform::Rotate(const glm::vec3& axis, float angle) {
 void Transform::Translate(const glm::vec3& offset) {
     translation = glm::translate(glm::mat4(1.0f), offset);
     ReCalculateModel();
-}
+} 

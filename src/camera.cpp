@@ -50,7 +50,7 @@ void Camera::UpdatePosition(const float& delta) {
         position += -up*delta*speed;
     }
 }
-
+ 
 void Camera::UpdateVectors() {
     yaw += InputSystem::deltaCursPosX*mouse_sense;
     pitch += InputSystem::deltaCursPosY*mouse_sense;

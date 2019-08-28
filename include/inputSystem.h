@@ -11,6 +11,6 @@ public:
     static double deltaCursPosX;
     static double deltaCursPosY;
 private:
-};
+}; 
 
 #endif /* End of __INPUT_SYSTEM__ */

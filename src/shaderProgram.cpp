@@ -3,15 +3,19 @@
 #include <fstream>
 #include <streambuf>
 
-
 void ShaderProgram::Load(const std::string& fileName) {
     std::ifstream input(fileName);
     json shaderData;
     input >> shaderData;
 
     name = fileName;
+    bool flag = false;
 
-    mapSources[GL_VERTEX_SHADER] = shaderData["vertex"];
+    // разбираем json файл
+    if (shaderData.find("vertex") != shaderData.end()) {
+        mapSources[GL_VERTEX_SHADER] = shaderData["vertex"];
+        flag = true;
+    }
     
     if (shaderData.find("fragment") != shaderData.end()) {
         mapSources[GL_FRAGMENT_SHADER] = shaderData["fragment"];
@@ -29,8 +33,7 @@ void ShaderProgram::Load(const std::string& fileName) {
         mapSources[GL_GEOMETRY_SHADER] = shaderData["geometry"];
     }
 
-    
-    // Новое, разбираемся с дефайнами до компиляции
+    // разбираемся с дефайнами до компиляции
     auto it = shaderData.find("defines");
     if (it != shaderData.end()) {
         for (json::iterator iter = it->begin(); iter != it->end(); ++iter) {
@@ -38,9 +41,11 @@ void ShaderProgram::Load(const std::string& fileName) {
         }
     }
 
-    Compile();
-    Link();
-    Delete();
+    if (flag) {
+        Compile();
+        Link();
+        DeleteShaders();
+    }
 }
 
 void ShaderProgram::Compile() {
@@ -52,24 +57,24 @@ void ShaderProgram::Compile() {
 	    t.seekg(0, std::ios::beg);
 	    source_cpp.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-        mapShaders[element.first] = glCreateShader(element.first); // создать объект шейдера (в скобках тип шейдера)
+        GLCall(mapShaders[element.first] = glCreateShader(element.first)); // создать объект шейдера (в скобках тип шейдера)
         GLuint& shader_descriptor = mapShaders[element.first];
 	    
 	   
         // TODO:: Убрать хардкод версии шейдера - перенести версию в json файл
         const char *sources[3] = { "#version 330 core\n", defines_source.c_str(), source_cpp.c_str() };
-	    glShaderSource(shader_descriptor, 3, sources, NULL);  
-	    glCompileShader(shader_descriptor); // компилируем шейдер
+	    GLCall(glShaderSource(shader_descriptor, 3, sources, NULL));  
+	    GLCall(glCompileShader(shader_descriptor)); // компилируем шейдер
 
 	    // проверка на ошибки при сборке шейдера
 	    GLint success;
-	    glGetShaderiv(shader_descriptor, GL_COMPILE_STATUS, &success);
+	    GLCall(glGetShaderiv(shader_descriptor, GL_COMPILE_STATUS, &success));
 	    if(!success) {
             GLint logLen;
-            glGetShaderiv(shader_descriptor, GL_INFO_LOG_LENGTH, &logLen);
+            GLCall(glGetShaderiv(shader_descriptor, GL_INFO_LOG_LENGTH, &logLen));
             if (logLen > 0) {
                 char *infoLog = new char[logLen];
-                glGetShaderInfoLog(shader_descriptor, logLen, NULL, infoLog);
+                GLCall(glGetShaderInfoLog(shader_descriptor, logLen, NULL, infoLog));
                 std::cout << "ERROR::SHADER::COMPILATION_FAILED::" << name << "\n" << infoLog << std::endl;
                 delete[] infoLog;
             }
@@ -78,23 +83,22 @@ void ShaderProgram::Compile() {
 }
 
 void ShaderProgram::Link() {
-    // создание программы 
-	descriptor = glCreateProgram();
+	GLCall(descriptor = glCreateProgram()); // создание программы 
 
     for (auto& element: mapShaders) {
-        glAttachShader(descriptor, element.second); // присоединяем собранные шейдеры к программе
+        GLCall(glAttachShader(descriptor, element.second)); // присоединяем собранные шейдеры к программе
     }
-	glLinkProgram(descriptor); // связываем
+	GLCall(glLinkProgram(descriptor)); // связываем
 
 	// проверка на ошибки при связывании
 	GLint success;
-	glGetProgramiv(descriptor, GL_LINK_STATUS, &success);
+	GLCall(glGetProgramiv(descriptor, GL_LINK_STATUS, &success));
 	if (!success) {
         GLint logLen;
-        glGetProgramiv(descriptor, GL_INFO_LOG_LENGTH, &logLen);
+        GLCall(glGetProgramiv(descriptor, GL_INFO_LOG_LENGTH, &logLen));
         if (logLen > 0) {
             char *infoLog = new char[logLen];
-		    glGetProgramInfoLog(descriptor, logLen, NULL, infoLog);
+		    GLCall(glGetProgramInfoLog(descriptor, logLen, NULL, infoLog));
             std::cout << "ERROR::SHADER::LINKING_FAILED::" << name << "\n"<< infoLog << std::endl;
             delete[] infoLog;
         }
@@ -102,48 +106,44 @@ void ShaderProgram::Link() {
 }
 
 void ShaderProgram::Run() const {
-    glUseProgram(descriptor); // использование созданной программы
+    GLCall(glUseProgram(descriptor)); // использование созданной программы
 }
 
 void ShaderProgram::SetUniform(const std::string& name, const glm::mat4& matrix) {
-   GLint location = -1;
-    if (uniformCache.find(name) != uniformCache.end()) {
-        location = uniformCache[name];
-    }
-    else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
-        uniformCache[name] = location;
-    }
-     
-    if (location != -1) {
-        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-    }
-    else {
-        std::cerr << "Uniform  " << name << " not found" << std::endl;
-    }
-
-    // обработка ошибок!!!
-}
-
-void ShaderProgram::SetUniform(const std::string& name, const glm::mat3& matrix) {
     // получить индекс формы (переменная программы-шейдера, название формы, определенной внутри этой программы)
     GLint location = -1;
     if (uniformCache.find(name) != uniformCache.end()) {
         location = uniformCache[name];
     }
     else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
         uniformCache[name] = location;
     }
      
     if (location != -1) {
-        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix)); // установка значения формы
+        GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix)));
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
+}
 
-    // обработка ошибок!!!
+void ShaderProgram::SetUniform(const std::string& name, const glm::mat3& matrix) {
+    GLint location = -1;
+    if (uniformCache.find(name) != uniformCache.end()) {
+        location = uniformCache[name];
+    }
+    else {
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
+        uniformCache[name] = location;
+    }
+     
+    if (location != -1) {
+        GLCall(glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix))); // установка значения формы
+    }
+    else {
+        std::cerr << "Uniform  " << name << " not found" << std::endl;
+    }
 }
 
 void ShaderProgram::SetUniform(const std::string& name, const glm::vec4& vector) {
@@ -152,18 +152,16 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec4& vector)
         location = uniformCache[name];
     }
     else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
         uniformCache[name] = location;
     }
 
     if (location != -1) {
-        glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+        GLCall(glUniform4f(location, vector.x, vector.y, vector.z, vector.w));
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
-
-    // обработка ошибок!!!
 }
 
 void ShaderProgram::SetUniform(const std::string& name, const glm::vec3& vector) {
@@ -172,17 +170,16 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec3& vector)
         location = uniformCache[name];
     }
     else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
         uniformCache[name] = location;
     }
 
     if (location != -1) {
-        glUniform3f(location, vector.x, vector.y, vector.z);
+        glUniform3f(location, vector.x, vector.y, vector.z); //!!!!!!!!!!!!!!! тут GLCall вылетает с ошибкой
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
-    // обработка ошибок!!!
 }
 
 void ShaderProgram::SetUniform(const std::string& name, const glm::vec2& vector) {
@@ -191,18 +188,16 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec2& vector)
         location = uniformCache[name];
     }
     else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
         uniformCache[name] = location;
     }
     
     if (location != -1) {
-        glUniform2f(location, vector.x, vector.y);
+        GLCall(glUniform2f(location, vector.x, vector.y));
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
-
-    // обработка ошибок!!!
 }
 
 void ShaderProgram::SetUniform(const std::string& name, float value) {
@@ -211,12 +206,12 @@ void ShaderProgram::SetUniform(const std::string& name, float value) {
         location = uniformCache[name];
     }
     else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
         uniformCache[name] = location;
     }
 
     if (location != -1) {
-        glUniform1f(location, value);
+        glUniform1f(location, value); //!!!!!!!!!!!!! GLCall вылетает с ошибкой
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
@@ -229,27 +224,24 @@ void ShaderProgram::SetUniform(const std::string& name, int value) {
         location = uniformCache[name];
     }
     else {
-        location = glGetUniformLocation(descriptor, name.c_str()); 
+        GLCall(location = glGetUniformLocation(descriptor, name.c_str())); 
         uniformCache[name] = location;
     }
    
     if (location != -1) {
-        glUniform1i(location, value);
+        GLCall(glUniform1i(location, value));
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
     }
 }
 
-void ShaderProgram::Delete() {
+void ShaderProgram::DeleteShaders() {
     for (auto& element: mapShaders) {
-	    glDeleteShader(element.second);
+	    GLCall(glDeleteShader(element.second));
     }
 }
 
 ShaderProgram::~ShaderProgram(){
-    //for (auto& element: mapShaders) {
-	//    glDeleteShader(element.second);
-    //}
-    glDeleteProgram(descriptor);
+    GLCall(glDeleteProgram(descriptor));
 }

@@ -99,7 +99,6 @@ void PbrMaterial::SetInnerUniforms() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-
 void MaterialPBR::SetAlbedo(const std::string& fileName) {
     albedoMap = Engine::textureManager.Get(fileName);
     albedo_texture = true;
@@ -182,27 +181,17 @@ void MaterialPBR::Init() {
     if (albedo_texture) {
         shaderProgram->SetUniform("albedoMap", 0);
     }
-    else {
-        shaderProgram->SetUniform("albedo", albedo_color);
-    }
-        
+   
     if (normal_texture) {
         shaderProgram->SetUniform("normalMap", 1);
     }
 
-
     if (metallic_texture) {
          shaderProgram->SetUniform("metallicMap", 2);
-    }
-    else {
-        shaderProgram->SetUniform("metallic", metallic);
     }
        
     if (roughness_texture) {
         shaderProgram->SetUniform("roughnessMap", 3);
-    }
-    else {
-        shaderProgram->SetUniform("roughness", roughness);
     }
        
     if (ao_texture) {
@@ -214,10 +203,12 @@ void MaterialPBR::Init() {
     }
 }
 
-
 void MaterialPBR::SetInnerUniforms() {
     if (albedo_texture) {
         albedoMap->Bind(GL_TEXTURE0);
+    }
+    else {
+        shaderProgram->SetUniform("albedo", albedo_color);
     }
         
     if (normal_texture) {
@@ -227,9 +218,15 @@ void MaterialPBR::SetInnerUniforms() {
     if (metallic_texture) {
         metallicMap->Bind(GL_TEXTURE2);
     }
+    else {
+        shaderProgram->SetUniform("metallic", metallic);
+    }
        
     if (roughness_texture) {
         roughnessMap->Bind(GL_TEXTURE3);
+    }
+    else {
+        shaderProgram->SetUniform("roughness", roughness);
     }
        
     if (ao_texture) {

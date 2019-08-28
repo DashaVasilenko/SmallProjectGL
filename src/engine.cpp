@@ -2,4 +2,4 @@
 
 ResourceManager<ShaderProgram> Engine::programManager;
 ResourceManager<Texture> Engine::textureManager;
-ResourceManager<Geometry> Engine::geometryManager;
+ResourceManager<Geometry> Engine::geometryManager; 

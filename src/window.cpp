@@ -1,24 +1,24 @@
 #include "window.h"
 #include "inputSystem.h"
 
-bool Window::cursor_enabled = false;
+bool Window::cursor_enabled = false; // включен или выключен курсор
 
 // (указатель на GLFWwindow, код нажатой клавиши, действие над клавишей, число описывающее модификаторы (shift, control, alt или super) ) 
 void Window::OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
+        GLCall(glfwSetWindowShouldClose(window, GL_TRUE));
     }
     if (key == GLFW_KEY_TAB && action == GLFW_PRESS) {
         if (!cursor_enabled) { // когда окно гуи нужно включить
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // включает курсор в окне гуи
-            glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback); // чтобы гуи читала нажатие клавиш (колбэк на гуи)
-            glfwSetCursorPosCallback(window, nullptr); // отключить колбэк на курсор. чтобы он не двигался в окне гуи (чтобы камера не двигалась)
+            GLCall(glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)); // включает курсор в окне гуи
+            GLCall(glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback)); // чтобы гуи читала нажатие клавиш (колбэк на гуи)
+            GLCall(glfwSetCursorPosCallback(window, nullptr)); // отключить колбэк на курсор. чтобы он не двигался в окне гуи (чтобы камера не двигалась)
             InputSystem::firstMouseMove = true;
         }
         else { // когда окно гуи нужно выключить
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // выключаем курсор в окне гуи
-            glfwSetCursorPosCallback(window, OnMouseMove); // включить колбэк для курсора
-            glfwSetKeyCallback(window, OnKeyPressed); // включить колбэк для клавиатуры        
+            GLCall(glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED)); // выключаем курсор в окне гуи
+            GLCall(glfwSetCursorPosCallback(window, OnMouseMove)); // включить колбэк для курсора
+            GLCall(glfwSetKeyCallback(window, OnKeyPressed)); // включить колбэк для клавиатуры        
         }
         cursor_enabled = !cursor_enabled;
         InputSystem::draw_gui = !InputSystem::draw_gui;
@@ -44,8 +44,9 @@ void Window::OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
 int Window::Init() {
     // инициализация GLFW
     if (!glfwInit()) {
-        exit(EXIT_FAILURE);
+        return -1;    
     }
+    init_glfw = true; // значит, что инициализация GLFW прошла успешно
 
 	// подсказка glfw окно какой версии создавать
 	// Window creation + GL context
@@ -61,14 +62,15 @@ int Window::Init() {
     window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
     if (!window) {
         glfwTerminate();
-        exit(EXIT_FAILURE);
+        return -1;
     }
+    init_window = true; // значит, что создание окна прошло успешно
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // скрыть курсор мыши 
+    GLCall(glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED));  // скрыть курсор мыши 
 	// context
-    glfwSetCursorPosCallback(window, OnMouseMove); // передача функции для курсора в GLFW
-    glfwSetKeyCallback(window, OnKeyPressed); // передача функции для клавиатуры в GLFW
-	glfwMakeContextCurrent(window);
+    GLCall(glfwSetCursorPosCallback(window, OnMouseMove)); // передача функции для курсора в GLFW
+    GLCall(glfwSetKeyCallback(window, OnKeyPressed)); // передача функции для клавиатуры в GLFW
+	GLCall(glfwMakeContextCurrent(window));
 
 	// Glew init (инициализация GLEW)
 	glewExperimental = true; 
@@ -77,6 +79,8 @@ int Window::Init() {
 }
 
 Window::~Window() {
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    if(init_window) 
+        GLCall(glfwDestroyWindow(window));
+    if(init_glfw)
+        GLCall(glfwTerminate());
 }
