@@ -8,6 +8,7 @@
 #include "resourceManager.h"
 #include "engine.h"
 #include "errors.h"
+#include "texture.h"
 
 
 class SkyBox {
@@ -15,11 +16,11 @@ public:
     SkyBox();
     void Draw(const glm::mat4& projection, const glm::mat4& view);
     void Init(const std::array<std::string, 6>& fileNames);
-
-    ~SkyBox();
+    //~SkyBox();
 
 private:
-    unsigned int descriptor;
+    //unsigned int descriptor;
+    CubeMap cubemap;
     Geometry* skybox;
     ShaderProgram* skyboxProgram;
 };

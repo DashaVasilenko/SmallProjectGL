@@ -52,7 +52,7 @@ int main() {
 											 "textures/skybox/right.tga",
 											 "textures/skybox/left.tga"
 											 };
-	
+	// Создаем небо
 	SkyBox skybox;
 	skybox.Init(fileNames);
 	DirectionalLight dl({3.0f, 3.0f, 3.0f}, {1.0f, -1.0f, 0.0f});

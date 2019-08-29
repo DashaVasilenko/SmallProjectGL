@@ -1,11 +1,12 @@
 #ifndef __TEXTURE__
 #define __TEXTURE__
 
+#include <iostream>
 #include <string>
+#include <array>
 #include <GL/glew.h>
 #include "stb_image.h"
 #include "errors.h"
-
 
 class Texture {
 public:
@@ -25,5 +26,32 @@ private:
     int cnt;
     void Init();
 };
+
+class Texture2D : public Texture {
+
+};
+
+class CubeMap { // потом сделать наследование от Texture
+public:
+    CubeMap();
+    void Bind() const;
+    //void Load(const std::string& filename);
+    void Init(const std::array<std::string, 6>& fileNames);
+
+    ~CubeMap();
+
+private:
+    GLuint descriptor;
+    unsigned char* image;
+    int width;
+    int height;
+    int nrChannels;
+};
+
+class RenderTexture : public Texture {
+
+};
+
+
 
 #endif /* End of __TEXTURE__ */
