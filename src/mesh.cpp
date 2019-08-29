@@ -6,7 +6,7 @@ SubMesh::SubMesh(const Geometry* geometry, Material* material) {
 }
 
 void SubMesh::Draw() {
-    material->SetInnerUniforms();
+    //material->SetInnerUniforms();
     geometry->Draw();
 }
 
@@ -20,6 +20,7 @@ void Mesh::Draw(const glm::mat4& projection, const glm::mat4& view, const glm::m
         glm::mat3 modelView = view*model;
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelView));
         material->SetNormalMatrix(normalMatrix);
+        material->SetInnerUniforms();
         subMesh.Draw();
     }
 }

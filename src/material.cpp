@@ -197,13 +197,10 @@ void MaterialPBR::Init() {
     if (ao_texture) {
         shaderProgram->SetUniform("aoMap", 4);
     }
-
-    if (albedo_texture || normal_texture || roughness_texture || metallic_texture || ao_texture) {
-        shaderProgram->SetUniform("texture_scale", texture_scale);
-    }
 }
 
 void MaterialPBR::SetInnerUniforms() {
+	//shaderProgram->Run();
     if (albedo_texture) {
         albedoMap->Bind(GL_TEXTURE0);
     }
@@ -232,4 +229,8 @@ void MaterialPBR::SetInnerUniforms() {
     if (ao_texture) {
         aoMap->Bind(GL_TEXTURE4);
     }
+
+	if (albedo_texture || normal_texture || roughness_texture || metallic_texture || ao_texture) {
+		shaderProgram->SetUniform("texture_scale", texture_scale);
+	}
 }

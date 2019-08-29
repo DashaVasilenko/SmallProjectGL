@@ -175,7 +175,7 @@ void ShaderProgram::SetUniform(const std::string& name, const glm::vec3& vector)
     }
 
     if (location != -1) {
-        glUniform3f(location, vector.x, vector.y, vector.z); //!!!!!!!!!!!!!!! тут GLCall вылетает с ошибкой
+        GLCall(glUniform3f(location, vector.x, vector.y, vector.z));  
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
@@ -211,7 +211,7 @@ void ShaderProgram::SetUniform(const std::string& name, float value) {
     }
 
     if (location != -1) {
-        glUniform1f(location, value); //!!!!!!!!!!!!! GLCall вылетает с ошибкой
+        GLCall(glUniform1f(location, value));
     }
     else {
         std::cerr << "Uniform  " << name << " not found" << std::endl;
