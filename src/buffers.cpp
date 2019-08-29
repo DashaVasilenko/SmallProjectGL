@@ -142,14 +142,9 @@ void FrameBuffer::BufferInit(int width, int  height) {
     Bind();
 
     // используем текстурные прикрепления для создания объектра буфера цвета
-    GLCall(glGenTextures(1, &tex_color_buf));
-    GLCall(glBindTexture(GL_TEXTURE_2D, tex_color_buf));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    // присоединение текстуры к объекту текущего кадрового буфера
-    // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex_color_buf, 0)); 
+    tex_color_buf.Bind();
+    tex_color_buf.Init(width, height);
+    tex_color_buf.Bind(GL_COLOR_ATTACHMENT0);
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
     GLCall(glGenRenderbuffers(1, &rbo));
@@ -168,7 +163,6 @@ void FrameBuffer::Bind() const {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));  // привязываем как текущий активный буфер кадра 
 }
 
-// !!! где-то надо отвязать (не знаю, где)
 void FrameBuffer::Unbind() const {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
 }

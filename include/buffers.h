@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "errors.h"
+#include "texture.h"
 
 class IndexBuffer {
 public:
@@ -80,12 +81,14 @@ public:
     void BufferInit(int width, int  height);
     void Bind() const;
     void Unbind() const;
-    int GetTexDescriptor() { return this->tex_color_buf; }
+    //int GetTexDescriptor() { return this->tex_color_buf; }
+    GLuint GetTexDescriptor() { return tex_color_buf.GetDescriptor(); }
     ~FrameBuffer();
     
 private:
     GLuint descriptor;
-    unsigned int tex_color_buf;
+    //unsigned int tex_color_buf;
+    RenderTexture tex_color_buf;
     unsigned int rbo;
 };
 

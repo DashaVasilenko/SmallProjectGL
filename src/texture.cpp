@@ -40,6 +40,22 @@ Texture::~Texture() {
 }
 
 //-----------------------------------------------------------------------------------------------------------
+
+
+
+/*
+Texture2D::Texture2D() {
+    GLCall(glGenTextures(1, &descriptor));
+}
+
+void Texture::Bind() const {
+    GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
+}
+*/
+
+
+
+//-----------------------------------------------------------------------------------------------------------
 CubeMap::CubeMap() {
     GLCall(glGenTextures(1, &descriptor));
 }
@@ -80,3 +96,26 @@ void CubeMap::Init(const std::array<std::string, 6>& fileNames) {
 CubeMap::~CubeMap() {
     GLCall(glDeleteTextures(1, &descriptor));
 } 
+
+//------------------------------------------------------------------------------------------------------
+RenderTexture::RenderTexture() {
+    GLCall(glGenTextures(1, &descriptor));
+}
+
+void RenderTexture::Bind() const {
+    GLCall(glBindTexture(GL_TEXTURE_2D, descriptor));
+}
+
+void RenderTexture:: Bind(GLenum slot) const {
+    // присоединение текстуры к объекту текущего кадрового буфера
+    // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, slot, GL_TEXTURE_2D, descriptor, 0)); 
+}
+
+void RenderTexture::Init(int width, int height) {
+    this->width = width;
+    this->height = height;
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+}

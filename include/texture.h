@@ -27,9 +27,14 @@ private:
     void Init();
 };
 
-class Texture2D : public Texture {
+/*
+class Texture2D : public Texture { // потом сделать наследование от Texture
+public:
+
+private:
 
 };
+*/
 
 class CubeMap { // потом сделать наследование от Texture
 public:
@@ -49,9 +54,20 @@ private:
 };
 
 class RenderTexture : public Texture {
+public:
+    RenderTexture();
+    void Bind() const;
+    void Bind(GLenum slot) const;
+    void Init(int width, int height);
+    GLuint GetDescriptor() { return descriptor; }
+
+private:
+    GLuint descriptor;
+    unsigned char* image;
+    int width;
+    int height;
+    int cnt;
 
 };
-
-
 
 #endif /* End of __TEXTURE__ */
