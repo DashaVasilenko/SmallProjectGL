@@ -19,7 +19,7 @@ void Renderer::Init() {
     gbuffer.BufferInit(Renderer::width, Renderer::height);
     shadowbuffer.BufferInit(Renderer::width, Renderer::height);
     postprocessbuffer.BufferInit(Renderer::width, Renderer::height);
-    current_view_buffer = postprocessbuffer.bloom;
+    current_view_buffer = postprocessbuffer.bloom.GetDescriptor();
 
 // Говорим на какие слоты ждать текстуры
     toneMapPlusBrightness->Run();
@@ -109,19 +109,19 @@ void Renderer::BeginLightPass() {
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     GLCall(glActiveTexture(GL_TEXTURE0));
-    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.position));
+    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.position.GetDescriptor()));
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     GLCall(glActiveTexture(GL_TEXTURE1));
-    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.normal));
+    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.normal.GetDescriptor()));
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     GLCall(glActiveTexture(GL_TEXTURE2));
-    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.albedo));
+    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.albedo.GetDescriptor()));
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     GLCall(glActiveTexture(GL_TEXTURE3));
-    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.metallRoughAO));
+    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.metallRoughAO.GetDescriptor()));
 
     GLCall(glStencilFunc(GL_NOTEQUAL, 0x00, 0xFF));
     GLCall(glDisable(GL_DEPTH_TEST));
@@ -190,7 +190,7 @@ void Renderer::LightPass(entt::registry& registry) {
 
         BeginLightPass();
         GLCall(glActiveTexture(GL_TEXTURE4));
-        GLCall(glBindTexture(GL_TEXTURE_2D, shadowbuffer.depthMap));
+        GLCall(glBindTexture(GL_TEXTURE_2D, shadowbuffer.depthMap.GetDescriptor()));
         dl.SetInnerUniforms();
         dl.Draw(viewMatrix, lightMatrix);
         GLCall(glDisable(GL_BLEND));
@@ -202,7 +202,7 @@ void Renderer::PostProcess() {
 
     // TODO: Заменить на метод Texture.Bind(GLenum)
     GLCall(glActiveTexture(GL_TEXTURE0));
-    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.result));
+    GLCall(glBindTexture(GL_TEXTURE_2D, gbuffer.result.GetDescriptor()));
 
     // Биндим фреймбуффер для постпроцессинга и указываем 2 выхода
     postprocessbuffer.Bind();
@@ -224,12 +224,12 @@ void Renderer::PostProcess() {
         GLCall(glDrawBuffer(GL_COLOR_ATTACHMENT2));
         if (first_iteration) {
             GLCall(glActiveTexture(GL_TEXTURE0));
-            GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.brightMap)); 
+            GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.brightMap.GetDescriptor())); 
             first_iteration = false;
         }
         else {
             GLCall(glActiveTexture(GL_TEXTURE0));
-            GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.verticalGauss)); 
+            GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.verticalGauss.GetDescriptor())); 
         }
 
         gaussProgram->Run();
@@ -239,7 +239,7 @@ void Renderer::PostProcess() {
 
         GLCall(glDrawBuffer(GL_COLOR_ATTACHMENT3));
         GLCall(glActiveTexture(GL_TEXTURE0));
-        GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.horizontalGauss)); 
+        GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.horizontalGauss.GetDescriptor())); 
         gaussProgram->Run();
         gaussProgram->SetUniform("horizontal", horizontal);
         quad->Draw();
@@ -250,10 +250,10 @@ void Renderer::PostProcess() {
     GLCall(glDrawBuffer(GL_COLOR_ATTACHMENT4)); // указали, в какой канал будем рисовать
 
     GLCall(glActiveTexture(GL_TEXTURE0)); // прифигачили одну текстуру на 0 слот
-    GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.hdrMap));
+    GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.hdrMap.GetDescriptor()));
 
     GLCall(glActiveTexture(GL_TEXTURE1)); // прифигачили вторую текстуру на 1 слот
-    GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.verticalGauss));
+    GLCall(glBindTexture(GL_TEXTURE_2D, postprocessbuffer.verticalGauss.GetDescriptor()));
 
     bloomProgram->Run();
     quad->Draw();
@@ -374,44 +374,44 @@ bool Renderer::DebugLight(const std::vector<std::string>& arguments) {
 bool Renderer::ViewBuffer(const std::vector<std::string>& arguments) {
     if (arguments.size() == 1) {
         if (arguments[0] == "normal") {
-            current_view_buffer = gbuffer.normal;
+            current_view_buffer = gbuffer.normal.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "position") {
-            current_view_buffer = gbuffer.position;
+            current_view_buffer = gbuffer.position.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "albedo") {
-            current_view_buffer = gbuffer.albedo;
+            current_view_buffer = gbuffer.albedo.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "mrao") {
-            current_view_buffer = gbuffer.metallRoughAO;
+            current_view_buffer = gbuffer.metallRoughAO.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "nohdr") {
-            current_view_buffer = gbuffer.result;
+            current_view_buffer = gbuffer.result.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "hdr") {
-            current_view_buffer = postprocessbuffer.hdrMap;
+            current_view_buffer = postprocessbuffer.hdrMap.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "shadowmap") {
-            current_view_buffer = shadowbuffer.depthMap;
+            current_view_buffer = shadowbuffer.depthMap.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "brightmap") {
-            current_view_buffer = postprocessbuffer.brightMap;
+            current_view_buffer = postprocessbuffer.brightMap.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "gauss") {
-            current_view_buffer = postprocessbuffer.verticalGauss;
-            //current_view_buffer = postprocessbuffer.horizontalGauss;
+            current_view_buffer = postprocessbuffer.verticalGauss.GetDescriptor();
+            //current_view_buffer = postprocessbuffer.horizontalGauss.GetDescriptor();
             return true;
         }
         else if (arguments[0] == "bloom") {
-            current_view_buffer = postprocessbuffer.bloom;
+            current_view_buffer = postprocessbuffer.bloom.GetDescriptor();
             return true;
         }
         return false;

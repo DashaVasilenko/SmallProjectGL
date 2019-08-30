@@ -143,7 +143,7 @@ void FrameBuffer::BufferInit(int width, int  height) {
 
     // используем текстурные прикрепления для создания объектра буфера цвета
     tex_color_buf.Bind();
-    tex_color_buf.Init(width, height);
+    tex_color_buf.Init(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_LINEAR);
     tex_color_buf.Bind(GL_COLOR_ATTACHMENT0);
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета

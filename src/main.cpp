@@ -140,14 +140,14 @@ int main() {
 	}
 	*/
 
-	/*
+	
 	//Прожектор
 	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 60.0f, 35.0f);
 	auto spotlight = registry.create();
 	registry.assign<SpotLight>(spotlight, sl);
-	*/
 
-	/*
+
+	
 	// Точечные источники 
 	for (int i = 0; i < 10; i++) {
 	 	for (int j = 0; j < 10; j++) {
@@ -159,7 +159,7 @@ int main() {
 	 		registry.assign<PointLight>(pointLight, pl);
 	 	}
 	}
-	*/
+	
 
 	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());

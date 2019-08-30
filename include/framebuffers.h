@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include "errors.h"
+#include "texture.h"
 
 class GBuffer {
 public:
@@ -18,11 +19,11 @@ public:
 
 private:
     GLuint descriptor;
-    unsigned int position;
-    unsigned int normal; 
-    unsigned int albedo;
-    unsigned int metallRoughAO;
-    unsigned int result;
+    RenderTexture position; 
+    RenderTexture normal;
+    RenderTexture albedo;
+    RenderTexture metallRoughAO;
+    RenderTexture result;
     unsigned int rbo;
 };
 
@@ -40,7 +41,7 @@ public:
 
 private:
     GLuint descriptor;
-    unsigned int depthMap;
+    RenderTexture depthMap;
     unsigned int size = 4096; // размер мапы
 };
 
@@ -55,12 +56,13 @@ public:
     
 private:
     GLuint descriptor;
-    unsigned int hdrMap;
-    unsigned int brightMap;
-    unsigned int horizontalGauss;
-    unsigned int verticalGauss;
-    unsigned int bloom;
-    unsigned int depthMap;
+    RenderTexture hdrMap;
+    RenderTexture brightMap;
+    RenderTexture horizontalGauss;
+    RenderTexture verticalGauss;
+    RenderTexture bloom;
+    //unsigned int depthMap;
+    RenderTexture depthMap; // чет оно нигде не используется. я не нашла где
 };
 
 #endif /* End of __FRAMEBUFFERS__ */

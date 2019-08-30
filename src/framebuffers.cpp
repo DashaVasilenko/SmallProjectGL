@@ -8,48 +8,30 @@ GBuffer::GBuffer() {
 // дописать эту функцию 
 void GBuffer::BufferInit(int width, int  height) {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));
-    //unsigned int gPosition, gNormal, gColorSpec;
 
     // буфер позиций
-    GLCall(glGenTextures(1, &position));
-    GLCall(glBindTexture(GL_TEXTURE_2D, position));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    // присоединение текстуры к объекту текущего кадрового буфера
-    // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, position, 0));
+    position.Bind();
+    position.Init(width, height, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST);
+    position.Bind(GL_COLOR_ATTACHMENT0);
 
     // буфер нормалей
-    GLCall(glGenTextures(1, &normal));
-    GLCall(GLCall(glBindTexture(GL_TEXTURE_2D, normal));
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normal, 0));
+    normal.Bind();
+    normal.Init(width, height, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST);
+    normal.Bind(GL_COLOR_ATTACHMENT1);
 
     // буфер для цвета + коэффициента зеркального отражения
-    GLCall(glGenTextures(1, &albedo));
-    GLCall(glBindTexture(GL_TEXTURE_2D, albedo));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, albedo, 0));
+    albedo.Bind();
+    albedo.Init(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
+    albedo.Bind(GL_COLOR_ATTACHMENT2);
 
     // прочая шняга
-    GLCall(glGenTextures(1, &metallRoughAO));
-    GLCall(glBindTexture(GL_TEXTURE_2D, metallRoughAO));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, metallRoughAO, 0));
+    metallRoughAO.Bind();
+    metallRoughAO.Init(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_LINEAR);
+    metallRoughAO.Bind(GL_COLOR_ATTACHMENT3);
 
-    GLCall(glGenTextures(1, &result));
-    GLCall(glBindTexture(GL_TEXTURE_2D, result));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, result, 0));
+    result.Bind();
+    result.Init(width, height, GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
+    result.Bind(GL_COLOR_ATTACHMENT4);
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
     GLCall(glGenRenderbuffers(1, &rbo));
@@ -91,21 +73,12 @@ ShadowBuffer::ShadowBuffer() {
 // дописать эту функцию 
 void ShadowBuffer::BufferInit(int width, int  height) {
     Bind();
-    //unsigned int gPosition, gNormal, gColorSpec;
 
     // карта глубины
-    GLCall(glGenTextures(1, &depthMap));
-    GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
-    float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-    GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor)); // задаем цвет границы
-    // присоединение текстуры к объекту текущего кадрового буфера
-    // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
-    GLCall( glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
+    depthMap.Bind();
+    depthMap.InitDepthMap(size, size);
+    depthMap.Bind(GL_DEPTH_ATTACHMENT);
+    
     // указываем, что не будем рендерить цвет, так как нас интересует только глубины
     // glDrawBuffer(GL_NONE);  
     // glReadBuffer(GL_NONE);
@@ -119,7 +92,6 @@ void ShadowBuffer::BufferInit(int width, int  height) {
 void ShadowBuffer::Bind() {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));
 }
-
 
 void ShadowBuffer::Unbind() const {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
@@ -136,51 +108,30 @@ PostProcessBuffer::PostProcessBuffer() {
 
 void PostProcessBuffer::BufferInit(int width, int height) {
     Bind();
-    GLCall(glGenTextures(1, &hdrMap));
-    GLCall(glBindTexture(GL_TEXTURE_2D, hdrMap));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hdrMap, 0));
+    
+    hdrMap.Bind();
+    hdrMap.Init(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
+    hdrMap.Bind(GL_COLOR_ATTACHMENT0);
 
-    GLCall(glGenTextures(1, &brightMap));
-    GLCall(glBindTexture(GL_TEXTURE_2D, brightMap));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, brightMap, 0));
+    brightMap.Bind();
+    brightMap.InitBrightMapGauss(width, height);
+    brightMap.Bind(GL_COLOR_ATTACHMENT1);
  
-    GLCall(glGenTextures(1, &horizontalGauss));
-    GLCall(glBindTexture(GL_TEXTURE_2D, horizontalGauss));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, horizontalGauss, 0));
+    horizontalGauss.Bind();
+    horizontalGauss.InitBrightMapGauss(width, height);
+    horizontalGauss.Bind(GL_COLOR_ATTACHMENT2);
 
-    GLCall(glGenTextures(1, &verticalGauss));
-    GLCall(glBindTexture(GL_TEXTURE_2D, verticalGauss));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, verticalGauss, 0));
+    verticalGauss.Bind();
+    verticalGauss.InitBrightMapGauss(width, height);
+    verticalGauss.Bind(GL_COLOR_ATTACHMENT3);
 
-    GLCall(glGenTextures(1, &bloom));
-    GLCall(glBindTexture(GL_TEXTURE_2D, bloom));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, bloom, 0));
+    bloom.Bind();
+    bloom.Init(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
+    bloom.Bind(GL_COLOR_ATTACHMENT4);
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
-
 }
 
 void PostProcessBuffer::Bind() const {

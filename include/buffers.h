@@ -87,7 +87,6 @@ public:
     
 private:
     GLuint descriptor;
-    //unsigned int tex_color_buf;
     RenderTexture tex_color_buf;
     unsigned int rbo;
 };

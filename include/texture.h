@@ -42,7 +42,6 @@ public:
     void Bind() const;
     //void Load(const std::string& filename);
     void Init(const std::array<std::string, 6>& fileNames);
-
     ~CubeMap();
 
 private:
@@ -58,7 +57,9 @@ public:
     RenderTexture();
     void Bind() const;
     void Bind(GLenum slot) const;
-    void Init(int width, int height);
+    void Init(int width, int height, GLuint internalformat, GLenum format, GLenum type, GLint param);
+    void InitDepthMap(int width, int height);
+    void InitBrightMapGauss(int width, int height);
     GLuint GetDescriptor() { return descriptor; }
 
 private:
@@ -67,7 +68,6 @@ private:
     int width;
     int height;
     int cnt;
-
 };
 
 #endif /* End of __TEXTURE__ */

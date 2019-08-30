@@ -16,10 +16,8 @@ public:
     SkyBox();
     void Draw(const glm::mat4& projection, const glm::mat4& view);
     void Init(const std::array<std::string, 6>& fileNames);
-    //~SkyBox();
 
 private:
-    //unsigned int descriptor;
     CubeMap cubemap;
     Geometry* skybox;
     ShaderProgram* skyboxProgram;
