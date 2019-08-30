@@ -31,28 +31,28 @@ private:
 
 class PhongTextureMaterial: public Material{
 public:
-    PhongTextureMaterial(ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, float);
+    PhongTextureMaterial(ShaderProgram*, const Texture2D*, const Texture2D* , const Texture2D*, const Texture2D*, float);
     void SetInnerUniforms() override;
 
 private:
-    const Texture* ambientMap;
-    const Texture* diffuseMap;
-    const Texture* specularMap;
-    const Texture* normalMap;
+    const Texture2D* ambientMap;
+    const Texture2D* diffuseMap;
+    const Texture2D* specularMap;
+    const Texture2D* normalMap;
     float shininess;
 };
 
 class PbrMaterial: public Material{
 public:
-    PbrMaterial(ShaderProgram*, const Texture*, const Texture* , const Texture*, const Texture*, const Texture*);
+    PbrMaterial(ShaderProgram*, const Texture2D*, const Texture2D* , const Texture2D*, const Texture2D*, const Texture2D*);
     void SetInnerUniforms() override;
 
 private:
-    const Texture* albedoMap;
-    const Texture* normalMap;
-    const Texture* metallicMap;
-    const Texture* roughnessMap;
-    const Texture* aoMap;
+    const Texture2D* albedoMap;
+    const Texture2D* normalMap;
+    const Texture2D* metallicMap;
+    const Texture2D* roughnessMap;
+    const Texture2D* aoMap;
 };
 
 enum NormalFlag { NORMAL_MAP, DISPLACEMENT_MAP };
@@ -74,12 +74,12 @@ public:
     void SetInnerUniforms() override;
     
 private:
-    const Texture* albedoMap;
-    const Texture* metallicMap;
-    const Texture* roughnessMap;
-    const Texture* normalMap;
-    const Texture* displacementMap;
-    const Texture* aoMap;
+    const Texture2D* albedoMap;
+    const Texture2D* metallicMap;
+    const Texture2D* roughnessMap;
+    const Texture2D* normalMap;
+    const Texture2D* displacementMap;
+    const Texture2D* aoMap;
 
     glm::vec3 albedo_color = glm::vec3(1.0f, 0.0f, 0.0f);
 

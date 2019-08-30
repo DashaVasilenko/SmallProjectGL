@@ -37,10 +37,10 @@ void PhongMaterial::SetInnerUniforms() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 PhongTextureMaterial::PhongTextureMaterial(
                         ShaderProgram* shaderProgram, 
-                        const Texture* ambientColor,
-                        const Texture* diffuseColor, 
-                        const Texture* specularColor,
-                        const Texture* normals,
+                        const Texture2D* ambientColor,
+                        const Texture2D* diffuseColor, 
+                        const Texture2D* specularColor,
+                        const Texture2D* normals,
                         float s) 
 {
     this->shaderProgram = shaderProgram;
@@ -58,10 +58,10 @@ PhongTextureMaterial::PhongTextureMaterial(
 }
 
 void PhongTextureMaterial::SetInnerUniforms() {
-    ambientMap->Bind(GL_TEXTURE0);
-    diffuseMap->Bind(GL_TEXTURE1);   
-    specularMap->Bind(GL_TEXTURE2);
-    normalMap->Bind(GL_TEXTURE3);
+    ambientMap->BindSlot(GL_TEXTURE0);
+    diffuseMap->BindSlot(GL_TEXTURE1);   
+    specularMap->BindSlot(GL_TEXTURE2);
+    normalMap->BindSlot(GL_TEXTURE3);
    
     shaderProgram->SetUniform("material.shininess", shininess);
 }
@@ -69,11 +69,11 @@ void PhongTextureMaterial::SetInnerUniforms() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 PbrMaterial::PbrMaterial(
                         ShaderProgram* shaderProgram, 
-                        const Texture* albedo,
-                        const Texture* normals, 
-                        const Texture* metallic,
-                        const Texture* roughness,
-                        const Texture* ao) 
+                        const Texture2D* albedo,
+                        const Texture2D* normals, 
+                        const Texture2D* metallic,
+                        const Texture2D* roughness,
+                        const Texture2D* ao) 
 {
     this->shaderProgram = shaderProgram;
     this->albedoMap = albedo;
@@ -91,11 +91,11 @@ PbrMaterial::PbrMaterial(
 }
 
 void PbrMaterial::SetInnerUniforms() {
-    albedoMap->Bind(GL_TEXTURE0);
-    normalMap->Bind(GL_TEXTURE1);
-    metallicMap->Bind(GL_TEXTURE2);
-    roughnessMap->Bind(GL_TEXTURE3);
-    aoMap->Bind(GL_TEXTURE4);
+    albedoMap->BindSlot(GL_TEXTURE0);
+    normalMap->BindSlot(GL_TEXTURE1);
+    metallicMap->BindSlot(GL_TEXTURE2);
+    roughnessMap->BindSlot(GL_TEXTURE3);
+    aoMap->BindSlot(GL_TEXTURE4);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -202,32 +202,32 @@ void MaterialPBR::Init() {
 void MaterialPBR::SetInnerUniforms() {
 	//shaderProgram->Run();
     if (albedo_texture) {
-        albedoMap->Bind(GL_TEXTURE0);
+        albedoMap->BindSlot(GL_TEXTURE0);
     }
     else {
         shaderProgram->SetUniform("albedo", albedo_color);
     }
         
     if (normal_texture) {
-        normalMap->Bind(GL_TEXTURE1);
+        normalMap->BindSlot(GL_TEXTURE1);
     }
 
     if (metallic_texture) {
-        metallicMap->Bind(GL_TEXTURE2);
+        metallicMap->BindSlot(GL_TEXTURE2);
     }
     else {
         shaderProgram->SetUniform("metallic", metallic);
     }
        
     if (roughness_texture) {
-        roughnessMap->Bind(GL_TEXTURE3);
+        roughnessMap->BindSlot(GL_TEXTURE3);
     }
     else {
         shaderProgram->SetUniform("roughness", roughness);
     }
        
     if (ao_texture) {
-        aoMap->Bind(GL_TEXTURE4);
+        aoMap->BindSlot(GL_TEXTURE4);
     }
 
 	if (albedo_texture || normal_texture || roughness_texture || metallic_texture || ao_texture) {

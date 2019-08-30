@@ -12,26 +12,26 @@ void GBuffer::BufferInit(int width, int  height) {
     // буфер позиций
     position.Bind();
     position.Init(width, height, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST);
-    position.Bind(GL_COLOR_ATTACHMENT0);
+    position.BindSlot(GL_COLOR_ATTACHMENT0);
 
     // буфер нормалей
     normal.Bind();
     normal.Init(width, height, GL_RGB16F, GL_RGB, GL_FLOAT, GL_NEAREST);
-    normal.Bind(GL_COLOR_ATTACHMENT1);
+    normal.BindSlot(GL_COLOR_ATTACHMENT1);
 
     // буфер для цвета + коэффициента зеркального отражения
     albedo.Bind();
     albedo.Init(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
-    albedo.Bind(GL_COLOR_ATTACHMENT2);
+    albedo.BindSlot(GL_COLOR_ATTACHMENT2);
 
     // прочая шняга
     metallRoughAO.Bind();
     metallRoughAO.Init(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_LINEAR);
-    metallRoughAO.Bind(GL_COLOR_ATTACHMENT3);
+    metallRoughAO.BindSlot(GL_COLOR_ATTACHMENT3);
 
     result.Bind();
     result.Init(width, height, GL_RGBA16F, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
-    result.Bind(GL_COLOR_ATTACHMENT4);
+    result.BindSlot(GL_COLOR_ATTACHMENT4);
     
     // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
     GLCall(glGenRenderbuffers(1, &rbo));
@@ -77,7 +77,7 @@ void ShadowBuffer::BufferInit(int width, int  height) {
     // карта глубины
     depthMap.Bind();
     depthMap.InitDepthMap(size, size);
-    depthMap.Bind(GL_DEPTH_ATTACHMENT);
+    depthMap.BindSlot(GL_DEPTH_ATTACHMENT);
     
     // указываем, что не будем рендерить цвет, так как нас интересует только глубины
     // glDrawBuffer(GL_NONE);  
@@ -111,23 +111,23 @@ void PostProcessBuffer::BufferInit(int width, int height) {
     
     hdrMap.Bind();
     hdrMap.Init(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
-    hdrMap.Bind(GL_COLOR_ATTACHMENT0);
+    hdrMap.BindSlot(GL_COLOR_ATTACHMENT0);
 
     brightMap.Bind();
     brightMap.InitBrightMapGauss(width, height);
-    brightMap.Bind(GL_COLOR_ATTACHMENT1);
+    brightMap.BindSlot(GL_COLOR_ATTACHMENT1);
  
     horizontalGauss.Bind();
     horizontalGauss.InitBrightMapGauss(width, height);
-    horizontalGauss.Bind(GL_COLOR_ATTACHMENT2);
+    horizontalGauss.BindSlot(GL_COLOR_ATTACHMENT2);
 
     verticalGauss.Bind();
     verticalGauss.InitBrightMapGauss(width, height);
-    verticalGauss.Bind(GL_COLOR_ATTACHMENT3);
+    verticalGauss.BindSlot(GL_COLOR_ATTACHMENT3);
 
     bloom.Bind();
     bloom.Init(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
-    bloom.Bind(GL_COLOR_ATTACHMENT4);
+    bloom.BindSlot(GL_COLOR_ATTACHMENT4);
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;

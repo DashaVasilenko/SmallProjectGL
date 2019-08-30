@@ -9,28 +9,6 @@ void Texture::Bind() const {
     GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
 }
 
-void Texture::Bind(GLenum slot) const {
-    GLCall(glActiveTexture(slot));
-    GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
-}
-
-void Texture::Load(const std::string& filename) {
-    // (путь, ширина, высота, количество каналов при загрузке изображения, количество каналов для отображения)
-	// каналы STBI_grey = 1, STBI_grey_alpha = 2, STBI_rgb = 3, STBI_rgb_alpha = 4
-	image = stbi_load(filename.c_str(), &width, &height, &cnt, 3); // загружаем текстуру
-    Init();
-}
-
-void Texture::Init() {
-    Bind();
-    // (текстурная цель, уровень мипмапа, формат текстуры, ширина, высота, 0, формат исходного изображения,
-	//  тип данных исходного изображения, данные изображения)
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image)); // генерируем текстуру
-	GLCall(glGenerateMipmap(GL_TEXTURE_2D)); // генерация всех необходимых мипмапов для текстуры
-	stbi_image_free(image); // освобождения памяти
-    Unbind(); // отвязка объекта текстуры
-}
-
 void Texture::Unbind() const { 
     GLCall(glBindTexture(GL_TEXTURE_2D, 0)); // отвязка объекта текстуры
 }
@@ -40,38 +18,29 @@ Texture::~Texture() {
 }
 
 //-----------------------------------------------------------------------------------------------------------
-
-
-
-/*
-Texture2D::Texture2D() {
-    GLCall(glGenTextures(1, &descriptor));
-}
-void Texture::Bind() const {
-    GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
-}
-*/
-
-
-
-//-----------------------------------------------------------------------------------------------------------
-CubeMap::CubeMap() {
-    GLCall(glGenTextures(1, &descriptor));
-}
-
-void CubeMap::Bind() const {
+void Texture2D::BindSlot(GLenum slot) const {
+    GLCall(glActiveTexture(slot));
     GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
 }
 
-/*
-void CubeMap::Load(const std::string& filename) {
+void Texture2D::Load(const std::string& filename) {
     // (путь, ширина, высота, количество каналов при загрузке изображения, количество каналов для отображения)
 	// каналы STBI_grey = 1, STBI_grey_alpha = 2, STBI_rgb = 3, STBI_rgb_alpha = 4
 	image = stbi_load(filename.c_str(), &width, &height, &cnt, 3); // загружаем текстуру
-    //Init();
+    Init();
 }
-*/
 
+void Texture2D::Init() {
+    Bind();
+    // (текстурная цель, уровень мипмапа, формат текстуры, ширина, высота, 0, формат исходного изображения,
+	//  тип данных исходного изображения, данные изображения)
+	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image)); // генерируем текстуру
+	GLCall(glGenerateMipmap(GL_TEXTURE_2D)); // генерация всех необходимых мипмапов для текстуры
+	stbi_image_free(image); // освобождения памяти
+    Unbind(); // отвязка объекта текстуры
+}
+
+//-----------------------------------------------------------------------------------------------------------
 void CubeMap::Init(const std::array<std::string, 6>& fileNames) {
     for(unsigned int i = 0; i < fileNames.size(); i++)
     {
@@ -92,20 +61,8 @@ void CubeMap::Init(const std::array<std::string, 6>& fileNames) {
     GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE)); 
 }
 
-CubeMap::~CubeMap() {
-    GLCall(glDeleteTextures(1, &descriptor));
-} 
-
 //------------------------------------------------------------------------------------------------------
-RenderTexture::RenderTexture() {
-    GLCall(glGenTextures(1, &descriptor));
-}
-
-void RenderTexture::Bind() const {
-    GLCall(glBindTexture(GL_TEXTURE_2D, descriptor));
-}
-
-void RenderTexture:: Bind(GLenum slot) const {
+void RenderTexture:: BindSlot(GLenum slot) const {
     // присоединение текстуры к объекту текущего кадрового буфера
     // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, slot, GL_TEXTURE_2D, descriptor, 0)); 

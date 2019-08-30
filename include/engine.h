@@ -9,7 +9,7 @@
 class Engine {
 public:
     static ResourceManager<ShaderProgram> programManager;
-    static ResourceManager<Texture> textureManager;
+    static ResourceManager<Texture2D> textureManager;
     static ResourceManager<Geometry> geometryManager;
     
 private:

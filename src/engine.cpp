@@ -1,5 +1,5 @@
 #include "engine.h"
 
 ResourceManager<ShaderProgram> Engine::programManager;
-ResourceManager<Texture> Engine::textureManager;
+ResourceManager<Texture2D> Engine::textureManager;
 ResourceManager<Geometry> Engine::geometryManager; 
