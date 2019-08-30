@@ -47,7 +47,6 @@ Texture::~Texture() {
 Texture2D::Texture2D() {
     GLCall(glGenTextures(1, &descriptor));
 }
-
 void Texture::Bind() const {
     GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
 }

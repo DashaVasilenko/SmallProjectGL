@@ -30,9 +30,7 @@ private:
 /*
 class Texture2D : public Texture { // потом сделать наследование от Texture
 public:
-
 private:
-
 };
 */
 
