@@ -27,7 +27,7 @@ protected:
 
 class Texture2D : public Texture { // потом сделать наследование от Texture
 public:
-    void BindSlot(GLenum slot) const;
+    void CreateAttachment(GLenum slot) const;
     void Load(const std::string& filename);
     void Init();
 };
@@ -42,7 +42,7 @@ private:
 
 class RenderTexture : public Texture {
 public:
-    void BindSlot(GLenum slot) const;
+    void CreateAttachment(GLenum slot) const;
     void Init(int width, int height, GLuint internalformat, GLenum format, GLenum type, GLint param);
     void InitDepthMap(int width, int height);
     void InitBrightMapGauss(int width, int height);

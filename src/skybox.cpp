@@ -13,6 +13,5 @@ void SkyBox::Draw(const glm::mat4& projection, const glm::mat4& view) {
 }
 
 void SkyBox::Init(const std::array<std::string, 6>& fileNames) {
-    cubemap.Bind();
     cubemap.Init(fileNames);
 }

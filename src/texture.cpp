@@ -18,7 +18,7 @@ Texture::~Texture() {
 }
 
 //-----------------------------------------------------------------------------------------------------------
-void Texture2D::BindSlot(GLenum slot) const {
+void Texture2D::CreateAttachment(GLenum slot) const {
     GLCall(glActiveTexture(slot));
     GLCall(glBindTexture(GL_TEXTURE_2D, descriptor)); // привязка текстуры
 }
@@ -42,6 +42,7 @@ void Texture2D::Init() {
 
 //-----------------------------------------------------------------------------------------------------------
 void CubeMap::Init(const std::array<std::string, 6>& fileNames) {
+    Bind();
     for(unsigned int i = 0; i < fileNames.size(); i++)
     {
         image = stbi_load(fileNames[i].c_str(), &width, &height, &nrChannels, 0);
@@ -62,13 +63,14 @@ void CubeMap::Init(const std::array<std::string, 6>& fileNames) {
 }
 
 //------------------------------------------------------------------------------------------------------
-void RenderTexture:: BindSlot(GLenum slot) const {
+void RenderTexture:: CreateAttachment(GLenum slot) const {
     // присоединение текстуры к объекту текущего кадрового буфера
     // (тип объекта кадра, тип прикрепления, тип текстуры, объект текстуры, используемый для вывода МИП-уровень)
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, slot, GL_TEXTURE_2D, descriptor, 0)); 
 }
 
 void RenderTexture::Init(int width, int height, GLuint internalformat, GLenum format, GLenum type, GLint param) {
+    Bind();
     this->width = width;
     this->height = height;
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, NULL));
@@ -77,6 +79,7 @@ void RenderTexture::Init(int width, int height, GLuint internalformat, GLenum fo
 }
 
 void RenderTexture::InitDepthMap(int width, int height) {
+    Bind();
     this->width = width;
     this->height = height;
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
@@ -89,6 +92,7 @@ void RenderTexture::InitDepthMap(int width, int height) {
 }
 
 void RenderTexture::InitBrightMapGauss(int width, int height) {
+    Bind();
     this->width = width;
     this->height = height;
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL));

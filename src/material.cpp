@@ -58,10 +58,10 @@ PhongTextureMaterial::PhongTextureMaterial(
 }
 
 void PhongTextureMaterial::SetInnerUniforms() {
-    ambientMap->BindSlot(GL_TEXTURE0);
-    diffuseMap->BindSlot(GL_TEXTURE1);   
-    specularMap->BindSlot(GL_TEXTURE2);
-    normalMap->BindSlot(GL_TEXTURE3);
+    ambientMap->CreateAttachment(GL_TEXTURE0);
+    diffuseMap->CreateAttachment(GL_TEXTURE1);   
+    specularMap->CreateAttachment(GL_TEXTURE2);
+    normalMap->CreateAttachment(GL_TEXTURE3);
    
     shaderProgram->SetUniform("material.shininess", shininess);
 }
@@ -91,11 +91,11 @@ PbrMaterial::PbrMaterial(
 }
 
 void PbrMaterial::SetInnerUniforms() {
-    albedoMap->BindSlot(GL_TEXTURE0);
-    normalMap->BindSlot(GL_TEXTURE1);
-    metallicMap->BindSlot(GL_TEXTURE2);
-    roughnessMap->BindSlot(GL_TEXTURE3);
-    aoMap->BindSlot(GL_TEXTURE4);
+    albedoMap->CreateAttachment(GL_TEXTURE0);
+    normalMap->CreateAttachment(GL_TEXTURE1);
+    metallicMap->CreateAttachment(GL_TEXTURE2);
+    roughnessMap->CreateAttachment(GL_TEXTURE3);
+    aoMap->CreateAttachment(GL_TEXTURE4);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -202,32 +202,32 @@ void MaterialPBR::Init() {
 void MaterialPBR::SetInnerUniforms() {
 	//shaderProgram->Run();
     if (albedo_texture) {
-        albedoMap->BindSlot(GL_TEXTURE0);
+        albedoMap->CreateAttachment(GL_TEXTURE0);
     }
     else {
         shaderProgram->SetUniform("albedo", albedo_color);
     }
         
     if (normal_texture) {
-        normalMap->BindSlot(GL_TEXTURE1);
+        normalMap->CreateAttachment(GL_TEXTURE1);
     }
 
     if (metallic_texture) {
-        metallicMap->BindSlot(GL_TEXTURE2);
+        metallicMap->CreateAttachment(GL_TEXTURE2);
     }
     else {
         shaderProgram->SetUniform("metallic", metallic);
     }
        
     if (roughness_texture) {
-        roughnessMap->BindSlot(GL_TEXTURE3);
+        roughnessMap->CreateAttachment(GL_TEXTURE3);
     }
     else {
         shaderProgram->SetUniform("roughness", roughness);
     }
        
     if (ao_texture) {
-        aoMap->BindSlot(GL_TEXTURE4);
+        aoMap->CreateAttachment(GL_TEXTURE4);
     }
 
 	if (albedo_texture || normal_texture || roughness_texture || metallic_texture || ao_texture) {
