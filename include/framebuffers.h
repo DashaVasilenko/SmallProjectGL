@@ -5,20 +5,31 @@
 #include "errors.h"
 #include "texture.h"
 
-class GBuffer {
+class FrameBuffer {
 public:
-    friend class Renderer;
-    GBuffer();
-    GLuint GetDescriptor() { return descriptor; }
+    FrameBuffer();
     void BufferInit(int width, int  height);
-    void StartFrame() const;
     void Bind() const;
     void Unbind() const;
+    GLuint GetDescriptor() { return descriptor; }
+    GLuint GetTexDescriptor() { return tex_color_buf.GetDescriptor(); }
+    ~FrameBuffer();
+    
+protected:
+    GLuint descriptor;
+    
+private:
+    RenderTexture tex_color_buf;
+    unsigned int rbo;
+};
 
-    ~GBuffer();
+class GBuffer : public FrameBuffer{
+public:
+    friend class Renderer;
+    void BufferInit(int width, int  height);
+    void StartFrame() const;
 
 private:
-    GLuint descriptor;
     RenderTexture position; 
     RenderTexture normal;
     RenderTexture albedo;
@@ -27,35 +38,23 @@ private:
     unsigned int rbo;
 };
 
-class ShadowBuffer {
+class ShadowBuffer : public FrameBuffer {
 public:
     friend class Renderer;
-    ShadowBuffer();
     void BufferInit(int width, int  height);
-    void Bind();
-    void Unbind() const;
-
     unsigned int GetSize() { return size; }
 
-    ~ShadowBuffer();
-
 private:
-    GLuint descriptor;
     RenderTexture depthMap;
     unsigned int size = 4096; // размер мапы
 };
 
-class PostProcessBuffer {
+class PostProcessBuffer : public FrameBuffer {
 public:
     friend class Renderer;
-    PostProcessBuffer();
     void BufferInit(int width, int  height);
-    void Bind() const;
-    void Unbind() const;
-    ~PostProcessBuffer();
     
 private:
-    GLuint descriptor;
     RenderTexture hdrMap;
     RenderTexture brightMap;
     RenderTexture horizontalGauss;

@@ -1,11 +1,44 @@
 #include "framebuffers.h"
 #include <iostream>
 
-GBuffer::GBuffer() {
-    GLCall(glGenFramebuffers(1, &descriptor)); // создаем gBuffer, 1 - кол-во буферов
+//--------------------------------------------------------------------------
+FrameBuffer::FrameBuffer() {
+    GLCall(glGenFramebuffers(1, &descriptor)); // создаем буфер FBO (frame buffer objects) 1 - кол-во буферов
 }
 
-// дописать эту функцию 
+void FrameBuffer::BufferInit(int width, int  height) {
+    Bind();
+
+    // используем текстурные прикрепления для создания объектра буфера цвета
+    tex_color_buf.Init(width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_LINEAR);
+    tex_color_buf.CreateAttachment(GL_COLOR_ATTACHMENT0);
+    
+    // создание объекта рендербуфера для совмещенных буфера глубины и трафарета
+    GLCall(glGenRenderbuffers(1, &rbo));
+    GLCall(glBindRenderbuffer(GL_RENDERBUFFER, rbo)); 
+    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height));  
+    // присоединяем объект рендербуфера к совмещенной точке прикрепления глубины и трафарета буфера кадра
+    GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo));
+
+    //проверяем текущий привязанный кадровый буфер на завершенность
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
+}
+
+void FrameBuffer::Bind() const {
+    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));  // привязываем как текущий активный буфер кадра 
+}
+
+void FrameBuffer::Unbind() const {
+    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
+}
+
+FrameBuffer::~FrameBuffer() {
+    GLCall(glDeleteFramebuffers(1, &descriptor));  // удаляем ненужный буфер
+}
+
+//--------------------------------------------------------------------------------------------------------
 void GBuffer::BufferInit(int width, int  height) {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));
 
@@ -41,31 +74,13 @@ void GBuffer::BufferInit(int width, int  height) {
     Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
 }
 
-void GBuffer::Bind() const {
-    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));
-}
-
 void GBuffer::StartFrame() const {
     GLCall(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, descriptor));
     GLCall(glDrawBuffer(GL_COLOR_ATTACHMENT4));
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
 }
 
-void GBuffer::Unbind() const {
-    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
-}
-
-GBuffer::~GBuffer() {
-    GLCall(glDeleteFramebuffers(1, &descriptor));  // удаляем ненужный буфер
-}
-
-
 //------------------------------------------------------------------------------------------------
-ShadowBuffer::ShadowBuffer() {
-    GLCall(glGenFramebuffers(1, &descriptor)); // создаем ShadowBuffer, 1 - кол-во буферов
-}
-
-// дописать эту функцию 
 void ShadowBuffer::BufferInit(int width, int  height) {
     Bind();
 
@@ -83,23 +98,7 @@ void ShadowBuffer::BufferInit(int width, int  height) {
     Unbind();  
 }
 
-void ShadowBuffer::Bind() {
-    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));
-}
-
-void ShadowBuffer::Unbind() const {
-    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); // отвязываем буфера и возвращаем базовый кадровый буфер на место активного  
-}
-
-ShadowBuffer::~ShadowBuffer() {
-    GLCall(glDeleteFramebuffers(1, &descriptor));  // удаляем ненужный буфер
-}
-
 //--------------------------------------------------------------------------------------------------------------------------
-PostProcessBuffer::PostProcessBuffer() {
-    GLCall(glGenFramebuffers(1, &descriptor)); 
-}
-
 void PostProcessBuffer::BufferInit(int width, int height) {
     Bind();
     
@@ -121,16 +120,4 @@ void PostProcessBuffer::BufferInit(int width, int height) {
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
     Unbind();  // отвязываем объект буфера кадра, чтобы случайно не начать рендер не туда, куда предполагалось
-}
-
-void PostProcessBuffer::Bind() const {
-    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, descriptor));
-}
-
-void PostProcessBuffer::Unbind() const {
-    GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-}
-
-PostProcessBuffer::~PostProcessBuffer() {
-    GLCall(glDeleteFramebuffers(1, &descriptor));
 }

@@ -73,22 +73,4 @@ private:
     GLuint freeAttribNum = 0;
 };
 
-class FrameBuffer {
-public:
-    FrameBuffer();
-    //void SetWidth(int width) { this->width = width; } // пока не используется
-    //void SetHeight(int height) { this->height = height; } // пока не используется
-    void BufferInit(int width, int  height);
-    void Bind() const;
-    void Unbind() const;
-    //int GetTexDescriptor() { return this->tex_color_buf; }
-    GLuint GetTexDescriptor() { return tex_color_buf.GetDescriptor(); }
-    ~FrameBuffer();
-    
-private:
-    GLuint descriptor;
-    RenderTexture tex_color_buf;
-    unsigned int rbo;
-};
-
 #endif /* End of __BUFFERS__ */
