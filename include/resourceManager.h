@@ -4,13 +4,12 @@
 #include <unordered_map>
 #include <string>
 
-// шаблонный класс
 template<typename T>
 class ResourceManager {
 public:
     ResourceManager() {}
-    ResourceManager& operator=(const ResourceManager&) = delete; // delete говорит, что нет такого оперетора (чтобы нельзя было копировать)
-    ResourceManager(const ResourceManager&) = delete; // delete говорит, что нет такого оперетора
+    ResourceManager& operator=(const ResourceManager&) = delete; 
+    ResourceManager(const ResourceManager&) = delete;
 
     bool Remove(const std::string& fileName);
     T* Get(const std::string& fileName);
@@ -21,7 +20,7 @@ private:
     std::pair<T*,  int>* Find(const std::string& fileName);
     void Free(const std::string& fileName);
 
-    std::unordered_map<std::string, std::pair<T*, int>> resourceMap; // < имя файла, <тип, кол-во сколько раз используется> >
+    std::unordered_map<std::string, std::pair<T*, int>> resourceMap;
 };
 
 template<typename T>
@@ -38,7 +37,7 @@ std::pair<T*,  int>* ResourceManager<T>::Find(const std::string& fileName) {
 template<typename T>
 bool ResourceManager<T>::Add(const std::string& fileName) {
     auto res = Find(fileName);
-    // если этот объект уже используется, то просто увеличиваем счетчик
+    
     if (res) {
         ++res->second;
         return true;

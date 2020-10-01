@@ -2,17 +2,16 @@
 #include <iostream>
 
 IndexBuffer::IndexBuffer() {
-    GLCall(glGenBuffers(1, &descriptor)); // создаем буфер IBO (1 - кол-во буферов)
+    GLCall(glGenBuffers(1, &descriptor));
 }
 
 void IndexBuffer::BufferData(int* data, size_t count) {
     Bind();
-    // копируем вершинные данные в буфер (тип буфера, количество данных в байтах, данные, режим работы с данными)
     GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count*sizeof(int), data, GL_STATIC_DRAW));
 }
 
 void IndexBuffer::Bind() const {
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, descriptor)); // определяем тип буфера
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, descriptor));
 }
 
 void IndexBuffer::Unbind() const {
@@ -25,17 +24,16 @@ IndexBuffer::~IndexBuffer() {
 
 //--------------------------------------------------------------------------
 VertexBuffer::VertexBuffer() {
-    GLCall(glGenBuffers(1, &descriptor)); // создаем буфер VBO (vertex buffer objects) 1 - кол-во буферов
+    GLCall(glGenBuffers(1, &descriptor));
 }
 
 void VertexBuffer::BufferData(void* data, size_t size) {
     Bind();
-    // копируем вершинные данные в буфер (тип буфера, количество данных в байтах, данные, режим работы с данными)
     GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
 }
 
 void VertexBuffer::Bind() const {
-    GLCall(glBindBuffer(GL_ARRAY_BUFFER, descriptor)); // определяем тип буфера
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, descriptor)); 
 }
 
 void VertexBuffer::Unbind() const {
@@ -111,15 +109,12 @@ void VertexArray::AddAttributes(const VertexBuffer& vertexBuffer, const BufferLa
     Bind();
 
     for (const auto& bufferElement: layout.elements) {
-        // сообщаем OpenGL как он должен интерпретировать вершинные данные
-	    // (какой аргумент шейдера мы хотим настроить(layout (location = 0)), размер аргумента в шейдере, тип данных,
-	    //  необходимость нормализовать входные данные, расстояние между наборами данных, смещение начала данных в буфере)
         GLCall(glVertexAttribPointer(
                                 freeAttribNum, bufferElement.GetCount(), 
                                 bufferElement.GetOpenglType(), GL_FALSE, 
                                 layout.GetStride(), (GLvoid*)bufferElement.offset
                              ));
-	    GLCall(glEnableVertexAttribArray(freeAttribNum)); // включаем атрибуты, т.е. передаем вершинному атрибуту позицию аргумента
+	    GLCall(glEnableVertexAttribArray(freeAttribNum));
         freeAttribNum++;
     }
 }

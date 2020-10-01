@@ -1,7 +1,7 @@
 #include "inputSystem.h"
 
-bool InputSystem::keys[1024]; // нажатые(отпущенные) клавиши
-bool InputSystem::draw_gui = false; // рисуем в гуи
+bool InputSystem::keys[1024]; 
+bool InputSystem::draw_gui = false;
 bool InputSystem::firstMouseMove = true;
 double InputSystem::lastCursPosX;
 double InputSystem::lastCursPosY;

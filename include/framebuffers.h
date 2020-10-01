@@ -61,7 +61,7 @@ private:
     RenderTexture verticalGauss;
     RenderTexture bloom;
     //unsigned int depthMap;
-    RenderTexture depthMap; // чет оно нигде не используется. я не нашла где
+    RenderTexture depthMap; 
 };
 
 #endif /* End of __FRAMEBUFFERS__ */

@@ -12,12 +12,12 @@ public:
     virtual ~Light(){} 
 
 protected:
-    Geometry* geometry;  //Теперь у света есть своя геометрия
+    Geometry* geometry;  
     ShaderProgram* shaderProgram;
    
     glm::vec3 color;
-    glm::vec3 position_WS;  // Позиции в WorldSpace
-    float intensity; // интенсивность
+    glm::vec3 position_WS;  // World space position
+    float intensity; 
 };
 
 class DirectionalLight : public Light{
@@ -48,17 +48,17 @@ private:
     ShaderProgram* debugProgram;
 
     glm::mat4 model = glm::mat4(1.0f);
-    /* по дефолту свет затухает с квадратичной скоростью */
-    float Kc = 1.0f; // константный коэффициент
-    float Kl = 0.7f; // линейный коэффициент
-    float Kq = 1.8f; // квадратичный коэффициент
+    /* Attenuation is given by the quadratic function*/
+    float Kc = 1.0f; // const coeff
+    float Kl = 0.7f; // linear coeff
+    float Kq = 1.8f; // quadratic coeff
     float radius;
 };
 
 class SpotLight : public Light{
 public:
     SpotLight(const glm::vec3& color, const glm::vec3& pos, const glm::vec3& dir, float angle, float intensity = 1.0f, float exponent = 15.0f);
-    void SetAttenuation(float k1) { assert(k1 >= 0); exponent = k1;  } // затухание света
+    void SetAttenuation(float k1) { assert(k1 >= 0); exponent = k1;  }
     void SetInnerUniforms() override;
     void Draw(const glm::mat4& projection, const glm::mat4& view);
     void DebugDraw(const glm::mat4& projection, const glm::mat4& view);
@@ -71,8 +71,8 @@ private:
     
     glm::mat4 model = glm::mat4(1.0f);
     glm::vec3 direction;
-    float cutoff; // угол отсечки (от 0 до 90 градусов)
-    float exponent; // экспонента углового ослабления силы света
+    float cutoff; 
+    float exponent;
 };
 
 #endif /* End of Light */

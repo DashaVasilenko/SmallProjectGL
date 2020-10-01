@@ -21,7 +21,7 @@ float get_random() {
 
 int main() {
 	Window window;
-	window.SetWidth(1080);
+	window.SetWidth(1024);
 	window.SetHeight(768);
 	window.SetName("Karl's window!");
 	window.Init();
@@ -30,20 +30,19 @@ int main() {
 	gui.Init(window.GetPointer());
 	auto& console = gui.GetConsole();
 	
-	Renderer::SetWidth(window.GetWidth());
-	Renderer::SetHeight(window.GetHeight());
+	Renderer::SetWidth(window.GetDrawWidth());
+	Renderer::SetHeight(window.GetDrawHeight());
 	Renderer renderer;
 	renderer.Init();
 
-	console->AddCommand("wireframe", renderer.GetWireFrameFunc()); // добавить функции для консоли
-	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc()); // добавить функции для консоли
-	console->AddCommand("debuglight", renderer.GetDebugLightFunc()); // добавить функции для консоли
+	// registering console functions
+	console->AddCommand("wireframe", renderer.GetWireFrameFunc());
+	console->AddCommand("viewbuffer", renderer.GetViewBufferFunc()); 
+	console->AddCommand("debuglight", renderer.GetDebugLightFunc());
+	
+	entt::registry registry;
 
-	// Создаем сцену
-	// Все хранится в registry!!!
-	entt::registry registry; // библиотечная штука. почитать!!!
-
-	// Создаем небо
+	// Sky
 	std::array<std::string, 6> fileNames = { "textures/skybox/front.tga",
 											 "textures/skybox/back.tga",
 											 "textures/skybox/up.tga",
@@ -52,7 +51,7 @@ int main() {
 											 "textures/skybox/right.tga",
 											 "textures/skybox/left.tga"
 											 };
-	// Создаем небо
+	// Sky
 	SkyBox skybox;
 	skybox.Init(fileNames);
 	DirectionalLight dl({3.0f, 3.0f, 3.0f}, {1.0f, -1.0f, 0.0f});
@@ -60,14 +59,13 @@ int main() {
 	auto sky = registry.create();
 	registry.assign<DirectionalLight>(sky, dl);
 	registry.assign<SkyBox>(sky, skybox);
-	// Конец неба
 
-	// Грузим необходимую геометрию
+	// Loading obj files
 	const Geometry* cubeGeo = Engine::geometryManager.Get("data/cube.obj");
 	const Geometry* sphereGeo = Engine::geometryManager.Get("data/sphere_highpoly.obj");
-	//const Geometry* dragonGeo = Engine::geometryManager.Get("data/dragon.obj");
+	const Geometry* dragonGeo = Engine::geometryManager.Get("data/dragon.obj");
 
-	// Создаем пол
+	// Floor
 	MaterialPBR floor_Material;
 	floor_Material.SetAlbedo("textures/7/d.png");
 	floor_Material.SetRoughness("textures/7/r.png");
@@ -82,10 +80,8 @@ int main() {
 	floor_transform.Scale({40.0f, 0.15f, 40.0f});
 	registry.assign<Mesh>(floor, floor_mesh);
 	registry.assign<Transform>(floor, floor_transform);
-	// конец Пола
 	
-	/*
-	// Создаем дракона
+	// Dragon
 	MaterialPBR dragon_Material;
 
 	dragon_Material.SetAlbedo(glm::vec3(0.207, 0.556, 0.737));
@@ -98,31 +94,43 @@ int main() {
 
 	registry.assign<Transform>(dragon, dragon_transform);
 	registry.assign<Mesh>(dragon, dragon_mesh);
-	*/
 	
 	
-	// Cоздаем сферы
-	MaterialPBR* sphere_Materials = new MaterialPBR[100];
+	// Spheres
+	MaterialPBR sphere_Material_1;
+	sphere_Material_1.SetAlbedo("textures/rustedironAlbedo.png");
+	sphere_Material_1.SetNormalMap("textures/rustedironNormalMap.png", NORMAL_MAP);
+	sphere_Material_1.SetRoughness("textures/rustedironRoughness.png");
+	sphere_Material_1.SetRoughness("textures/rustedironMetallic.png");
+	sphere_Material_1.Init();
+
+	MaterialPBR sphere_Material_2;
+	sphere_Material_2.SetAlbedo("textures/woodAlbedo.png");
+	sphere_Material_2.SetNormalMap("textures/woodNormalMap.png", NORMAL_MAP);
+	sphere_Material_2.SetRoughness("textures/woodRoughness.png");
+	sphere_Material_2.SetMetallic("textures/woodMetallic.png");
+	sphere_Material_2.Init();
+
 
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
-			sphere_Materials[10 * i + j].SetRoughness(0.1 * i);
-			sphere_Materials[10 * i + j].SetMetallic(0.1 * j);
-			sphere_Materials[10 * i + j].Init();
-
-			Mesh sphere_mesh{{sphereGeo, &sphere_Materials[10 * i + j]}};
-
+			auto sphere = registry.create();
 			Transform sphere_transform;
 			sphere_transform.Translate({-18.0f + 4 * i, 1.0f, -18.0f + 4 * j});
-			auto sphere = registry.create();
 			registry.assign<Transform>(sphere, sphere_transform);
-			registry.assign<Mesh>(sphere, std::move(sphere_mesh));
+					
+			if (j % 2 == 0) {
+				Mesh sphere_mesh{{sphereGeo, &sphere_Material_1}};
+				registry.assign<Mesh>(sphere, std::move(sphere_mesh));
+			}
+			else {
+				Mesh sphere_mesh{{sphereGeo, &sphere_Material_2}};
+				registry.assign<Mesh>(sphere, std::move(sphere_mesh));
+			}
 		}
 	}
 	
 
-	/*
-	// Создаём кубики
 	MaterialPBR cube_Material;
 	cube_Material.SetAlbedo("textures/5/d.png");
 	cube_Material.SetRoughness("textures/5/r.png");
@@ -138,30 +146,25 @@ int main() {
 	 	registry.assign<Transform>(cube, cube_transform);
 	 	registry.assign<Mesh>(cube, cube_mesh);
 	}
-	*/
 
 	
-	//Прожектор
-	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 60.0f, 35.0f);
+	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 35.0f, 10.0f);
 	auto spotlight = registry.create();
 	registry.assign<SpotLight>(spotlight, sl);
-
-
 	
-	// Точечные источники 
 	for (int i = 0; i < 10; i++) {
 	 	for (int j = 0; j < 10; j++) {
 			float r = get_random();
 	 		float g = get_random();
 	 		float b = get_random();
 	 		auto pointLight = registry.create();
-	 		PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 50.0f);
+	 		PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 200.0f);
 	 		registry.assign<PointLight>(pointLight, pl);
 	 	}
 	}
 	
 
-	PerspectiveCamera camera; // (угол раствора камеры, ширина области просмотра/на высоту, ближняя и дальняя стенки)
+	PerspectiveCamera camera; 
 	camera.SetAspect((float)window.GetWidth()/(float)window.GetHeight());
 	camera.SetProjection(45.0f, camera.GetAspect(), 0.1f, 100.0f);
 	camera.SetPosition(glm::vec3(7.0f, 10.0f, 20.0f));
@@ -172,20 +175,18 @@ int main() {
 	double currentTime = 0.0;
 	double lastTime = 0.0;
 	
-	// игровой цикл
+	// main loop
 	while (!glfwWindowShouldClose(window.GetPointer())) {
-		glfwPollEvents(); // проверяет события (ввод с клавиатуры, перемещение мыши) и вызывает функции обратного вызова(callback))
+		glfwPollEvents(); 
 
-		//calculate time
 		currentTime = glfwGetTime();
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 		camera.Update(deltaTime);
-		// Renderer pass
 		renderer.Update(registry);
 		gui.Update();
     	
- 		glfwSwapBuffers(window.GetPointer()); // заменяет цветовой буфер на следующий и выводит результат на экран
+ 		glfwSwapBuffers(window.GetPointer());
 	}	
 
 	return 0;

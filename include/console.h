@@ -13,7 +13,6 @@
 
 #define MAX_COMMAND_LENGTH 128
 
-// тип функций, который возвращает бул,а на вход получает константную ссылку на вектор строк
 using ConsoleFunction = std::function<bool (const std::vector<std::string>&)>;
 
 class OutputStr {
@@ -37,7 +36,7 @@ private:
     
     char buffer[MAX_COMMAND_LENGTH];
     std::vector<std::string> command_line;
-    std::vector<OutputStr> text_buffer; // текст, который выводится в консоли при наборе
+    std::vector<OutputStr> text_buffer;
     void EnterCommand(char* buffer);
     void ParseString(const std::string& );
     void ExecuteCommand();

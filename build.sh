@@ -1,0 +1,1 @@
+cmake "-DCMAKE_TOOLCHAIN_FILE=/Users/sergeiborzov/Documents/vcpkg/scripts/buildsystems/vcpkg.cmake" CMakeLists.txt

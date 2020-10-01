@@ -58,7 +58,7 @@ public:
     size_t GetStride() const { return stride; }
 
 private:
-    size_t stride = 0; // какой-то шаг step
+    size_t stride = 0;
 };
 
 class VertexArray {

@@ -7,7 +7,13 @@ project(Lesson1)
 find_package (glfw3 REQUIRED)
 find_package (OpenGL REQUIRED)
 find_package (Assimp REQUIRED)
-find_package (GLEW REQUIRED STATIC)
+find_package (GLEW REQUIRED)
+
+# assimp cmake fix https://github.com/ros-planning/geometric_shapes/issues/23
+find_library(
+    assimp_LIBRARIES
+    NAMES assimp
+)
 
 file(GLOB sources 
 	  "src/*.cpp"
@@ -17,4 +23,4 @@ file(GLOB sources
 add_executable(main ${sources}) 
 target_include_directories(main PUBLIC include lib/include lib/imGUI)
 
-target_link_libraries(main ${GLEW_LIBRARY} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES} -lglfw)
+target_link_libraries(main PRIVATE GLEW::GLEW ${OPENGL_LIBRARIES} ${assimp_LIBRARIES} glfw)

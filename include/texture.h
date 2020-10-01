@@ -25,14 +25,14 @@ protected:
 };
 
 
-class Texture2D : public Texture { // потом сделать наследование от Texture
+class Texture2D : public Texture {
 public:
     void CreateAttachment(GLenum slot) const;
     void Load(const std::string& filename);
     void Init();
 };
 
-class CubeMap : public Texture{ // потом сделать наследование от Texture
+class CubeMap : public Texture{ 
 public:
     void Init(const std::array<std::string, 6>& fileNames);
 

@@ -1,13 +1,17 @@
 #ifndef __WINDOW__
 #define __WINDOW__
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 #include <GL/glew.h>
 #define GLEW_STATIC
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-#include <GLFW/glfw3.h>
+
 #include <stdlib.h>
 #include <string> 
 #include "errors.h"
@@ -18,8 +22,11 @@ public:
     void SetWidth(int width) { this->width = width; }
     void SetHeight(int height) { this->height = height; }
     void SetName(const std::string& name) { this->name = name; }
-    int GetWidth() { return this->width; }
-    int GetHeight() { return this->height; }
+    inline int GetWidth() { return this->width; }
+    inline int GetHeight() { return this->height; }
+    inline int GetDrawWidth() { int w, h; glfwGetFramebufferSize(window, &w, &h); return w; }
+    inline int GetDrawHeight() { int w, h; glfwGetFramebufferSize(window, &w, &h); return h; }
+
     int Init();
      
     static void OnKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mode);
