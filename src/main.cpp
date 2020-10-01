@@ -148,7 +148,7 @@ int main() {
 	}
 
 	
-	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 35.0f, 10.0f);
+	SpotLight sl({0.8f, 0.9f, 0.3f},{0.0f, 30.0f, 30.0f}, {0.0f, -1.0f, -1.0f}, 15.0f, 35.0f, 100.0f);
 	auto spotlight = registry.create();
 	registry.assign<SpotLight>(spotlight, sl);
 	
@@ -158,7 +158,7 @@ int main() {
 	 		float g = get_random();
 	 		float b = get_random();
 	 		auto pointLight = registry.create();
-	 		PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 200.0f);
+	 		PointLight pl({r,g,b}, {-18.0f+4*i, 2.0f, -18+4*j}, 100.0f);
 	 		registry.assign<PointLight>(pointLight, pl);
 	 	}
 	}
