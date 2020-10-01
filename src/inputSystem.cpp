@@ -3,6 +3,7 @@
 bool InputSystem::keys[1024]; 
 bool InputSystem::draw_gui = false;
 bool InputSystem::firstMouseMove = true;
+bool InputSystem::cameraMove = true;
 double InputSystem::lastCursPosX;
 double InputSystem::lastCursPosY;
 double InputSystem::deltaCursPosX; 

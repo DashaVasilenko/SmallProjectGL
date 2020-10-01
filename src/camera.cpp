@@ -26,8 +26,10 @@ void  Camera::SetFront(const glm::vec3& dir) {
 }
 
 void Camera::Update(const float& delta) {
-    UpdatePosition(delta);
-    UpdateVectors();
+    if (InputSystem::cameraMove) {
+        UpdatePosition(delta);
+        UpdateVectors();
+    }
 }
 
 void Camera::UpdatePosition(const float& delta) {
